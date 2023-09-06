@@ -1,0 +1,40 @@
+from sqlalchemy import DECIMAL, TIMESTAMP, Column, Integer, String, Table
+
+from src.core.database.database import metadata
+
+# Define the "Predictions" table
+predictions = Table(
+    "Predictions",
+    metadata,
+    Column("name", String(12)),
+    Column("prediction", String(50)),
+    Column("id", Integer, primary_key=True, autoincrement=True),
+    Column("created", TIMESTAMP),
+    Column("predicted_confidence", DECIMAL(5, 2)),
+    Column("real_player", DECIMAL(5, 2)),
+    Column("unknown_bot", DECIMAL(5, 2)),
+    Column("pvm_melee_bot", DECIMAL(5, 2)),
+    Column("smithing_bot", DECIMAL(5, 2)),
+    Column("magic_bot", DECIMAL(5, 2)),
+    Column("fishing_bot", DECIMAL(5, 2)),
+    Column("mining_bot", DECIMAL(5, 2)),
+    Column("crafting_bot", DECIMAL(5, 2)),
+    Column("pvm_ranged_magic_bot", DECIMAL(5, 2)),
+    Column("pvm_ranged_bot", DECIMAL(5, 2)),
+    Column("hunter_bot", DECIMAL(5, 2)),
+    Column("fletching_bot", DECIMAL(5, 2)),
+    Column("clue_scroll_bot", DECIMAL(5, 2)),
+    Column("lms_bot", DECIMAL(5, 2)),
+    Column("agility_bot", DECIMAL(5, 2)),
+    Column("wintertodt_bot", DECIMAL(5, 2)),
+    Column("runecrafting_bot", DECIMAL(5, 2)),
+    Column("zalcano_bot", DECIMAL(5, 2)),
+    Column("woodcutting_bot", DECIMAL(5, 2)),
+    Column("thieving_bot", DECIMAL(5, 2)),
+    Column("soul_wars_bot", DECIMAL(5, 2)),
+    Column("cooking_bot", DECIMAL(5, 2)),
+    Column("vorkath_bot", DECIMAL(5, 2)),
+    Column("barrows_bot", DECIMAL(5, 2)),
+    Column("herblore_bot", DECIMAL(5, 2)),
+    Column("zulrah_bot", DECIMAL(5, 2)),
+)

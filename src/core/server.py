@@ -5,7 +5,7 @@ from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
 
 from src import api
-from src.core import logging_config # needed for log formatting
+from . import logging_config  # needed for log formatting
 
 logger = logging.getLogger(__name__)
 
