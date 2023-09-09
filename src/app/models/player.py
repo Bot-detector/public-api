@@ -12,6 +12,20 @@ class Player:
         self.session = session
 
     async def get_kc(self, player_names: list[str]):
+        """
+        Retrieve Kill Count (KC) data for a list of player names.
+
+        Args:
+            player_names (list[str]): A list of player names for which KC data is requested.
+
+        Returns:
+            tuple: A tuple of dictionaries containing KC data for each player name. Each dictionary
+                includes the following keys:
+                - "count": The distinct count of reported players.
+                - "possible_ban": Whether the player has a possible ban (True or False).
+                - "confirmed_ban": Whether the player has a confirmed ban (True or False).
+                - "confirmed_player": Whether the player is confirmed as a valid player (True or False).
+        """
         async with self.session:
             # Create aliases for the tables
             reporting_player: dbPlayer = aliased(dbPlayer, name="reporting_player")

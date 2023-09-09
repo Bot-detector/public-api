@@ -15,6 +15,15 @@ router = APIRouter(tags=["Player"])
 async def get_players_kc(
     name: Annotated[list[str], Query(...)], session=Depends(get_session)
 ):
+    """
+    Get Kill Count (KC) data for multiple player names.
+
+    Args:
+        name (str): can be provided multiple times
+
+    Returns:
+        list[KCResponse]: A list of dictionaries containing KC data for each player.
+    """
     player = Player(session)
     names = await asyncio.gather(*[to_jagex_name(n) for n in name])
     data = await player.get_kc(player_names=names)
