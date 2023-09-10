@@ -13,7 +13,7 @@ router = APIRouter(tags=["Player"])
 
 @router.get("/players/score", response_model=list[KCResponse])
 async def get_players_kc(
-    name: Annotated[list[str], Query(...)], session=Depends(get_session)
+    name: Annotated[list[str], Query(..., max_length=13)], session=Depends(get_session)
 ):
     """
     Get Kill Count (KC) data for multiple player names.
