@@ -1,35 +1,27 @@
 from pydantic import BaseModel
 from datetime import datetime
 
+
 class PredictionResponse(BaseModel):
-    name: str
-    prediction: str
-    id: int
+    player_id: int
+    player_name: str
+    prediction_label: str
+    prediction_confidence: float
     created: datetime
-    predicted_confidence: float
-    real_player: float
-    unknown_bot: float
-    pvm_melee_bot: float
-    smithing_bot: float
-    magic_bot: float
-    fishing_bot: float
-    mining_bot: float
-    crafting_bot: float
-    pvm_ranged_magic_bot: float
-    pvm_ranged_bot: float
-    hunter_bot: float
-    fletching_bot: float
-    clue_scroll_bot: float
-    lms_bot: float
-    agility_bot: float
-    wintertodt_bot: float
-    runecrafting_bot: float
-    zalcano_bot: float
-    woodcutting_bot: float
-    thieving_bot: float
-    soul_wars_bot: float
-    cooking_bot: float
-    vorkath_bot: float
-    barrows_bot: float
-    herblore_bot: float
-    zulrah_bot: float
+    predictions_breakdown: dict
+
+    @classmethod
+    def from_data(self, data: dict, breakdown: bool):
+        # Create the player data dictionary with only the relevant fields
+        player_data = {
+            "player_id": data.pop("id"),
+            "player_name": data.pop("name"),
+            "prediction_label": data.pop("prediction"),
+            "prediction_confidence": data.pop("predicted_confidence") / 100.0,
+            "created": data.pop("created"),
+            "predictions_breakdown": {
+                k: v / 100.0 if v > 0 else v for k, v in data.items()
+            } if breakdown else {},
+        }
+
+        return self(**player_data)
