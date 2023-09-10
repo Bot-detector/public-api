@@ -1,11 +1,12 @@
-from fastapi import HTTPException
-from src.core.database.models.player import Player as dbPlayer
-from src.core.database.models.report import Report as dbReport
-from sqlalchemy import select, func
-from sqlalchemy.sql.expression import Delete, Insert, Select, Update, and_
+from sqlalchemy import func, select
+from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import aliased
-from sqlalchemy.engine import Result
+from sqlalchemy.sql.expression import Select
+
+from src.core.database.models.player import Player as dbPlayer
+from src.core.database.models.report import Report as dbReport
+
 
 class Player:
     def __init__(self, session: AsyncSession) -> None:
@@ -33,9 +34,7 @@ class Player:
 
             query: Select = select(
                 [
-                    func.count(func.distinct(reported_player.id)).label(
-                        "count"
-                    ),
+                    func.count(func.distinct(reported_player.id)).label("count"),
                     reported_player.possible_ban,
                     reported_player.confirmed_ban,
                     reported_player.confirmed_player,
@@ -54,6 +53,6 @@ class Player:
                 reported_player.confirmed_ban,
                 reported_player.confirmed_player,
             )
-            result:Result = await self.session.execute(query)
+            result: Result = await self.session.execute(query)
             await self.session.commit()
         return tuple(result.mappings())
