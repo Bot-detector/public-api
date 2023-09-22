@@ -8,25 +8,20 @@ logger = logging.getLogger(__name__)
 
 class LoggingMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
-        # Start time
         start_time = time.time()
-
-        # Process request
         response = await call_next(request)
+        process_time = time.time() - start_time
 
-        # End time
-        end_time = time.time()
+        query_params_list = [
+            (key, value if key != "token" else "***")
+            for key, value in request.query_params.items()
+        ]
 
-        # Calculate request processing time
-        process_time = end_time - start_time
-
-        log_info = {
-            "Request Method": request.method,
-            "Request URL": str(request.url),
-            "Response Status Code": response.status_code,
-            "Processing Time": f"{process_time:.4f}s",
-        }
-        # Log the request
-        logger.info(log_info)
-
+        logger.debug(
+            {
+                "url": request.url.path,
+                "params": query_params_list,
+                "process_time": f"{process_time:.4f}",
+            }
+        )
         return response
