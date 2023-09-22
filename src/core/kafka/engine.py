@@ -30,18 +30,16 @@ class AioKafkaEngine:
     async def start_consumer(self, group_id: str):
         self.consumer = AIOKafkaConsumer(
             self.topic,
-            loop=asyncio.get_event_loop(),
             bootstrap_servers=self.bootstrap_servers,
-            value_serializer=lambda v: json.dumps(v).encode('utf-8'),
+            value_serializer=lambda v: json.dumps(v).encode(),
             group_id=group_id,
         )
         await self.consumer.start()
 
     async def start_producer(self):
         self.producer = AIOKafkaProducer(
-            loop=asyncio.get_event_loop(),
             bootstrap_servers=self.bootstrap_servers,
-            value_serializer=lambda v: json.dumps(v).encode('utf-8')
+            value_serializer=lambda v: json.dumps(v).encode()
         )
         await self.producer.start()
 
@@ -58,7 +56,8 @@ class AioKafkaEngine:
     async def produce_messages(self):
         if self.producer is None:
             raise ValueError("Producer not started. Call start_producer() first.")
-        async for message in self.message_queue:
+        while True:
+            message = await self.message_queue.get()
             await self.producer.send(self.topic, value=message)
 
     async def stop_consumer(self):
@@ -68,3 +67,6 @@ class AioKafkaEngine:
     async def stop_producer(self):
         if self.producer:
             await self.producer.stop()
+    
+    def is_ready(self):
+        return self.consumer is not None or self.producer is not None

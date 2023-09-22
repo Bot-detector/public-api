@@ -1,7 +1,7 @@
 import time
 
 from src.app.views.input.report import Detection
-from src.core.fastapi.dependencies.kafka_engine import AioKafkaEngine
+from src.core.kafka.engine import AioKafkaEngine
 import logging
 
 logger = logging.getLogger(__name__)
@@ -44,6 +44,7 @@ class Report:
         return data
 
     async def send_to_kafka(self, data: list[Detection]) -> None:
-        for d in data:
-            self.kafka_engine.message_queue.put_nowait(d)
+        for detection in data:
+            detection = detection.model_dump_json()
+            self.kafka_engine.message_queue.put_nowait(detection)
         return

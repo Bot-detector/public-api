@@ -1,49 +1,31 @@
-# syntax=docker/dockerfile:1
+FROM python:3.11-slim as base
 
-# Comments are provided throughout this file to help you get started.
-# If you need more help, visit the Dockerfile reference guide at
-# https://docs.docker.com/engine/reference/builder/
+ARG api_port
+ENV UVICORN_PORT ${api_port}
 
-ARG PYTHON_VERSION=3.11.3
-FROM python:${PYTHON_VERSION}-slim as base
+ARG root_path
+ENV UVICORN_ROOT_PATH ${root_path}
 
-# Prevents Python from writing pyc files.
+# Keeps Python from generating .pyc files in the container
 ENV PYTHONDONTWRITEBYTECODE=1
 
-# Keeps Python from buffering stdout and stderr to avoid situations where
-# the application crashes without emitting any logs due to buffering.
+# Turns off buffering for easier container logging
 ENV PYTHONUNBUFFERED=1
 
-WORKDIR /app
+# set the working directory
+WORKDIR /project
 
-# Create a non-privileged user that the app will run under.
-# See https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#user
-ARG UID=10001
-RUN adduser \
-    --disabled-password \
-    --gecos "" \
-    --home "/nonexistent" \
-    --shell "/sbin/nologin" \
-    --no-create-home \
-    --uid "${UID}" \
-    appuser
+# install dependencies
+COPY ./requirements.txt /project
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Download dependencies as a separate step to take advantage of Docker's caching.
-# Leverage a cache mount to /root/.cache/pip to speed up subsequent builds.
-# Leverage a bind mount to requirements.txt to avoid having to copy them into
-# into this layer.
-RUN --mount=type=cache,target=/root/.cache/pip \
-    --mount=type=bind,source=requirements.txt,target=requirements.txt \
-    python -m pip install -r requirements.txt
+# copy the scripts to the folder
+COPY ./src /project/src
 
-# Switch to the non-privileged user to run the application.
+# production image
+FROM base as production
+# Creates a non-root user with an explicit UID and adds permission to access the /project folder
+RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /project
 USER appuser
 
-# Copy the source code into the container.
-COPY . .
-
-# Expose the port that the application listens on.
-EXPOSE 5000
-
-# Run the application.
-CMD uvicorn src.core.server:app --port 5000
+CMD ["uvicorn", "src.core.server:app", "--proxy-headers", "--host", "0.0.0.0"]
