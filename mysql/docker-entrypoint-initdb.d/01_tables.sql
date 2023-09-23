@@ -1,7 +1,7 @@
 USE playerdata;
 
 CREATE TABLE Players (
-    id SERIAL PRIMARY KEY,
+    id INT PRIMARY KEY AUTO_INCREMENT,
     name TEXT,
     created_at TIMESTAMP,
     updated_at TIMESTAMP,
@@ -46,7 +46,7 @@ CREATE TABLE Reports (
 
 
 CREATE TABLE Predictions (
-    id SERIAL PRIMARY KEY,
+    id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(12),
     prediction VARCHAR(50),
     created TIMESTAMP,
