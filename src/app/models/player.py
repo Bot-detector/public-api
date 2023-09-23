@@ -26,6 +26,7 @@ class Player:
                 - "possible_ban": Whether the player has a possible ban (True or False).
                 - "confirmed_ban": Whether the player has a confirmed ban (True or False).
                 - "confirmed_player": Whether the player is confirmed as a valid player (True or False).
+                - "manual_detect": Wheter the detection was manual (True or False)
         """
         async with self.session:
             # Create aliases for the tables
@@ -38,6 +39,7 @@ class Player:
                     reported_player.possible_ban,
                     reported_player.confirmed_ban,
                     reported_player.confirmed_player,
+                    dbReport.manual_detect,
                 ]
             )
             query = query.select_from(dbReport)
