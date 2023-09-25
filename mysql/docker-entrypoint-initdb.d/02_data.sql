@@ -7,8 +7,8 @@ SELECT
 	NOW() - INTERVAL FLOOR(RAND() * 365) DAY AS created_at,
 	NOW() - INTERVAL FLOOR(RAND() * 365) DAY AS updated_at,
 	1 AS possible_ban,
-	0 AS confirmed_ban, 
-	0 AS confirmed_player, 
+	0 AS confirmed_ban,
+	0 AS confirmed_player,
 	0 AS label_id,
 	ROUND(RAND() * 1) AS label_jagex, -- Random label_jagex between 0 and 2 (inclusive)
 	null ironman,
@@ -64,7 +64,7 @@ FROM (
 		(SELECT 0 AS N UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) AS a,
 		(SELECT 0 AS N UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) AS b
 ) AS numbers
-
+;
 -- Insert data into the Reports table
 INSERT INTO Reports (created_at, reportedID, reportingID, region_id, x_coord, y_coord, z_coord, timestamp, manual_detect, on_members_world, on_pvp_world, world_number, equip_head_id, equip_amulet_id, equip_torso_id, equip_legs_id, equip_boots_id, equip_cape_id, equip_hands_id, equip_weapon_id, equip_shield_id, equip_ge_value)
 SELECT
@@ -99,4 +99,4 @@ ORDER BY
     RAND() -- Randomize the order of the combinations
 LIMIT
     10000 -- Limit the number of combinations to insert
-; 
+;

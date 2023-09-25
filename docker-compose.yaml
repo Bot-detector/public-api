@@ -87,7 +87,7 @@ services:
       - .env
     depends_on:
       - kafka_setup
-      - database
+      - mysql
 
 networks:
   botdetector-network:
