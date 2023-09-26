@@ -54,6 +54,7 @@ class Player:
                 reported_player.possible_ban,
                 reported_player.confirmed_ban,
                 reported_player.confirmed_player,
+                dbReport.manual_detect
             )
             result: Result = await self.session.execute(query)
             await self.session.commit()

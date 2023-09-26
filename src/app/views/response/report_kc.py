@@ -5,3 +5,4 @@ class KCResponse(BaseModel):
     possible_ban: bool
     confirmed_ban: bool
     confirmed_player: bool
+    manual_detect: bool
