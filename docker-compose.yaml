@@ -83,8 +83,10 @@ services:
     # this overrides the env_file for the specific variable
     environment:
       - KAFKA_HOST=kafka:9092
-    env_file:
-      - .env
+      - DATABASE_URL=mysql+aiomysql://root:root_bot_buster@mysql:3306/playerdata
+      - env=DEV
+    # env_file:
+    #   - .env
     depends_on:
       - kafka_setup
       - mysql
