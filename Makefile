@@ -46,7 +46,7 @@ docker-up: ## Startup docker
 docker-build: ## Startup docker
 	docker-compose up --build
 
-setup: pre-commit-setup docker-build test-setup api-setup ## setup & run after downloaded repo
+setup: requirements pre-commit-setup docker-build test-setup api-setup ## setup & run after downloaded repo
 
 pre-commit-setup: ## Install pre-commit
 	python3 -m pip install pre-commit
@@ -64,5 +64,14 @@ requirements:
 docker-down:
 	docker-compose down
 
+docker-rebuild: docker-down
+	docker-compose up --build
+
 api-setup:
 	python3 -m pip install "fastapi[all]"
+
+env-setup:
+	touch .env
+	echo "KAFKA_HOST= 'localhost:9092'" >> .env
+	echo "DATABASE_URL= 'mysql+aiomysql://root:root_bot_buster@localhost:3306/playerdata'"  >> .env
+	echo "ENV='DEV'" >> .env
