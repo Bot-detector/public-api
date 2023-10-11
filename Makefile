@@ -67,6 +67,9 @@ docker-down:
 docker-rebuild: docker-down
 	docker-compose up --build
 
+docker-force-rebuild:
+	docker-compose up --build --force-recreate
+
 api-setup:
 	python3 -m pip install "fastapi[all]"
 
@@ -75,3 +78,8 @@ env-setup:
 	echo "KAFKA_HOST= 'localhost:9092'" >> .env
 	echo "DATABASE_URL= 'mysql+aiomysql://root:root_bot_buster@localhost:3306/playerdata'"  >> .env
 	echo "ENV='DEV'" >> .env
+
+docs:
+	open http://localhost:5000/docs
+	xdg-open http://localhost:5000/docs
+	. http://localhost:5000/docs
