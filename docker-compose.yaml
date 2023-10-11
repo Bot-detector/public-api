@@ -82,10 +82,11 @@ services:
       - botdetector-network
     # this overrides the env_file for the specific variable
     environment:
-      - KAFKA_HOST=localhost:9092
+      - KAFKA_HOST=kafka:9092
       - DATABASE_URL=mysql+aiomysql://root:root_bot_buster@mysql:3306/playerdata
       - env=DEV
-      - pool_recycle=1800
+      - pool_recycle=299
+      - pool_timeout=20
     # env_file:
     #   - .env
     depends_on:
