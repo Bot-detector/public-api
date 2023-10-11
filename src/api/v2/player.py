@@ -8,10 +8,10 @@ from src.app.views.response.report_kc import KCResponse
 from src.core.fastapi.dependencies.session import get_session
 from src.core.fastapi.dependencies.to_jagex_name import to_jagex_name
 
-router = APIRouter(prefix="/players", tags=["Player"])
+router = APIRouter(tags=["Player"])
 
 
-@router.get("/score", response_model=list[KCResponse], tags=["Score"])
+@router.get("/players/score", response_model=list[KCResponse])
 async def get_players_kc(
     name: Annotated[list[str], Query(..., max_length=13)], session=Depends(get_session)
 ):
@@ -27,5 +27,4 @@ async def get_players_kc(
     player = Player(session)
     names = await asyncio.gather(*[to_jagex_name(n) for n in name])
     data = await player.get_kc(player_names=names)
-    print(player.response)
     return data
