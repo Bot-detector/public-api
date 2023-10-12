@@ -41,10 +41,10 @@ test-coverage: clean ## Run unit tests and check code coverage
 	PYTHONPATH=src python3 -m pytest --cov=src tests/ --disable-warnings
 
 docker-up: ## Startup docker
-	docker-compose up
+	docker-compose --verbose up
 
 docker-build: ## Startup docker
-	docker-compose up --build
+	docker-compose --verbose up --build
 
 setup: requirements pre-commit-setup docker-build test-setup api-setup ## setup & run after downloaded repo
 
@@ -65,10 +65,10 @@ docker-down:
 	docker-compose down
 
 docker-rebuild: docker-down
-	docker-compose up --build
+	docker-compose --verbose up --build
 
 docker-force-rebuild:
-	docker-compose up --build --force-recreate
+	docker-compose --verbose up --build --force-recreate
 
 api-setup:
 	python3 -m pip install "fastapi[all]"
