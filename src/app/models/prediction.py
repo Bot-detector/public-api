@@ -22,6 +22,7 @@ class Prediction:
             Fetch predictions for a given user by their username.
 
     """
+
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
 

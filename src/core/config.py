@@ -8,4 +8,5 @@ class Settings(BaseSettings):
     POOL_RECYCLE: int
     POOL_TIMEOUT: int
 
+
 settings = Settings()

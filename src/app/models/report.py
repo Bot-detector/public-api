@@ -6,6 +6,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 class Report:
     def __init__(self, kafka_engine: AioKafkaEngine) -> None:
         self.kafka_engine = kafka_engine
