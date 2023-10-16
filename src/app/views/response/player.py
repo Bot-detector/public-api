@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from datetime import datetime
 
+
 class PlayerResponse(BaseModel):
     id: int
     name: str

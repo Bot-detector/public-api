@@ -32,7 +32,7 @@ def make_middleware() -> list[Middleware]:
             allow_methods=["*"],
             allow_headers=["*"],
         ),
-        Middleware(LoggingMiddleware)
+        Middleware(LoggingMiddleware),
     ]
     return middleware
 
@@ -63,12 +63,12 @@ async def startup_event():
         try:
             await report_engine.start_producer()
             logger.info("report_engine started")
-            break      
+            break
         except Exception as e:
             logger.error(e)
             await asyncio.sleep(5)
             continue
-    
+
     while True:
         if report_engine.is_ready():
             asyncio.ensure_future(report_engine.produce_messages())

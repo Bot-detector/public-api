@@ -6,4 +6,5 @@ class Settings(BaseSettings):
     DATABASE_URL: str
     KAFKA_HOST: str = "localhost:9094"
 
+
 settings = Settings()

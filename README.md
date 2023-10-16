@@ -23,7 +23,7 @@ sudo apt install python3-pip
 ```
 ```sh
 python3 -m venv .venv
-source .venv\Scripts\activate
+source .venv/bin/activate
 python3 -m pip install --upgrade pip
 pip install -r requirements.txt
 pre-commit install

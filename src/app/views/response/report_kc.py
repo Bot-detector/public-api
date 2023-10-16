@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 
+
 class KCResponse(BaseModel):
     count: int
     possible_ban: bool
