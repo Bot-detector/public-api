@@ -21,7 +21,9 @@ class PredictionResponse(BaseModel):
             "created": data.pop("created"),
             "predictions_breakdown": {
                 k: v / 100.0 if v > 0 else v for k, v in data.items()
-            } if breakdown else {},
+            }
+            if breakdown
+            else {},
         }
 
         return self(**player_data)

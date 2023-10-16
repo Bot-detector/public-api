@@ -3,6 +3,7 @@ from aiokafka import AIOKafkaConsumer, AIOKafkaProducer
 from asyncio import Queue
 import json
 
+
 def retry_on_exception(max_retries=3, retry_interval=5):
     def decorator(func):
         async def wrapper(*args, **kwargs):
@@ -16,8 +17,11 @@ def retry_on_exception(max_retries=3, retry_interval=5):
                     await asyncio.sleep(retry_interval)
                 else:
                     break
+
         return wrapper
+
     return decorator
+
 
 class AioKafkaEngine:
     def __init__(self, bootstrap_servers: list[str], topic: str, message_queue: Queue):
@@ -39,7 +43,7 @@ class AioKafkaEngine:
     async def start_producer(self):
         self.producer = AIOKafkaProducer(
             bootstrap_servers=self.bootstrap_servers,
-            value_serializer=lambda v: json.dumps(v).encode()
+            value_serializer=lambda v: json.dumps(v).encode(),
         )
         await self.producer.start()
 
@@ -51,7 +55,7 @@ class AioKafkaEngine:
         async for message in self.consumer:
             value = message.value
             self.message_queue.put_nowait(value)
-    
+
     @retry_on_exception(max_retries=3, retry_interval=5)
     async def produce_messages(self):
         if self.producer is None:
@@ -67,6 +71,6 @@ class AioKafkaEngine:
     async def stop_producer(self):
         if self.producer:
             await self.producer.stop()
-    
+
     def is_ready(self):
         return self.consumer is not None or self.producer is not None

@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from pydantic.fields import Field
 
+
 class Equipment(BaseModel):
     equip_head_id: int = Field(None, ge=0)
     equip_amulet_id: int = Field(None, ge=0)

@@ -1,6 +1,7 @@
 from sqlalchemy import Boolean, Column, DateTime, Integer, Text
 from src.core.database.database import Base
 
+
 class Player(Base):
     __tablename__ = "Players"
 
