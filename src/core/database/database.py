@@ -6,8 +6,12 @@ from sqlalchemy.orm import sessionmaker
 from src.core.config import settings
 
 # Create an async SQLAlchemy engine
-engine = create_async_engine(settings.DATABASE_URL, echo=(settings.ENV != "PRD"))
-
+engine = create_async_engine(
+    settings.DATABASE_URL,
+    pool_timeout=settings.POOL_TIMEOUT,
+    pool_recycle=settings.POOL_RECYCLE,
+    echo=(settings.ENV != "PRD"),
+)
 # Create a session factory
 SessionFactory = sessionmaker(
     bind=engine,

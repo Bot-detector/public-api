@@ -84,7 +84,9 @@ services:
     environment:
       - KAFKA_HOST=kafka:9092
       - DATABASE_URL=mysql+aiomysql://root:root_bot_buster@mysql:3306/playerdata
-      - env=DEV
+      - ENV=DEV
+      - POOL_RECYCLE=60
+      - POOL_TIMEOUT=30
     # env_file:
     #   - .env
     depends_on:
