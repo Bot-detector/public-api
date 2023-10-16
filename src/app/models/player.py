@@ -12,7 +12,7 @@ class Player:
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
 
-    async def get_kc(self, player_names: list[str]):
+    async def get_kc(self, player_names: tuple[str]):
         """
         Retrieve Kill Count (KC) data for a list of player names.
 
