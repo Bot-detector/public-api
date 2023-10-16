@@ -78,6 +78,8 @@ env-setup:
 	echo "KAFKA_HOST= 'localhost:9092'" >> .env
 	echo "DATABASE_URL= 'mysql+aiomysql://root:root_bot_buster@localhost:3306/playerdata'"  >> .env
 	echo "ENV='DEV'" >> .env
+	echo "POOL_RECYCLE='60'" >> .env
+	echo "POOL_TIMEOUT='30'" >> .env
 
 docs:
 	open http://localhost:5000/docs
