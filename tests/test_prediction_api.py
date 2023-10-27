@@ -16,11 +16,12 @@ class TestPredictionAPI(TestCase):
         score = requests.get(url, params)
         assert score.status_code == 200
 
-    # def testInvalidPredictionReturns200(self):
-    # 	url = "http://localhost:5000/v2/prediction"
-    # 	params = {"name": [""]}
-    # 	response = requests.get(url, params)
-    # 	assert response.status_code == 200
+    def testInvalidPredictionReturns200(self):
+        url = "http://localhost:5000/v2/prediction"
+        params = {"name": [""]}
+        params["breakdown"] = False
+        response = requests.get(url, params)
+        assert response.status_code == 404
 
     # def testInvalidPredictionBodyIsEmpty(self):
     # 	url = "http://localhost:5000/v2/prediction"
