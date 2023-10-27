@@ -16,7 +16,7 @@ class TestPredictionAPI(TestCase):
         score = requests.get(url, params)
         assert score.status_code == 200
 
-    def testInvalidPredictionReturns200(self):
+    def testInvalidPredictionReturns404(self):
         url = "http://localhost:5000/v2/prediction"
         params = {"name": [""]}
         params["breakdown"] = False
