@@ -4,6 +4,9 @@ import requests
 import json
 from unittest import TestCase
 
+from hypothesis import given
+import hypothesis.strategies as st
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
@@ -50,10 +53,20 @@ class TestPredictionAPI(TestCase):
         # should return a populated dictionary, should be True
         assert bool(json_data["predictions_breakdown"])
 
-    def testInvalidPredictionReturns404(self):
+    @given(st.text(min_size=0, max_size=2))
+    def testInvalidSmallNamePredictionReturns404(self, name):
         url = "http://localhost:5000/v2/prediction"
         # build params
-        params = {"name": [""]}
+        params = {"name": [name]}
+        params["breakdown"] = False
+        response = requests.get(url, params)
+        assert response.status_code == 404
+
+    @given(st.text(min_size=13, max_size=None))
+    def testInvalidLargeNamePredictionReturns404(self, name):
+        url = "http://localhost:5000/v2/prediction"
+        # build params
+        params = {"name": [name]}
         params["breakdown"] = False
         response = requests.get(url, params)
         assert response.status_code == 404
@@ -66,11 +79,3 @@ class TestPredictionAPI(TestCase):
         params["breakdown"] = True
         response = requests.get(url, params)
         assert response.status_code == 404
-
-    # def testInvalidPredictionBodyIsEmpty(self):
-    # 	url = "http://localhost:5000/v2/prediction"
-    # 	params = {"name": [""]}
-    # 	response = requests.get(url, params)
-    # 	error = f"Invalid response return type, expected list[dict]"
-    # 	print(response.json())
-    # 	assert isinstance(response.json(), list), error
