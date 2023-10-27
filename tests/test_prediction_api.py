@@ -16,7 +16,7 @@ class TestPredictionAPI(TestCase):
         score = requests.get(url, params)
         assert score.status_code == 200
 
-    def testValidPredictionReturns200(self):
+    def testValidPredictionReturns200Breakdown(self):
         url = "http://localhost:5000/v2/prediction"
         params = {}
         # build params
