@@ -16,10 +16,29 @@ class TestPredictionAPI(TestCase):
         score = requests.get(url, params)
         assert score.status_code == 200
 
+    def testValidPredictionReturns200(self):
+        url = "http://localhost:5000/v2/prediction"
+        params = {}
+        # build params
+        params["name"] = ["Player1"]
+        params["breakdown"] = True
+        score = requests.get(url, params)
+        assert score.status_code == 200
+
     def testInvalidPredictionReturns404(self):
         url = "http://localhost:5000/v2/prediction"
+        # build params
         params = {"name": [""]}
         params["breakdown"] = False
+        response = requests.get(url, params)
+        assert response.status_code == 404
+
+    def testInvalidPredictionReturns404Breakdown(self):
+        url = "http://localhost:5000/v2/prediction"
+        params = {}
+        # build params
+        params["name"] = [""]
+        params["breakdown"] = True
         response = requests.get(url, params)
         assert response.status_code == 404
 
