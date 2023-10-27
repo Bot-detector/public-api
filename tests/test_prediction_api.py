@@ -1,6 +1,7 @@
 import os
 import sys
 import requests
+import json
 from unittest import TestCase
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -16,6 +17,18 @@ class TestPredictionAPI(TestCase):
         score = requests.get(url, params)
         assert score.status_code == 200
 
+    def testValidPredictionReturns200NotBreakdown(self):
+        url = "http://localhost:5000/v2/prediction"
+        params = {}
+        # build params
+        params["name"] = ["Player1"]
+        params["breakdown"] = False
+        score = requests.get(url, params)
+        # get first element because conversion makes it in a list
+        json_data = (json.loads(score.text))[0]
+        # should be an empty list, empty dicts return False
+        assert not json_data["predictions_breakdown"]
+
     def testValidPredictionReturns200Breakdown(self):
         url = "http://localhost:5000/v2/prediction"
         params = {}
@@ -24,6 +37,18 @@ class TestPredictionAPI(TestCase):
         params["breakdown"] = True
         score = requests.get(url, params)
         assert score.status_code == 200
+
+    def testValidPredictionReturns200BreakdownPopulated(self):
+        url = "http://localhost:5000/v2/prediction"
+        params = {}
+        # build params
+        params["name"] = ["Player1"]
+        params["breakdown"] = True
+        score = requests.get(url, params)
+        # get first element because conversion makes it in a list
+        json_data = (json.loads(score.text))[0]
+        # should return a populated dictionary, should be True
+        assert bool(json_data["predictions_breakdown"])
 
     def testInvalidPredictionReturns404(self):
         url = "http://localhost:5000/v2/prediction"
