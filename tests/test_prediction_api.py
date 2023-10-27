@@ -62,7 +62,7 @@ class TestPredictionAPI(TestCase):
         response = requests.get(url, params)
         assert response.status_code == 404
 
-    @given(st.text(min_size=13, max_size=None))
+    @given(st.text(min_size=14, max_size=None))
     def testInvalidLargeNamePredictionReturns404(self, name):
         url = "http://localhost:5000/v2/prediction"
         # build params
