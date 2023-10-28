@@ -23,7 +23,7 @@ use the `make` command with an `action` when developing on linux.  think of `act
 `make help` to see all avaiable actions
 
 ```sh
->public-api $ make help
+public-api$ make help
 clean-pyc            clean python cache files
 clean-test           cleanup pytests leftovers
 test                 Run pytest unit tests
@@ -45,7 +45,7 @@ prereqs:
 
 run `setup`
 ```sh
->public-api $ make setup
+public-api$ make setup
 ```
 
 once complete you will have to open a new terminal as the docker output will be running in the current one. you are looking for the message 'Application startup complete.' to know when the `setup` is done and containers are running. 
@@ -57,7 +57,7 @@ more explinations of different `make` `actions` that can be run in the other sec
 run `docker-down`
 
 ```sh
->public-api $ make docker-down
+public-api$ make docker-down
 docker-compose down
 [+] Running 6/6
  ✔ Container kafdrop                       Removed  10.2s 
@@ -71,7 +71,7 @@ docker-compose down
 ### bring docker containers back up
 run `docker-up`. example below is using public-api
 ```sh
->public-api $ make docker-up
+public-api$ make docker-up
 docker-compose --verbose up
 [+] Building 0.0s (0/0)                              
 [+] Running 7/5
@@ -90,14 +90,14 @@ docker-compose --verbose up
 run `docker-force-rebuild`. usually done if requirements.txt are changed.  or if containers are having weird issues and you want to start fresh.
 
 ```sh
->public-api $ make docker-force-rebuild
+public-api$ make docker-force-rebuild
 ```
 
 ### make sure tests are still passing
 run `test`
 
 ```sh
->public-api $ make test
+public-api$ make test
 
 python3 -m pytest --verbosity=1 --rootdir=./
 =============== test session starts ===============
