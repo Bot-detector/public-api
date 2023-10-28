@@ -67,7 +67,7 @@ docker-compose down
 ### bring docker containers back up
 run `docker-up`. example below is using public-api
 ```sh
-rustic:public-api rustic$ make docker-up
+>$ make docker-up
 docker-compose --verbose up
 [+] Building 0.0s (0/0)                              
 [+] Running 7/5
@@ -100,7 +100,7 @@ python3 -m pytest --verbosity=1 --rootdir=./
 platform darwin -- Python 3.11.6, pytest-7.4.2, pluggy-1.3.0 -- /opt/homebrew/opt/python@3.11/bin/python3.11
 cachedir: .pytest_cache
 hypothesis profile 'default' -> database=DirectoryBasedExampleDatabase(PosixPath('./bot-detector/public-api/.hypothesis/examples'))
-rootdir: /Users/rustic/Library/Mobile Documents/com~apple~CloudDocs/workspace/bot-detector/public-api
+rootdir: public-api
 plugins: hypothesis-6.88.1, anyio-3.7.1
 collected 13 items                   
 
