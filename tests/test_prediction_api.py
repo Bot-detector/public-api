@@ -80,7 +80,7 @@ class TestPredictionAPI(TestCase):
         response = requests.get(url, params)
         assert response.status_code == 404
 
-    def test_invalid_player_breakdown_false_returns_empty_property(self):
+    def test_invalid_player_breakdown_false_returns_player_not_found(self):
         url = "http://localhost:5000/v2/prediction"
         params = {}
         # build params
@@ -88,11 +88,11 @@ class TestPredictionAPI(TestCase):
         params["breakdown"] = False
         score = requests.get(url, params)
         # get first element because conversion makes it in a list
-        json_data = (json.loads(score.text))[0]
+        json_data = json.loads(score.text)
         # should be an empty list, empty dicts return False
-        assert not json_data["predictions_breakdown"]
+        assert json_data["detail"] == "Player not found"
 
-    def test_invalid_player_breakdown_true_returns_empty_property(self):
+    def test_invalid_player_breakdown_true_returns_player_not_found(self):
         url = "http://localhost:5000/v2/prediction"
         params = {}
         # build params
@@ -100,6 +100,6 @@ class TestPredictionAPI(TestCase):
         params["breakdown"] = True
         score = requests.get(url, params)
         # get first element because conversion makes it in a list
-        json_data = (json.loads(score.text))[0]
+        json_data = json.loads(score.text)
         # should be an empty list, empty dicts return False
-        assert not json_data["predictions_breakdown"]
+        assert json_data["detail"] == "Player not found"
