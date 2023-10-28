@@ -48,6 +48,10 @@ run `setup`
 >$ make setup
 ```
 
+once complete you will have to open a new terminal as the docker output will be running in the current one. you are looking for the message 'Application startup complete.' to know when the `setup` is done and containers are running. 
+
+more explinations of different `make` `actions` that can be run in the other sections below
+
 #### take docker conters down
 
 run `docker-down`
