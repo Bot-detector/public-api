@@ -43,7 +43,7 @@ test-coverage: clean-test ## Run unit tests and check code coverage
 docker-up: ## Startup docker
 	docker-compose --verbose up
 
-docker-build: ## Startup docker
+docker-build: ## Startup docker with build switch
 	docker-compose --verbose up --build
 
 setup: requirements pre-commit-setup docker-build test-setup api-setup ## setup & run after downloaded repo
