@@ -32,7 +32,7 @@ clean-test: ## cleanup pytests leftovers
 	rm -f output.xml
 
 test: clean-test ## Run pytest unit tests
-	python3 -m pytest --verbosity=1 --rootdir=./
+	python3 -m pytest --verbosity=1
 
 test-debug: ## Run unit tests with debugging enabled
 	python3 -m pytest --pdb
