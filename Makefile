@@ -31,13 +31,13 @@ clean-test: ## cleanup pytests leftovers
 	rm -f test-results.html
 	rm -f output.xml
 
-test: clean ## Run pytest unit tests
-	python3 -m pytest --verbosity=1
+test: clean-test ## Run pytest unit tests
+	python3 -m pytest --verbosity=1 --rootdir=./
 
 test-debug: ## Run unit tests with debugging enabled
 	python3 -m pytest --pdb
 
-test-coverage: clean ## Run unit tests and check code coverage
+test-coverage: clean-test ## Run unit tests and check code coverage
 	PYTHONPATH=src python3 -m pytest --cov=src tests/ --disable-warnings
 
 docker-up: ## Startup docker
