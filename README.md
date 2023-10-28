@@ -17,7 +17,7 @@ pip install -r requirements.txt
 pre-commit install
 ```
 ## linux
-use the `make` command with an `action` when developing on linux
+use the `make` command with an `action` when developing on linux.  think of `actions` as a list of predefined commands to help simplify common development routines.
 
 #### view avaiable actions
 `make help` to see all avaiable actions
