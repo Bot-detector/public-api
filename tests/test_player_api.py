@@ -33,7 +33,6 @@ class TestPlayerAPI(TestCase):
         error = f"Invalid response return type, expected list[dict]"
         # print(len(json_data))
         assert len(json_data) > 0
-        # assert isinstance(score.json(), list), error
 
     def test_invalid_player_returns_empty(self):
         url = "http://localhost:5000/v2/players/score"
@@ -44,5 +43,4 @@ class TestPlayerAPI(TestCase):
         # get first element because conversion makes it in a list
         json_data = json.loads(score.text)
         # should return a populated dictionary, should be True
-        # print(len(json_data))
         assert len(json_data) == 0
