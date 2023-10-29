@@ -55,7 +55,7 @@ pre-commit-setup: ## Install pre-commit
 pre-commit: ## Run pre-commit
 	pre-commit run --all-files
 
-test-setup: ## installs pytest singular package
+test-setup: ## installs pytest singular package for local testing
 	python3 -m pip install pytest
 
 requirements: ## installs all requirements
@@ -70,7 +70,7 @@ docker-rebuild: docker-down ## shuts down docker then brings it up and rebuilds
 docker-force-rebuild: docker-down ## shuts down docker than brings it up and force rebuilds
 	docker-compose --verbose up --build --force-recreate
 
-api-setup: ## installs fastapi singular package
+api-setup: ## installs fastapi singular package, for local testing
 	python3 -m pip install "fastapi[all]"
 
 docs: # opens your browser to the webapps testing docs
