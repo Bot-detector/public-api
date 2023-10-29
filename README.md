@@ -6,8 +6,12 @@ structure:
 - src.core: contains the core componetns
 - src.core.database: contains all the database functionality
 
-# setup
-## windows
+# Setup
+1. Create fork of primary repo
+2. Download a clone of the forked repo `git clone <your github repo path url>`
+3. Open a terminal to your cloned repo
+4. follow linux or windows sections for further setup
+## Windows
 creating a python venv to work in and install the project requirements
 ```sh
 python -m venv .venv
@@ -17,9 +21,16 @@ pip install -r requirements.txt
 pre-commit install
 ```
 ## Linux
+Setup overview:
+1. install requirements: python, pip, make, docker
+2. create venv `make venv-create` or `python3 -m venv .venv`
+3. activate venv `source .venv/bin/activate`
+4. run setup `make setup`
+
+detailed guide in sections below
 
 ### Install make and pip
-#### debian 
+#### Debian 
 distros such as ubuntu, mint, pop, kali
 ```ssh
 public-api$ sudo apt install make
@@ -39,7 +50,7 @@ public-api$ sudo pacman -Syu make
 public-api$ sudo pacman -Syu python3-pip
 ```
 
-##### MacOS
+#### MacOS
 typically requires xcode command line tools from http://developer.apple.com/ 
 or using homebrew from https://brew.sh/ (example below). note the command it installs is `gmake`, ideally just make an alias `make` by adding it to your bash profile
 ```ssh
