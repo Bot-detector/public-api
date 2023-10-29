@@ -19,37 +19,29 @@ pre-commit install
 ## linux
 
 #### install make and pip
-
 ##### debian 
-
 distros such as ubuntu, mint, pop, kali
-
 ```ssh
 public-api$ sudo apt install make
 public-api$ sudo apt install python3-pip
 ```
 
 ##### red hat 
-
 distros such as fedora, centos, rocky
-
 ```ssh
 public-api$ sudo yum install make
 public-api$ sudo yum install python3-pip
 ```
 
 ##### arch linux
-
 ```ssh
 public-api$ sudo pacman -Syu make
 public-api$ sudo pacman -Syu python3-pip
 ```
 
 ##### macos
-
 typically requires xcode command line tools from http://developer.apple.com/ 
 or using homebrew from https://brew.sh/ (example below). note the command it installs is `gmake`, ideally just make an alias `make` by adding it to your bash profile
-
 ```ssh
 public-api$ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 public-api$ brew --version
@@ -59,13 +51,11 @@ public-api$ brew install python3-pip
 ```
 
 add your alias to your bash profile (loaded on terminal start)
-
 ```ssh
 public-api$ nano ~/.bash_profile
 ```
 
 ctrl+x and enter to save once you have added the alias line (example below line to add)
-
 ```ssh
 alias make="gmake"
 ```
@@ -73,7 +63,6 @@ alias make="gmake"
 #### venvs
 
 ##### setup and activate your virtual enviornment
-
 run the following command to create your venv
 ```ssh
 public-api$ make venv-create
@@ -92,13 +81,10 @@ public-api$
 ```
 
 #### make usage guide
-
 use the `make` command with an `action` when developing on linux.  think of `actions` as a list of predefined commands to help simplify common development routines.
 
 ##### view avaiable actions
-
 `make help` to see all avaiable actions
-
 ```sh
 clean-pyc            clean python cache files
 clean-test           cleanup pytests leftovers
@@ -139,7 +125,6 @@ once complete you will have to open a new terminal as the docker output will be 
 more explinations of different `make` `actions` that can be run in the other sections below
 
 ##### take docker conters down
-
 run `docker-down`
 
 ```sh
@@ -174,16 +159,13 @@ docker-compose --verbose up
 
 ##### force rebuild of containers
 run `docker-force-rebuild`. usually done if requirements.txt are changed.  or if containers are having weird issues and you want to start fresh.
-
 ```sh
 (.venv) public-api$ make docker-force-rebuild
 ```
 
 #### TDD using pytest
-
 ##### make sure tests are still passing
 run `test`
-
 ```sh
 (.venv) public-api$ make test
 
@@ -212,6 +194,7 @@ tests/test_prediction_api.py::TestPredictionAPI::test_valid_player_breakdown_tru
 
 =============== 13 passed in 1.54s ===============
 ```
+
 # for admin purposes saving & upgrading
 when you added some dependancies update the requirements
 ```sh
