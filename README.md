@@ -85,17 +85,24 @@ alias make="gmake"
 `make help` to see all avaiable actions
 
 ```sh
-public-api$ make help
 clean-pyc            clean python cache files
 clean-test           cleanup pytests leftovers
 test                 Run pytest unit tests
 test-debug           Run unit tests with debugging enabled
 test-coverage        Run unit tests and check code coverage
 docker-up            Startup docker
-docker-build         Startup docker
+docker-build         Startup docker with build switch
 setup                setup & run after downloaded repo
 pre-commit-setup     Install pre-commit
 pre-commit           Run pre-commit
+test-setup           installs pytest singular package for local testing
+requirements         installs all requirements
+docker-down          shutdown docker
+docker-rebuild       shuts down docker then brings it up and rebuilds
+docker-force-rebuild shuts down docker than brings it up and force rebuilds
+api-setup            installs fastapi singular package, for local testing
+venv-create          cleans the .venv then creates a venv in the folder .venv
+venv-remove          removes the .venv folder
 ```
 
 #### setup and activate your virtual enviornment
