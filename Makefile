@@ -55,39 +55,31 @@ pre-commit-setup: ## Install pre-commit
 pre-commit: ## Run pre-commit
 	pre-commit run --all-files
 
-test-setup:
+test-setup: ## installs pytest singular package
 	python3 -m pip install pytest
 
-requirements:
+requirements: ## installs all requirements
 	python3 -m pip install -r requirements.txt
 
-docker-down:
+docker-down: ## shutdown docker
 	docker-compose down
 
-docker-rebuild: docker-down
+docker-rebuild: docker-down ## shuts down docker then brings it up and rebuilds
 	docker-compose --verbose up --build
 
-docker-force-rebuild:
+docker-force-rebuild: docker-down ## shuts down docker than brings it up and force rebuilds
 	docker-compose --verbose up --build --force-recreate
 
-api-setup:
+api-setup: ## installs fastapi singular package
 	python3 -m pip install "fastapi[all]"
 
-env-setup:
-	touch .env
-	echo "KAFKA_HOST= 'localhost:9092'" >> .env
-	echo "DATABASE_URL= 'mysql+aiomysql://root:root_bot_buster@localhost:3306/playerdata'"  >> .env
-	echo "ENV='DEV'" >> .env
-	echo "POOL_RECYCLE='60'" >> .env
-	echo "POOL_TIMEOUT='30'" >> .env
-
-docs:
+docs: # opens your browser to the webapps testing docs
 	open http://localhost:5000/docs
 	xdg-open http://localhost:5000/docs
 	. http://localhost:5000/docs
 
-venv-create:
+venv-create: venv-remove ## cleans the .venv then creates a venv in the folder .venv
 	python3 -m venv .venv
 
-venv-remove:
+venv-remove: ## removes the .venv folder
 	rm -rf .venv
