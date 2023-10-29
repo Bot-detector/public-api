@@ -17,46 +17,35 @@ pip install -r requirements.txt
 pre-commit install
 ```
 ## linux
-use the `make` command with an `action` when developing on linux.  think of `actions` as a list of predefined commands to help simplify common development routines.
 
-#### *make* sure (pun intended) make gnu is installed
-using the command below it should show you the version, you can also use `man`
+#### install make and pip
 
-```ssh
-public-api$ make --version
-GNU Make 3.81
-Copyright (C) 2006  Free Software Foundation, Inc.
-This is free software; see the source for copying conditions.
-There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A
-PARTICULAR PURPOSE.
+##### debian 
 
-This program built for i386-apple-darwin11.3.0
-```
-
-##### install make if not found and pip
-
-###### debian distros such as ubuntu, mint, pop, kali
+distros such as ubuntu, mint, pop, kali
 
 ```ssh
 public-api$ sudo apt install make
 public-api$ sudo apt install python3-pip
 ```
 
-###### red hat distros such as fedora, centos, rocky
+##### red hat 
+
+distros such as fedora, centos, rocky
 
 ```ssh
 public-api$ sudo yum install make
 public-api$ sudo yum install python3-pip
 ```
 
-###### arch linux/manjaro
+##### arch linux
 
 ```ssh
 public-api$ sudo pacman -Syu make
 public-api$ sudo pacman -Syu python3-pip
 ```
 
-###### macos
+##### macos
 
 typically requires xcode command line tools from http://developer.apple.com/ 
 or using homebrew from https://brew.sh/ (example below). note the command it installs is `gmake`, ideally just make an alias `make` by adding it to your bash profile
@@ -81,7 +70,33 @@ ctrl+x and enter to save once you have added the alias line (example below line 
 alias make="gmake"
 ```
 
-#### view avaiable actions
+#### venvs
+
+##### setup and activate your virtual enviornment
+
+run the following command to create your venv
+```ssh
+public-api$ make venv-create
+```
+
+next command is to activate your virtiual envionrment, you should see (.venv) to the far left of your prompt showing you what env you are in
+```ssh
+public-api$ source .venv/bin/activate
+(.venv) public-api$ 
+```
+
+if you ever need to get out of the virtual enviornment run the `deactivate` command
+```ssh
+(.venv) public-api$ deactivate
+public-api$ 
+```
+
+#### make usage guide
+
+use the `make` command with an `action` when developing on linux.  think of `actions` as a list of predefined commands to help simplify common development routines.
+
+##### view avaiable actions
+
 `make help` to see all avaiable actions
 
 ```sh
@@ -105,32 +120,15 @@ venv-create          cleans the .venv then creates a venv in the folder .venv
 venv-remove          removes the .venv folder
 ```
 
-#### setup and activate your virtual enviornment
-
-run the following command to create your venv
-```ssh
-public-api$ make venv-create
-```
-
-next command is to activate your virtiual envionrment, you should see (.venv) to the far left of your prompt showing you what env you are in
-```ssh
-public-api$ source .venv/bin/activate
-(.venv) public-api$ 
-```
-
-if you ever need to get out of the virtual enviornment run the `deactivate` command
-```ssh
-(.venv) public-api$ deactivate
-public-api$ 
-```
-
-### setup your docker enviornment
+#### docker enviornment
 prereqs: 
 - docker
 - python3
 - local clone of repo
 - terminal opened to cloned repos root path
 
+
+##### setup docker env
 run `setup`
 ```sh
 (.venv) public-api$ make setup
@@ -140,7 +138,7 @@ once complete you will have to open a new terminal as the docker output will be 
 
 more explinations of different `make` `actions` that can be run in the other sections below
 
-#### take docker conters down
+##### take docker conters down
 
 run `docker-down`
 
@@ -156,7 +154,7 @@ docker-compose down
  ✔ Network public-api_botdetector-network  Removed   0.0s 
 ```
 
-### bring docker containers back up
+##### bring docker containers back up
 run `docker-up`. example below is using public-api
 ```sh
 (.venv) public-api$ make docker-up
@@ -174,14 +172,16 @@ docker-compose --verbose up
  ...
 ```
 
-### force rebuild of containers
+##### force rebuild of containers
 run `docker-force-rebuild`. usually done if requirements.txt are changed.  or if containers are having weird issues and you want to start fresh.
 
 ```sh
 (.venv) public-api$ make docker-force-rebuild
 ```
 
-### make sure tests are still passing
+#### TDD using pytest
+
+##### make sure tests are still passing
 run `test`
 
 ```sh
