@@ -19,6 +19,64 @@ pre-commit install
 ## linux
 use the `make` command with an `action` when developing on linux.  think of `actions` as a list of predefined commands to help simplify common development routines.
 
+#### *make* sure (pun intended) make gnu is installed
+using the command below it should show you the version, you can also use `man`
+
+```ssh
+public-api$ make --version
+GNU Make 3.81
+Copyright (C) 2006  Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.
+There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE.
+
+This program built for i386-apple-darwin11.3.0
+```
+
+##### install make if not found
+
+###### debian distros such as ubuntu, mint, pop, kali
+
+```ssh
+public-api$ sudo apt install make
+```
+
+###### red hat distros such as fedora, centos, rocky
+
+```ssh
+public-api$ sudo yum install make
+```
+
+###### arch linux/manjaro
+
+```ssh
+public-api$ sudo pacman -Syu make
+```
+
+###### macos
+
+typically requires xcode command line tools from http://developer.apple.com/ 
+or using homebrew from https://brew.sh/ (example below). note the command it installs is `gmake`, ideally just make an alias `make` by adding it to your bash profile
+
+```ssh
+public-api$ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+public-api$ brew --version
+Homebrew 4.1.17
+public-api$ brew install make
+```
+
+add your alias to your bash profile (loaded on terminal start)
+
+```ssh
+public-api$ nano ~/.bash_profile
+```
+
+ctrl+x and enter to save once you have added the alias line (example below line to add)
+
+```ssh
+alias make="gmake"
+```
+
 #### view avaiable actions
 `make help` to see all avaiable actions
 
