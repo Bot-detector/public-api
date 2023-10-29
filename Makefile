@@ -31,22 +31,22 @@ clean-test: ## cleanup pytests leftovers
 	rm -f test-results.html
 	rm -f output.xml
 
-test: clean ## Run pytest unit tests
-	python3 -m pytest
+test: clean-test ## Run pytest unit tests
+	python3 -m pytest --verbosity=1
 
 test-debug: ## Run unit tests with debugging enabled
 	python3 -m pytest --pdb
 
-test-coverage: clean ## Run unit tests and check code coverage
+test-coverage: clean-test ## Run unit tests and check code coverage
 	PYTHONPATH=src python3 -m pytest --cov=src tests/ --disable-warnings
 
 docker-up: ## Startup docker
 	docker-compose --verbose up
 
-docker-build: ## Startup docker
+docker-build: ## Startup docker with build switch
 	docker-compose --verbose up --build
 
-setup: requirements pre-commit-setup docker-build test-setup api-setup ## setup & run after downloaded repo
+setup: requirements venv-create pre-commit-setup docker-build test-setup api-setup ## setup & run after downloaded repo
 
 pre-commit-setup: ## Install pre-commit
 	python3 -m pip install pre-commit
@@ -55,33 +55,34 @@ pre-commit-setup: ## Install pre-commit
 pre-commit: ## Run pre-commit
 	pre-commit run --all-files
 
-test-setup:
+test-setup: ## installs pytest singular package for local testing
 	python3 -m pip install pytest
 
-requirements:
+requirements: ## installs all requirements
 	python3 -m pip install -r requirements.txt
 
-docker-down:
+docker-down: ## shutdown docker
 	docker-compose down
 
-docker-rebuild: docker-down
+docker-rebuild: docker-down ## shuts down docker then brings it up and rebuilds
 	docker-compose --verbose up --build
 
-docker-force-rebuild:
+docker-force-rebuild: docker-down ## shuts down docker than brings it up and force rebuilds
 	docker-compose --verbose up --build --force-recreate
 
-api-setup:
+api-setup: ## installs fastapi singular package, for local testing
 	python3 -m pip install "fastapi[all]"
 
-env-setup:
-	touch .env
-	echo "KAFKA_HOST= 'localhost:9092'" >> .env
-	echo "DATABASE_URL= 'mysql+aiomysql://root:root_bot_buster@localhost:3306/playerdata'"  >> .env
-	echo "ENV='DEV'" >> .env
-	echo "POOL_RECYCLE='60'" >> .env
-	echo "POOL_TIMEOUT='30'" >> .env
-
-docs:
+docs: # opens your browser to the webapps testing docs
 	open http://localhost:5000/docs
 	xdg-open http://localhost:5000/docs
 	. http://localhost:5000/docs
+
+venv-create: venv-remove ## cleans the .venv then creates a venv in the folder .venv
+	python3 -m venv .venv
+
+venv-remove: ## removes the .venv folder
+	rm -rf .venv
+
+check: ## run pre commit hooks for github, should do black checks
+	pre-commit
