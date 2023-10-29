@@ -33,24 +33,27 @@ PARTICULAR PURPOSE.
 This program built for i386-apple-darwin11.3.0
 ```
 
-##### install make if not found
+##### install make if not found and pip
 
 ###### debian distros such as ubuntu, mint, pop, kali
 
 ```ssh
 public-api$ sudo apt install make
+public-api$ sudo apt install python3-pip
 ```
 
 ###### red hat distros such as fedora, centos, rocky
 
 ```ssh
 public-api$ sudo yum install make
+public-api$ sudo yum install python3-pip
 ```
 
 ###### arch linux/manjaro
 
 ```ssh
 public-api$ sudo pacman -Syu make
+public-api$ sudo pacman -Syu python3-pip
 ```
 
 ###### macos
@@ -63,6 +66,7 @@ public-api$ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebre
 public-api$ brew --version
 Homebrew 4.1.17
 public-api$ brew install make
+public-api$ brew install python3-pip
 ```
 
 add your alias to your bash profile (loaded on terminal start)
@@ -94,7 +98,26 @@ pre-commit-setup     Install pre-commit
 pre-commit           Run pre-commit
 ```
 
-### setup your enviornment
+#### setup and activate your virtual enviornment
+
+run the following command to create your venv
+```ssh
+public-api$ make venv-create
+```
+
+next command is to activate your virtiual envionrment, you should see (.venv) to the far left of your prompt showing you what env you are in
+```ssh
+public-api$ source .venv/bin/activate
+(.venv) public-api$ 
+```
+
+if you ever need to get out of the virtual enviornment run the `deactivate` command
+```ssh
+(.venv) public-api$ deactivate
+public-api$ 
+```
+
+### setup your docker enviornment
 prereqs: 
 - docker
 - python3
