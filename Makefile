@@ -34,6 +34,9 @@ clean-test: ## cleanup pytests leftovers
 test: clean-test ## Run pytest unit tests
 	python3 -m pytest --verbosity=1
 
+test-report:
+	python3 -m pytest --junit-xml=pytest_report.xml
+
 test-debug: ## Run unit tests with debugging enabled
 	python3 -m pytest --pdb
 
@@ -46,7 +49,12 @@ docker-up: ## Startup docker
 docker-build: ## Startup docker with build switch
 	docker-compose --verbose up --build
 
+docker-build-detached: ## Startup docker with build switch
+	docker-compose up --build -d
+
 setup: requirements venv-create pre-commit-setup docker-build test-setup api-setup ## setup & run after downloaded repo
+
+setup-detached: requirements venv-create pre-commit-setup docker-build-detached test-setup api-setup ## setup & run after downloaded repo detached
 
 pre-commit-setup: ## Install pre-commit
 	python3 -m pip install pre-commit
@@ -57,6 +65,8 @@ pre-commit: ## Run pre-commit
 
 test-setup: ## installs pytest singular package for local testing
 	python3 -m pip install pytest
+	python3 -m pip install requests
+	python3 -m pip install hypothesis
 
 requirements: ## installs all requirements
 	python3 -m pip install -r requirements.txt
