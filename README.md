@@ -16,30 +16,30 @@ python -m pip install --upgrade pip
 pip install -r requirements.txt
 pre-commit install
 ```
-## linux
+## Linux
 
-#### install make and pip
-##### debian 
+### Install make and pip
+#### debian 
 distros such as ubuntu, mint, pop, kali
 ```ssh
 public-api$ sudo apt install make
 public-api$ sudo apt install python3-pip
 ```
 
-##### red hat 
+#### Red Hat 
 distros such as fedora, centos, rocky
 ```ssh
 public-api$ sudo yum install make
 public-api$ sudo yum install python3-pip
 ```
 
-##### arch linux
+#### Arch Linux
 ```ssh
 public-api$ sudo pacman -Syu make
 public-api$ sudo pacman -Syu python3-pip
 ```
 
-##### macos
+##### MacOS
 typically requires xcode command line tools from http://developer.apple.com/ 
 or using homebrew from https://brew.sh/ (example below). note the command it installs is `gmake`, ideally just make an alias `make` by adding it to your bash profile
 ```ssh
@@ -60,14 +60,15 @@ ctrl+x and enter to save once you have added the alias line (example below line 
 alias make="gmake"
 ```
 
-#### venvs
+### Python Virtual Enviornment
 
-##### setup and activate your virtual enviornment
+#### Setup
 run the following command to create your venv
 ```ssh
 public-api$ make venv-create
 ```
 
+####  Activate
 next command is to activate your virtiual envionrment, you should see (.venv) to the far left of your prompt showing you what env you are in
 ```ssh
 public-api$ source .venv/bin/activate
@@ -80,10 +81,10 @@ if you ever need to get out of the virtual enviornment run the `deactivate` comm
 public-api$ 
 ```
 
-#### make usage guide
+### Make User Guide
 use the `make` command with an `action` when developing on linux.  think of `actions` as a list of predefined commands to help simplify common development routines.
 
-##### view avaiable actions
+#### view avaiable actions
 `make help` to see all avaiable actions
 ```sh
 clean-pyc            clean python cache files
@@ -106,15 +107,16 @@ venv-create          cleans the .venv then creates a venv in the folder .venv
 venv-remove          removes the .venv folder
 ```
 
-#### docker enviornment
-prereqs: 
+### Docker
+
+#### Pre-reqs
 - docker
 - python3
 - local clone of repo
 - terminal opened to cloned repos root path
 
 
-##### setup docker env
+#### Setup Docker Enviornment
 run `setup`
 ```sh
 (.venv) public-api$ make setup
@@ -124,7 +126,7 @@ once complete you will have to open a new terminal as the docker output will be 
 
 more explinations of different `make` `actions` that can be run in the other sections below
 
-##### take docker conters down
+#### Shutdown Docker Containers
 run `docker-down`
 
 ```sh
@@ -139,7 +141,7 @@ docker-compose down
  ✔ Network public-api_botdetector-network  Removed   0.0s 
 ```
 
-##### bring docker containers back up
+##### Startup Docker Containers
 run `docker-up`. example below is using public-api
 ```sh
 (.venv) public-api$ make docker-up
@@ -157,14 +159,14 @@ docker-compose --verbose up
  ...
 ```
 
-##### force rebuild of containers
+##### Force Rebuild of Docker Containers
 run `docker-force-rebuild`. usually done if requirements.txt are changed.  or if containers are having weird issues and you want to start fresh.
 ```sh
 (.venv) public-api$ make docker-force-rebuild
 ```
 
-#### TDD using pytest
-##### make sure tests are still passing
+### TDD using pytest
+#### Verifying Tests Pass
 run `test`
 ```sh
 (.venv) public-api$ make test
