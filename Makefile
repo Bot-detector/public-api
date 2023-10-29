@@ -84,5 +84,5 @@ venv-create: venv-remove ## cleans the .venv then creates a venv in the folder .
 venv-remove: ## removes the .venv folder
 	rm -rf .venv
 
-check:
+check: ## run pre commit hooks for github, should do black checks
 	pre-commit
