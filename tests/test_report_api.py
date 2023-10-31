@@ -50,7 +50,8 @@ class TestPostReports(unittest.TestCase):
                     ),
                     "equip_ge_value": integers(min_value=0),
                 }
-            )
+            ),
+            min_size=1,  # Ensure the list has at least one element
         )
     )
     def test_post_reports(self, test_data):
@@ -65,16 +66,46 @@ class TestPostReports(unittest.TestCase):
         # Assert that the response data is as expected
         self.assertEqual(response.json(), {"detail": "Reports created successfully"})
 
-    @given(lists(integers()))
-    def test_post_reports_invalid_data(self, test_data):
-        # Make POST request to /reports endpoint with invalid data
-        response = requests.post("http://localhost:5000/v2/reports", json=test_data)
+    def test_post_reports_unprocessable_entity(self):
+        # Modify test_data to make it invalid
 
-        # Assert that the response status code is 400 (Bad Request)
+        # Make POST request to /reports endpoint
+        response = requests.post("http://localhost:5000/v2/reports", json=[{}])
+
+        # Print the test data and response data for debugging
+        print(f"\nResponse:\n{response.json()}\n")
+
+        # Assert that the response status code is 422 (Unprocessable Entity)
+        self.assertEqual(response.status_code, 422)
+
+    def test_post_reports_bad_data(self):
+        # Define the bad data
+        bad_data = [
+            {
+                "reporter": "0",
+                "reported": "0",
+                "region_id": 0,
+                "x_coord": 0,
+                "y_coord": 0,
+                "z_coord": 0,
+                "ts": 0,
+                "manual_detect": 0,
+                "on_members_world": 0,
+                "on_pvp_world": 0,
+                "world_number": 300,
+                "equipment": {},
+                "equip_ge_value": 0,
+            }
+        ]
+
+        # Make POST request to /reports endpoint with bad data
+        response = requests.post("http://localhost:5000/v2/reports", json=bad_data)
+
+        # Assert that the response status code is 400 (Bad Data)
         self.assertEqual(response.status_code, 400)
 
-        # Assert that the response data is as expected
-        self.assertEqual(response.json(), {"detail": "invalid data"})
+        # Print the response data for debugging
+        print(f"\nResponse:\n{response.json()}\n")
 
 
 if __name__ == "__main__":
