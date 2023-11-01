@@ -41,18 +41,22 @@ class TestPostReports(unittest.TestCase):
                     "on_members_world": one_of(just(0), just(1)),
                     "on_pvp_world": one_of(just(0), just(1)),
                     "world_number": integers(min_value=300, max_value=1000),
-                    "equipment": fixed_dictionaries(
-                        {
-                            "equip_head_id": one_of(integers(min_value=0), none()),
-                            "equip_amulet_id": one_of(integers(min_value=0), none()),
-                            "equip_torso_id": one_of(integers(min_value=0), none()),
-                            "equip_legs_id": one_of(integers(min_value=0), none()),
-                            "equip_boots_id": one_of(integers(min_value=0), none()),
-                            "equip_cape_id": one_of(integers(min_value=0), none()),
-                            "equip_hands_id": one_of(integers(min_value=0), none()),
-                            "equip_weapon_id": one_of(integers(min_value=0), none()),
-                            "equip_shield_id": one_of(integers(min_value=0), none()),
-                        }
+                    "equipment": dictionaries(
+                        keys=sampled_from(
+                            [
+                                "equip_head_id",
+                                "equip_amulet_id",
+                                "equip_torso_id",
+                                "equip_legs_id",
+                                "equip_boots_id",
+                                "equip_cape_id",
+                                "equip_hands_id",
+                                "equip_weapon_id",
+                                "equip_shield_id",
+                            ]
+                        ),
+                        values=integers(min_value=0),
+                        dict_class=dict,
                     ),
                     "equip_ge_value": integers(min_value=0),
                 }

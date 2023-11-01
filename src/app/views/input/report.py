@@ -14,14 +14,6 @@ class Equipment(BaseModel):
     equip_weapon_id: Optional[int] = Field(None, ge=0)
     equip_shield_id: Optional[int] = Field(None, ge=0)
 
-    # Custom validator here
-    @validator("*")
-    def allow_none(cls, v):
-        if v is None:
-            return None
-        else:
-            return v
-
 
 class Detection(BaseModel):
     reporter: str = Field(..., min_length=1, max_length=13)
