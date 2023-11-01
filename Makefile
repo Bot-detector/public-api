@@ -34,6 +34,9 @@ clean-test: ## cleanup pytests leftovers
 test: clean-test ## Run pytest unit tests
 	python3 -m pytest --verbosity=1
 
+test-report:
+	python3 -m pytest --junit-xml=pytest_report.xml
+
 test-debug: ## Run unit tests with debugging enabled
 	python3 -m pytest --pdb
 
@@ -46,17 +49,21 @@ docker-up: ## Startup docker
 docker-build: ## Startup docker with build switch
 	docker-compose --verbose up --build
 
-setup: requirements venv-create pre-commit-setup docker-build test-setup api-setup ## setup & run after downloaded repo
+docker-build-detached: ## Startup docker with build switch
+	docker-compose up --build -d
+
+setup: venv-create requirements pre-commit-setup docker-build test-setup ## setup & run after downloaded repo
+
+setup-detached: venv-create requirements pre-commit-setup docker-build-detached test-setup ## setup & run after downloaded repo detached
 
 pre-commit-setup: ## Install pre-commit
 	python3 -m pip install pre-commit
 	pre-commit --version
 
-pre-commit: ## Run pre-commit
-	pre-commit run --all-files
-
 test-setup: ## installs pytest singular package for local testing
 	python3 -m pip install pytest
+	python3 -m pip install requests
+	python3 -m pip install hypothesis
 
 requirements: ## installs all requirements
 	python3 -m pip install -r requirements.txt
@@ -70,9 +77,6 @@ docker-rebuild: docker-down ## shuts down docker then brings it up and rebuilds
 docker-force-rebuild: docker-down ## shuts down docker than brings it up and force rebuilds
 	docker-compose --verbose up --build --force-recreate
 
-api-setup: ## installs fastapi singular package, for local testing
-	python3 -m pip install "fastapi[all]"
-
 docs: # opens your browser to the webapps testing docs
 	open http://localhost:5000/docs
 	xdg-open http://localhost:5000/docs
@@ -83,6 +87,3 @@ venv-create: venv-remove ## cleans the .venv then creates a venv in the folder .
 
 venv-remove: ## removes the .venv folder
 	rm -rf .venv
-
-check: ## run pre commit hooks for github, should do black checks
-	pre-commit
