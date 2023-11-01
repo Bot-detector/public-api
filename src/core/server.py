@@ -1,6 +1,11 @@
 import asyncio
 import logging
-
+import os
+import uuid
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
 from fastapi import FastAPI
 from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
@@ -38,12 +43,29 @@ def make_middleware() -> list[Middleware]:
 
 
 def create_app() -> FastAPI:
+    # Use a different key function for the limiter when running tests
+    if os.getenv("ENV") == "DEV":
+        key_func = lambda: str(uuid.uuid4())
+    else:
+        key_func = get_remote_address
+    # Create a limiter instance using the client's remote address as the key
+    limiter = Limiter(
+        key_func=get_remote_address,
+        default_limits=["100000/day;10000/hour;1000/minute"],
+    )
+
+    # Create a FastAPI application with the title and description
     _app = FastAPI(
         title="Bot-Detector-API",
         description="Bot-Detector-API",
-        middleware=make_middleware(),
     )
+
+    _app.state.limiter = limiter
+    _app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+    _app.add_middleware(SlowAPIMiddleware)
     init_routers(_app=_app)
+
+    # Return the created FastAPI application
     return _app
 
 
