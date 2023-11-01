@@ -14,7 +14,6 @@ class Report:
 
     def _check_data_size(self, data: list[Detection]) -> list[Detection] | None:
         if len(data) > 5000:
-            logger.warning("Data size is too large")
             return None
         else:
             return data
@@ -25,12 +24,12 @@ class Report:
         max_ts = current_time + 3600
         filtered_data = [d for d in data if min_ts < d.ts < max_ts]
         if len(filtered_data) < len(data):
-            logger.warning("Some data has invalid time")
-        return filtered_data
+            return None
+        else:
+            return filtered_data
 
     def _check_unique_reporter(self, data: list[Detection]) -> list[Detection] | None:
         if len(set(d.reporter for d in data)) > 1:
-            logger.warning("More than one unique reporter found")
             return None
         else:
             return data
