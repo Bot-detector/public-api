@@ -1,5 +1,3 @@
-# FILEPATH: /Users/rustic/Library/Mobile Documents/com~apple~CloudDocs/workspace/bot-detector/public-api/src/tests/test_report.py
-
 import unittest
 import requests
 import time
