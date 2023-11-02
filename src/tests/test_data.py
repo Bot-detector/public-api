@@ -1,7 +1,7 @@
+import json
 import random
 import string
 import time
-import json
 
 
 # Function to generate random strings for reporter and reported fields
