@@ -87,3 +87,6 @@ venv-create: venv-remove ## cleans the .venv then creates a venv in the folder .
 
 venv-remove: ## removes the .venv folder
 	rm -rf .venv
+
+test-loud: ## runs pytest with verbose output
+	python3 -m pytest --verbose -s
