@@ -1,4 +1,4 @@
-name: Pytest report
+name: name: Pytest report manual
 
 on: 
   workflow_dispatch:
@@ -10,7 +10,6 @@ jobs:
   Linter-Unknown-Owner:
     name: Black Syntax Check on Public
     runs-on: ubuntu-latest
-    if: github.repository_owner != 'Bot-detector'
     steps:
       - uses: actions/checkout@v3
 
@@ -26,7 +25,6 @@ jobs:
   Build-Test-Unknown-Owner:
     name: Setup and Run Tests on Public
     runs-on: ubuntu-latest
-    if: github.repository_owner != 'Bot-detector'
     steps:
     - name: Checkout
       uses: actions/checkout@v3
