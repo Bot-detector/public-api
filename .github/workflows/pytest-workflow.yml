@@ -23,7 +23,7 @@ jobs:
           src: "./src"
 
   Build-Test-Known-Owner:
-    name: Setup Enviornment and Run Tests on Self Hosted
+    name: Setup and Run Tests on Self Hosted
     runs-on: [self-hosted, "hetzner"]
     if: github.repository_owner == 'Bot-detector'
     steps:
@@ -92,7 +92,7 @@ jobs:
           src: "./src"
 
   Build-Test-Unknown-Owner:
-    name: Setup Enviornment and Run Tests on Public
+    name: Setup and Run Tests on Public
     runs-on: ubuntu-latest
     if: github.repository_owner != 'Bot-detector'
     steps:
