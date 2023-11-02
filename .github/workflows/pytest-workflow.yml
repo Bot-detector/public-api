@@ -9,7 +9,7 @@ jobs:
   Linter-Known-Owner:
     name: Black Syntax Check
     runs-on: [self-hosted, "hetzner"]
-    if: github.repository_owner == 'bot-detector'
+    if: github.repository_owner == 'Bot-detector'
     steps:
       - uses: actions/checkout@v3
 
@@ -25,7 +25,7 @@ jobs:
   Build-Test-Known-Owner:
     name: Setup Enviornment and Run Tests
     runs-on: [self-hosted, "hetzner"]
-    if: github.repository_owner == 'bot-detector'
+    if: github.repository_owner == 'Bot-detector'
     steps:
     - name: Checkout
       uses: actions/checkout@v3
@@ -78,7 +78,7 @@ jobs:
   Build-Test-Unknown-Owner:
     name: Setup Enviornment and Run Tests
     runs-on: [self-hosted, "hetzner"]
-    if: github.repository_owner != 'bot-detector'
+    if: github.repository_owner != 'Bot-detector'
     steps:
     - name: Checkout
       uses: actions/checkout@v3
@@ -131,7 +131,7 @@ jobs:
   Linter-Unknown-Owner:
     name: Black Syntax Check
     runs-on: ubuntu-latest
-    if: github.repository_owner != 'bot-detector'
+    if: github.repository_owner != 'Bot-detector'
     steps:
       - uses: actions/checkout@v3
 
