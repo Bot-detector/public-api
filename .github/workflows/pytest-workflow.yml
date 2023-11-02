@@ -6,9 +6,10 @@ permissions:
   contents: read
 
 jobs:
-  linter:
+  Linter-Known-Owner:
     name: Black Syntax Check
     runs-on: [self-hosted, "hetzner"]
+    if: github.repository_owner == 'bot-detector'
     steps:
       - uses: actions/checkout@v3
 
@@ -21,9 +22,10 @@ jobs:
           options: "--check --verbose"
           src: "./src"
 
-  Build-Test:
+  Build-Test-Known-Owner:
     name: Setup Enviornment and Run Tests
     runs-on: [self-hosted, "hetzner"]
+    if: github.repository_owner == 'bot-detector'
     steps:
     - name: Checkout
       uses: actions/checkout@v3
@@ -72,3 +74,72 @@ jobs:
         # Fail the workflow if no JUnit XML was found.
         # Default: true
         fail-on-empty: true
+
+  Build-Test-Unknown-Owner:
+    name: Setup Enviornment and Run Tests
+    runs-on: [self-hosted, "hetzner"]
+    if: github.repository_owner != 'bot-detector'
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.11.6"
+  
+    - name: Setup Docker Containers
+      run: |
+        make setup-detached
+
+    - name: Check API is Up
+      uses: cygnetdigital/wait_for_response@v2.0.0
+      with:
+        url: 'http://localhost:5000/docs'
+        responseCode: '200,500'
+        timeout: 120000 # wait up to 120 seconds 
+        interval: 5000 # poll every 5 seconds
+
+    - name: Generate Pytest Report
+      run: |
+        make test-report
+
+      # https://github.com/marketplace/actions/pytest-results-actions
+    - name: Surface Failing Tests
+      if: always()
+      uses: pmeier/pytest-results-action@main
+      with:
+        # A list of JUnit XML files, directories containing the former, and wildcard
+        # patterns to process.
+        # See @actions/glob for supported patterns.
+        path: pytest_report.xml
+
+        # Add a summary of the results at the top of the report
+        # Default: true
+        summary: true
+
+        # Select which results should be included in the report.
+        # Follows the same syntax as
+        # `pytest -r`
+        # Default: fEX
+        display-options: fEX
+
+        # Fail the workflow if no JUnit XML was found.
+        # Default: true
+        fail-on-empty: true
+
+  Linter-Unknown-Owner:
+    name: Black Syntax Check
+    runs-on: ubuntu-latest
+    if: github.repository_owner != 'bot-detector'
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install python3-venv package
+        run: sudo apt update && sudo apt install python3-venv -y
+
+      - name: Run Black
+        uses: psf/black@stable
+        with:
+          options: "--check --verbose"
+          src: "./src"
