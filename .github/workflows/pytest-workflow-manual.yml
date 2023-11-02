@@ -1,4 +1,4 @@
-name: name: Pytest report manual
+name: Pytest report manual
 
 on: 
   workflow_dispatch:
