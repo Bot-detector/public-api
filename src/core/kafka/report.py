@@ -1,6 +1,8 @@
 from asyncio import Queue
-from .engine import AioKafkaEngine
+
 from src.core.config import settings
+
+from .engine import AioKafkaEngine
 
 report_queue = Queue()
 report_engine = AioKafkaEngine(
