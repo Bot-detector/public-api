@@ -1,14 +1,10 @@
 name: hetzner production workflow
 
 on:
-  pull_request:
-    branches:
-      - main
-      - develop
   push:
     branches:
-      - main
-      - develop
+      - main 
+      - develop # in the future only main
   workflow_run:
     workflows: ["Pytest report"]
     types:
