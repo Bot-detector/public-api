@@ -1,11 +1,11 @@
+import json
 import os
 import sys
-import requests
-import json
 from unittest import TestCase
 
-from hypothesis import given
 import hypothesis.strategies as st
+import requests
+from hypothesis import given
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 

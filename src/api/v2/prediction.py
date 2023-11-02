@@ -1,9 +1,9 @@
-from fastapi import APIRouter, Query, Depends
-from src.core.fastapi.dependencies.to_jagex_name import to_jagex_name
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+
 from src.app.models.prediction import Prediction
-from src.core.fastapi.dependencies.session import get_session
 from src.app.views.response.prediction import PredictionResponse
-from fastapi import status, HTTPException
+from src.core.fastapi.dependencies.session import get_session
+from src.core.fastapi.dependencies.to_jagex_name import to_jagex_name
 
 router = APIRouter(tags=["Prediction"])
 

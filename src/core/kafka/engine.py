@@ -1,7 +1,8 @@
 import asyncio
-from aiokafka import AIOKafkaConsumer, AIOKafkaProducer
-from asyncio import Queue
 import json
+from asyncio import Queue
+
+from aiokafka import AIOKafkaConsumer, AIOKafkaProducer
 
 
 def retry_on_exception(max_retries=3, retry_interval=5):
