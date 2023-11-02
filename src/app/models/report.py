@@ -1,8 +1,8 @@
+import logging
 import time
 
 from src.app.views.input.report import Detection
 from src.core.kafka.engine import AioKafkaEngine
-import logging
 
 logger = logging.getLogger(__name__)
 
