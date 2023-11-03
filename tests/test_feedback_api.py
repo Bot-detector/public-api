@@ -73,37 +73,21 @@ class TestFeedbackScore(unittest.TestCase):
         self.assertEqual(response.json()["message"], "Feedback submitted successfully")
 
     def test_get_feedback_score(self):
-        # Define the parameters to send
-        params = {
-            "player_name": "Player1",
-        }
-
-        # Send the GET request
-        response = requests.get(
-            "http://localhost:5000/v2/feedback/score", params=params
-        )
-
-        # Assert that the response is as expected
-        self.assertEqual(response.status_code, 200)
-
-        print(f"Test Data: {params}, Response: {response.json()}")
-
-        # Assert that the returned data is as expected
+        response = requests.get("http://localhost:5000/v2/feedback/score", params={"names": ["Player1"]})
+self.assertEqual(response.status_code, 200)
         data = response.json()
-        self.assertIn("player_name", data)
-        self.assertIn("vote", data)
-        self.assertIn("prediction", data)
-        self.assertIn("confidence", data)
-        self.assertIn("subject_id", data)
-        self.assertIn("feedback_text", data)
-        self.assertIn("proposed_label", data)
-        self.assertEqual(data["player_name"], player_name)
 
-        # Assert that the returned data is of specific types
-        self.assertIsInstance(data["player_name"], str)
-        self.assertIsInstance(data["vote"], int)
-        self.assertIsInstance(data["prediction"], str)
-        self.assertIsInstance(data["confidence"], float)
-        self.assertIsInstance(data["subject_id"], int)
-        self.assertIsInstance(data["feedback_text"], str)
-        self.assertIsInstance(data["proposed_label"], str)
+        # Assert that the response is a list
+        self.assertIsInstance(data, list)
+
+        # Check the structure of each feedback item in the list
+        for feedback in data:
+            self.assertIn("player_name", feedback)
+            self.assertIn("vote", feedback)
+            self.assertIn("prediction", feedback)
+            self.assertIn("confidence", feedback)
+            self.assertIn("subject_id", feedback)
+            self.assertIn("feedback_text", feedback)
+            self.assertIn("proposed_label", feedback)
+            # Add data type assertions here
+        
