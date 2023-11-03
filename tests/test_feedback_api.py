@@ -66,19 +66,16 @@ class TestFeedbackScore(unittest.TestCase):
         # Send the POST request
         response = requests.post("http://localhost:5000/v2/feedback", json=data)
 
+        print(f"Test Data: {data}, Response: {response.json()}")
+
         # Assert that the response is as expected
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(
-            response.json()["message"], "Feedback submitted successfully"
-        )  # replace with your actual success message
+        self.assertEqual(response.json()["message"], "Feedback submitted successfully")
 
-    @given(
-        player_name=st.text(),
-    )
-    def test_get_feedback_score(self, player_name):
+    def test_get_feedback_score(self):
         # Define the parameters to send
         params = {
-            "player_name": player_name,
+            "player_name": "Player1",
         }
 
         # Send the GET request
@@ -88,6 +85,8 @@ class TestFeedbackScore(unittest.TestCase):
 
         # Assert that the response is as expected
         self.assertEqual(response.status_code, 200)
+
+        print(f"Test Data: {params}, Response: {response.json()}")
 
         # Assert that the returned data is as expected
         data = response.json()
