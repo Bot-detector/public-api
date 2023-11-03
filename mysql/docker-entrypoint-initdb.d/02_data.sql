@@ -357,3 +357,17 @@ CREATE PROCEDURE INSERTROWS(NUM INT) BEGIN
 DELIMITER ;
 
 CALL InsertRows(250);
+
+INSERT INTO Feedback (voter_id, subject_id, prediction, confidence, vote, feedback_text, reviewed, reviewer_id, user_notified, proposed_label)
+VALUES 
+(1, 2, 'real_player', 0.8, 1, 'Great player!', 0, NULL, 0, 'real_player'),
+(2, 3, 'pvm_melee_bot', 0.7, -1, 'Suspected bot.', 0, NULL, 0, 'bot'),
+(3, 4, 'smithing_bot', 0.6, 0, 'Not sure.', 0, NULL, 0, NULL),
+(4, 5, 'magic_bot', 0.9, 1, 'Definitely a bot.', 0, NULL, 0, 'bot'),
+-- Add more rows for each bot type
+(5, 6, 'fishing_bot', 0.85, -1, 'Suspected bot.', 0, NULL, 0, 'bot'),
+(6, 7, 'mining_bot', 0.75, 0, 'Not sure.', 0, NULL, 0, NULL),
+(7, 8, 'crafting_bot', 0.65, 1, 'Definitely a bot.', 0, NULL, 0, 'bot'),
+-- Continue until 'herblore_bot'
+(23, 24, 'barrows_bot', 0.55, -1, 'Suspected bot.', 0, NULL, 0, 'bot'),
+(24, 25, 'herblore_bot', 0.95, 0, 'Not sure.', 0, NULL, 0, NULL);
