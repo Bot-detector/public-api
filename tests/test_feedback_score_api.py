@@ -71,7 +71,7 @@ class TestFeedbackScore(unittest.TestCase):
             ]
         ),
     )
-    def test_post_feedback_score(
+    def test_post_feedback(
         self,
         player_name,
         vote,
@@ -93,10 +93,47 @@ class TestFeedbackScore(unittest.TestCase):
         }
 
         # Send the POST request
-        response = requests.post("http://localhost:5000/v2/feedback/score", json=data)
+        response = requests.post("http://localhost:5000/v2/feedback", json=data)
 
         # Assert that the response is as expected
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response.json()["message"], "Feedback submitted successfully"
         )  # replace with your actual success message
+
+    @given(
+        player_name=st.text(),
+    )
+    def test_get_feedback_score(self, player_name):
+        # Define the parameters to send
+        params = {
+            "player_name": player_name,
+        }
+
+        # Send the GET request
+        response = requests.get(
+            "http://localhost:5000/v2/feedback/score", params=params
+        )
+
+        # Assert that the response is as expected
+        self.assertEqual(response.status_code, 200)
+
+        # Assert that the returned data is as expected
+        data = response.json()
+        self.assertIn("player_name", data)
+        self.assertIn("vote", data)
+        self.assertIn("prediction", data)
+        self.assertIn("confidence", data)
+        self.assertIn("subject_id", data)
+        self.assertIn("feedback_text", data)
+        self.assertIn("proposed_label", data)
+        self.assertEqual(data["player_name"], player_name)
+
+        # Assert that the returned data is of specific types
+        self.assertIsInstance(data["player_name"], str)
+        self.assertIsInstance(data["vote"], int)
+        self.assertIsInstance(data["prediction"], str)
+        self.assertIsInstance(data["confidence"], float)
+        self.assertIsInstance(data["subject_id"], int)
+        self.assertIsInstance(data["feedback_text"], str)
+        self.assertIsInstance(data["proposed_label"], str)
