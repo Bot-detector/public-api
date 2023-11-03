@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from . import player, prediction, report, feedback
+from . import feedback, player, prediction, report
 
 router = APIRouter()
 router.include_router(player.router)

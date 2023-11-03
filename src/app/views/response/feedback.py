@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 
+
 class FeedbackResponse(BaseModel):
     id: int
     ts: str

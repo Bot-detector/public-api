@@ -1,8 +1,19 @@
-from sqlalchemy import Column, Integer, TIMESTAMP, ForeignKey, String, Float, Text, SmallInteger, UniqueConstraint
-from sqlalchemy.orm import relationship
+from sqlalchemy import (
+    TIMESTAMP,
+    Column,
+    Float,
+    ForeignKey,
+    Integer,
+    SmallInteger,
+    String,
+    Text,
+    UniqueConstraint,
+)
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
 
 Base = declarative_base()
+
 
 class Feedback(Base):
     __tablename__ = "Feedback"
@@ -20,9 +31,13 @@ class Feedback(Base):
     user_notified = Column(SmallInteger, nullable=False, server_default="0")
     proposed_label = Column(String(50))
 
-    voter = relationship("Player", foreign_keys=[voter_id], back_populates="feedback_given")
-    subject = relationship("Player", foreign_keys=[subject_id], back_populates="feedback_received")
+    voter = relationship(
+        "Player", foreign_keys=[voter_id], back_populates="feedback_given"
+    )
+    subject = relationship(
+        "Player", foreign_keys=[subject_id], back_populates="feedback_received"
+    )
 
     __table_args__ = (
-        UniqueConstraint('prediction', 'subject_id', 'voter_id', name='Unique_Vote'),
+        UniqueConstraint("prediction", "subject_id", "voter_id", name="Unique_Vote"),
     )

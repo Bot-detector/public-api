@@ -1,13 +1,14 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Query
 import asyncio
 from typing import Annotated
+
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+
 from src.app.models.feedback import Feedback
 from src.app.views.input.feedback import FeedbackIn, FeedbackOut
 from src.app.views.response.feedback import FeedbackResponse
+from src.app.views.response.ok import Ok
 from src.core.fastapi.dependencies.session import get_session
 from src.core.fastapi.dependencies.to_jagex_name import to_jagex_name
-
-from src.app.views.response.ok import Ok
 from src.core.kafka.feedback import feedback_engine
 
 router = APIRouter(tags=["feedback"])
