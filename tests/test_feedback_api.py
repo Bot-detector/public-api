@@ -73,8 +73,10 @@ class TestFeedbackScore(unittest.TestCase):
         self.assertEqual(response.json()["message"], "Feedback submitted successfully")
 
     def test_get_feedback_score(self):
-        response = requests.get("http://localhost:5000/v2/feedback/score", params={"names": ["Player1"]})
-self.assertEqual(response.status_code, 200)
+        response = requests.get(
+            "http://localhost:5000/v2/feedback/score", params={"names": ["Player1"]}
+        )
+        self.assertEqual(response.status_code, 200)
         data = response.json()
 
         # Assert that the response is a list
@@ -90,4 +92,3 @@ self.assertEqual(response.status_code, 200)
             self.assertIn("feedback_text", feedback)
             self.assertIn("proposed_label", feedback)
             # Add data type assertions here
-        
