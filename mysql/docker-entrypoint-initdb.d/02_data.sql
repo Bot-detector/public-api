@@ -426,16 +426,80 @@ UPDATE PredictionFeedback
 WHERE 1=1
   AND vote = 1
 
--- INSERT INTO Feedback (voter_id, subject_id, prediction, confidence, vote, feedback_text, reviewed, reviewer_id, user_notified, proposed_label)
--- VALUES 
--- (1, 2, 'real_player', 0.8, 1, 'Great player!', 0, NULL, 0, 'real_player'),
--- (2, 3, 'pvm_melee_bot', 0.7, -1, 'Suspected bot.', 0, NULL, 0, 'bot'),
--- (3, 4, 'smithing_bot', 0.6, 0, 'Not sure.', 0, NULL, 0, NULL),
--- (4, 5, 'magic_bot', 0.9, 1, 'Definitely a bot.', 0, NULL, 0, 'bot'),
--- -- Add more rows for each bot type
--- (5, 6, 'fishing_bot', 0.85, -1, 'Suspected bot.', 0, NULL, 0, 'bot'),
--- (6, 7, 'mining_bot', 0.75, 0, 'Not sure.', 0, NULL, 0, NULL),
--- (7, 8, 'crafting_bot', 0.65, 1, 'Definitely a bot.', 0, NULL, 0, 'bot'),
--- -- Continue until 'herblore_bot'
--- (23, 24, 'barrows_bot', 0.55, -1, 'Suspected bot.', 0, NULL, 0, 'bot'),
--- (24, 25, 'herblore_bot', 0.95, 0, 'Not sure.', 0, NULL, 0, NULL);
+
+CREATE PROCEDURE InsertPredictionFeedbackTestData(NUM INT)
+BEGIN
+    DECLARE i INT;
+    SET i = 1;
+
+    WHILE i <= NUM DO
+        -- Generate random data for test records
+        SET @voter_id = FLOOR(1 + RAND() * 250);
+        SET @subject_id = FLOOR(1 + RAND() * 250);
+        SET @prediction = CASE FLOOR(1 + RAND() * 25)
+            WHEN 1 THEN 'real_player'
+            WHEN 2 THEN 'pvm_melee_bot'
+            WHEN 3 THEN 'smithing_bot'
+            WHEN 4 THEN 'magic_bot'
+            WHEN 5 THEN 'fishing_bot'
+            WHEN 6 THEN 'mining_bot'
+            WHEN 7 THEN 'crafting_bot'
+            WHEN 8 THEN 'pvm_ranged_magic_bot'
+            WHEN 9 THEN 'pvm_ranged_bot'
+            WHEN 10 THEN 'hunter_bot'
+            WHEN 11 THEN 'fletching_bot'
+            WHEN 12 THEN 'clue_scroll_bot'
+            WHEN 13 THEN 'lms_bot'
+            WHEN 14 THEN 'agility_bot'
+            WHEN 15 THEN 'wintertodt_bot'
+            WHEN 16 THEN 'runecrafting_bot'
+            WHEN 17 THEN 'zalcano_bot'
+            WHEN 18 THEN 'woodcutting_bot'
+            WHEN 19 THEN 'thieving_bot'
+            WHEN 20 THEN 'soul_wars_bot'
+            WHEN 21 THEN 'cooking_bot'
+            WHEN 22 THEN 'vorkath_bot'
+            WHEN 23 THEN 'barrows_bot'
+            WHEN 24 THEN 'herblore_bot'
+            ELSE 'unknown_bot'
+        END;
+        SET @confidence = RAND();
+        SET @vote = IF(RAND() > 0.5, 1, -1);
+        SET @feedback_text = NULL;
+        SET @reviewed = 0;
+        SET @reviewer_id = NULL;
+        SET @user_notified = 0;
+        SET @proposed_label = CASE WHEN @vote = 1 THEN @prediction ELSE NULL END;
+
+        -- Insert the test data into the PredictionFeedback table
+        INSERT INTO PredictionFeedback (
+            voter_id,
+            subject_id,
+            prediction,
+            confidence,
+            vote,
+            feedback_text,
+            reviewed,
+            reviewer_id,
+            user_notified,
+            proposed_label
+        )
+        VALUES (
+            @voter_id,
+            @subject_id,
+            @prediction,
+            @confidence,
+            @vote,
+            @feedback_text,
+            @reviewed,
+            @reviewer_id,
+            @user_notified,
+            @proposed_label
+        );
+
+        SET i = i + 1;
+    END WHILE;
+END;
+
+-- Call the procedure to insert test data into the PredictionFeedback table
+CALL InsertPredictionFeedbackTestData(100);
