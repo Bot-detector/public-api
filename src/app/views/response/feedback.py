@@ -1,11 +1,15 @@
 from pydantic import BaseModel
 
-
 class FeedbackResponse(BaseModel):
-    player_name: str
-    vote: int
+    id: int
+    ts: str
+    voter_id: int
+    subject_id: int
     prediction: str
     confidence: float
-    subject_id: int
+    vote: int
     feedback_text: str
+    reviewed: int
+    reviewer_id: int
+    user_notified: int
     proposed_label: str
