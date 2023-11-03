@@ -3,8 +3,8 @@ from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.expression import Select
 
-from src.core.database.models.feedback import Feedback as dbFeedback
-from src.app.views.response.feedback import FeedbackResponse
+from src.core.database.models.feedback import PredictionFeedback as dbFeedback
+from src.app.views.response.feedback import PredictionFeedbackResponse
 
 
 class Feedback:
@@ -13,7 +13,7 @@ class Feedback:
 
     async def get_feedback_responses(
         self, player_names: list[str]
-    ) -> list[FeedbackResponse]:
+    ) -> list[PredictionFeedbackResponse]:
         """
         Retrieve feedback responses for a list of player names.
 
@@ -40,7 +40,7 @@ class Feedback:
             await self.session.commit()
 
         feedback_responses = [
-            FeedbackResponse(
+            PredictionFeedbackResponse(
                 player_name=feedback.player_name,
                 vote=feedback.vote,
                 prediction=feedback.prediction,

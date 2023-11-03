@@ -15,8 +15,8 @@ from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
 
 
-class Feedback(Base):
-    __tablename__ = "Feedback"
+class PredictionFeedback(Base):
+    __tablename__ = "PredictionFeedback"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     ts = Column(TIMESTAMP, nullable=False, server_default="CURRENT_TIMESTAMP")

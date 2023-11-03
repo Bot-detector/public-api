@@ -4,8 +4,8 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from src.app.models.feedback import Feedback
-from src.app.views.input.feedback import FeedbackIn, FeedbackOut
-from src.app.views.response.feedback import FeedbackResponse
+from src.app.views.input.feedback import PredictionFeedbackIn, PredictionFeedbackOut
+from src.app.views.response.feedback import PredictionFeedbackResponse
 from src.app.views.response.ok import Ok
 from src.core.fastapi.dependencies.session import get_session
 from src.core.fastapi.dependencies.to_jagex_name import to_jagex_name
@@ -14,7 +14,7 @@ from src.core.kafka.feedback import feedback_engine
 router = APIRouter(tags=["feedback"])
 
 
-@router.get("/feedback/score", response_model=list[FeedbackResponse])
+@router.get("/feedback/score", response_model=list[PredictionFeedbackResponse])
 async def get_feedback_score(
     name: Annotated[list[str], Query(..., max_length=13)], session=Depends(get_session)
 ):
@@ -38,7 +38,7 @@ async def get_feedback_score(
 
 
 @router.post("/feedback", status_code=status.HTTP_201_CREATED, response_model=Ok)
-async def post_feedbacks(feedback: list[FeedbackIn]):
+async def post_feedbacks(feedback: list[PredictionFeedbackIn]):
     feedback_obj = Feedback(kafka_engine=feedback_engine)
     data = await feedback_obj.parse_data(feedback)
     if not data:

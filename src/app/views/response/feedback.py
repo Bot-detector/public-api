@@ -3,7 +3,7 @@ from pydantic.fields import Field
 from typing import Optional
 
 
-class FeedbackResponse(BaseModel):
+class PredictionFeedbackResponse(BaseModel):
     player_name: str = Field(..., example="Player1")
     vote: int = Field(..., ge=-1, le=1, description="Vote is -1, 0 or 1")
     prediction: str = Field(..., example="Real_Player")

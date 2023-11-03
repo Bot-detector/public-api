@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from pydantic.fields import Field
 
 
-class FeedbackIn(BaseModel):
+class PredictionFeedbackIn(BaseModel):
     player_name: str = Field(..., example="Player1")
     vote: int = Field(..., ge=-1, le=1, description="Vote is -1, 0 or 1")
     prediction: str = Field(..., example="Real_Player")
@@ -14,5 +14,5 @@ class FeedbackIn(BaseModel):
     proposed_label: Optional[str] = Field(None, example="Real_Player")
 
 
-class FeedbackOut(BaseModel):
+class PredictionFeedbackOut(BaseModel):
     message: str = Field(..., example="Feedback submitted successfully")

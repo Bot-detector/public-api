@@ -1,5 +1,4 @@
 USE playerdata;
-
 -- Create a table for Players
 CREATE TABLE Players (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -16,7 +15,6 @@ CREATE TABLE Players (
     ultimate_ironman BOOLEAN,
     normalized_name TEXT
 );
-
 -- Create a table for Reports
 CREATE TABLE Reports (
     ID BIGINT PRIMARY KEY AUTO_INCREMENT,
@@ -45,7 +43,6 @@ CREATE TABLE Reports (
     CONSTRAINT `FK_Reported_Players_id` FOREIGN KEY (`reportedID`) REFERENCES `Players` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
     CONSTRAINT `FK_Reporting_Players_id` FOREIGN KEY (`reportingID`) REFERENCES `Players` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 );
-
 -- Create a table for Predictions
 CREATE TABLE Predictions (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -79,25 +76,35 @@ CREATE TABLE Predictions (
     herblore_bot DECIMAL(5, 2) DEFAULT 0,
     unknown_bot DECIMAL(5, 2) DEFAULT 0
 );
-
 -- Create a table for Feedback
-CREATE TABLE Feedback (
+CREATE TABLE PredictionFeedback (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    ts TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,  -- Add comments for clarity
+    ts TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    -- Add comments for clarity
     voter_id INT NOT NULL,
     subject_id INT NOT NULL,
     prediction VARCHAR(50) NOT NULL,
     confidence FLOAT NOT NULL,
-    vote INT NOT NULL DEFAULT '0',  -- Add comments for clarity
+    vote INT NOT NULL DEFAULT '0',
+    -- Add comments for clarity
     feedback_text TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
-    reviewed TINYINT NOT NULL DEFAULT '0',  -- Add comments for clarity
+    reviewed TINYINT NOT NULL DEFAULT '0',
+    -- Add comments for clarity
     reviewer_id INT DEFAULT NULL,
-    user_notified TINYINT NOT NULL DEFAULT '0',  -- Add comments for clarity
-    proposed_label VARCHAR(50) DEFAULT NULL,  -- Add comments for clarity
-    UNIQUE KEY Unique_Vote (prediction, subject_id, voter_id) USING BTREE,  -- Add comments for clarity
+    user_notified TINYINT NOT NULL DEFAULT '0',
+    -- Add comments for clarity
+    proposed_label VARCHAR(50) DEFAULT NULL,
+    -- Add comments for clarity
+    UNIQUE KEY Unique_Vote (
+        prediction,
+        subject_id,
+        voter_id
+    ) USING BTREE,
+    -- Add comments for clarity
     KEY Voter_ID (voter_id),
     KEY Subject_ID (subject_id),
     KEY Reviewer_ID (reviewer_id),
-    CONSTRAINT Subject_ID FOREIGN KEY (subject_id) REFERENCES Players (id) ON DELETE RESTRICT ON UPDATE RESTRICT,  -- Add comments for clarity
-    CONSTRAINT Voter_ID FOREIGN KEY (voter_id) REFERENCES Players (id) ON DELETE RESTRICT ON UPDATE RESTRICT  -- Add comments for clarity
+    CONSTRAINT Subject_ID FOREIGN KEY (subject_id) REFERENCES Players (id) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    -- Add comments for clarity
+    CONSTRAINT Voter_ID FOREIGN KEY (voter_id) REFERENCES Players (id) ON DELETE RESTRICT ON UPDATE RESTRICT -- Add comments for clarity
 );
