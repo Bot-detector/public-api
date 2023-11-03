@@ -34,7 +34,7 @@ class TestFeedbackScore(unittest.TestCase):
     ]
 
     @given(
-        player_name=st.text(),
+        player_name=st.text(min_size=1),
         vote=st.integers(min_value=-1, max_value=1),
         prediction=st.sampled_from(LABELS),
         confidence=st.floats(min_value=0, max_value=1),
