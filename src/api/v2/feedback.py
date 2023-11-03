@@ -1,16 +1,21 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from src.app.models.player import Player
+from fastapi import APIRouter, Depends, HTTPException, status, Query
+import asyncio
+from typing import Annotated
+from src.app.models.feedback import Feedback
 from src.app.views.input.feedback import FeedbackIn, FeedbackOut
+from src.app.views.response.feedback import FeedbackResponse
 from src.core.fastapi.dependencies.session import get_session
 from src.core.fastapi.dependencies.to_jagex_name import to_jagex_name
+
+from src.app.views.response.ok import Ok
+from src.core.kafka.feedback import feedback_engine
 
 router = APIRouter(tags=["feedback"])
 
 
-@router.post("/feedback", response_model=FeedbackOut)
-async def post_feedback(
-    feedback: FeedbackIn,
-    session=Depends(get_session),
+@router.get("/feedback/score", response_model=list[FeedbackResponse])
+async def get_feedback_score(
+    name: Annotated[list[str], Query(..., max_length=13)], session=Depends(get_session)
 ):
     """
     Post feedback data for a user.
@@ -25,10 +30,17 @@ async def post_feedback(
         HTTPException: Returns a 404 error with the message "Player not found" if no data is found for the user.
 
     """
-    player = Player(session=session)
-    data = await player.post_feedback(feedback=feedback)
-    if not data:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Player not found"
-        )
+    feedback = Feedback(session)
+    names = await asyncio.gather(*[to_jagex_name(n) for n in name])
+    data = await feedback.get_feedback(player_names=names)
     return data
+
+
+@router.post("/feedback", status_code=status.HTTP_201_CREATED, response_model=Ok)
+async def post_feedbacks(feedback: list[FeedbackIn]):
+    feedback_obj = Feedback(kafka_engine=feedback_engine)
+    data = await feedback_obj.parse_data(feedback)
+    if not data:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, detail="invalid data")
+    await feedback_obj.send_to_kafka(data)
+    return Ok()
