@@ -33,7 +33,7 @@ async def get_feedback_score(
     """
     feedback = Feedback(session)
     names = await asyncio.gather(*[to_jagex_name(n) for n in name])
-    data = await feedback.get_feedback(player_names=names)
+    data = await feedback.get_feedback_responses(player_names=names)
     return data
 
 

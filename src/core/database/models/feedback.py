@@ -1,16 +1,16 @@
 from sqlalchemy import (
-    TIMESTAMP,
     Column,
-    Float,
-    ForeignKey,
     Integer,
-    SmallInteger,
+    TIMESTAMP,
+    ForeignKey,
     String,
+    Float,
     Text,
+    SmallInteger,
     UniqueConstraint,
 )
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
+from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 

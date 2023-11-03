@@ -5,7 +5,7 @@ from hypothesis import given
 from hypothesis import strategies as st
 
 
-class TestFeedbackScore(unittest.TestCase):
+class TestFeedback(unittest.TestCase):
     LABELS = [
         "Real_Player",
         "PVM_Melee_bot",
@@ -76,7 +76,7 @@ class TestFeedbackScore(unittest.TestCase):
 
     def test_get_feedback_score(self):
         response = requests.get(
-            "http://localhost:5000/v2/feedback/score", params={"names": ["Player1"]}
+            "http://localhost:5000/v2/feedback/score", params={"name": ["Player1"]}
         )
         self.assertEqual(response.status_code, 200)
         data = response.json()
@@ -93,4 +93,18 @@ class TestFeedbackScore(unittest.TestCase):
             self.assertIn("subject_id", feedback)
             self.assertIn("feedback_text", feedback)
             self.assertIn("proposed_label", feedback)
-            # Add data type assertions here
+
+        for feedback in data:
+            self.assertIsInstance(feedback["player_name"], str)
+            self.assertIsInstance(feedback["vote"], int)
+            self.assertIsInstance(feedback["prediction"], str)
+            self.assertIsInstance(
+                feedback["confidence"], (int, float)
+            )  # Adjust data types as needed
+            self.assertIsInstance(feedback["subject_id"], int)
+            self.assertIsInstance(
+                feedback["feedback_text"], (str, type(None))
+            )  # It can be a string or None
+            self.assertIsInstance(
+                feedback["proposed_label"], (str, type(None))
+            )  # It can be a string or None
