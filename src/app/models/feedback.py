@@ -26,7 +26,6 @@ class Feedback:
         async with self.session:
             query: Select = select(
                 [
-                    dbFeedback.player_name,
                     dbFeedback.vote,
                     dbFeedback.prediction,
                     dbFeedback.confidence,
@@ -35,13 +34,12 @@ class Feedback:
                     dbFeedback.proposed_label,
                 ]
             )
-            query = query.where(dbFeedback.player_name.in_(player_names))
+            query = query.where(dbFeedback.subject_id.in_(player_names))
             result: Result = await self.session.execute(query)
             await self.session.commit()
 
         feedback_responses = [
             PredictionFeedbackResponse(
-                player_name=feedback.player_name,
                 vote=feedback.vote,
                 prediction=feedback.prediction,
                 confidence=feedback.confidence,
