@@ -1,6 +1,8 @@
 from sqlalchemy import Boolean, Column, DateTime, Integer, Text
+from sqlalchemy.orm import relationship  # Import relationship
 
 from src.core.database.database import Base
+from src.core.database.models.feedback import DataModelPredictionFeedback
 
 
 class Player(Base):
@@ -19,3 +21,15 @@ class Player(Base):
     hardcore_ironman = Column(Boolean)
     ultimate_ironman = Column(Boolean)
     normalized_name = Column(Text)
+
+    # Define the relationship in the Player model
+    feedback_given = relationship(
+        "DataModelPredictionFeedback",
+        foreign_keys=[DataModelPredictionFeedback.voter_id],
+        back_populates="voter",
+    )
+    feedback_received = relationship(
+        "DataModelPredictionFeedback",
+        foreign_keys=[DataModelPredictionFeedback.subject_id],
+        back_populates="subject",
+    )

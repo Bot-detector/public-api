@@ -2,12 +2,12 @@ from sqlalchemy import select
 from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.expression import Select
-
-from src.core.database.models.feedback import PredictionFeedback as dbFeedback
+from src.app.models.player import Player as dbPlayer
+from src.core.database.models.feedback import DataModelPredictionFeedback as dbFeedback
 from src.app.views.response.feedback import PredictionFeedbackResponse
 
 
-class Feedback:
+class AppModelFeedback:
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
 

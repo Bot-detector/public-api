@@ -15,7 +15,7 @@ from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
 
 
-class PredictionFeedback(Base):
+class DataModelPredictionFeedback(Base):
     __tablename__ = "PredictionFeedback"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -30,14 +30,13 @@ class PredictionFeedback(Base):
     reviewer_id = Column(Integer)
     user_notified = Column(SmallInteger, nullable=False, server_default="0")
     proposed_label = Column(String(50))
-
     voter = relationship(
-        "Player", foreign_keys=[voter_id], back_populates="feedback_given"
+        "Player",  # Use the actual class name from Player model
+        foreign_keys=[DataModelPredictionFeedback.voter_id],
+        back_populates="feedback_given",
     )
     subject = relationship(
-        "Player", foreign_keys=[subject_id], back_populates="feedback_received"
-    )
-
-    __table_args__ = (
-        UniqueConstraint("prediction", "subject_id", "voter_id", name="Unique_Vote"),
+        "Player",  # Use the actual class name from Player model
+        foreign_keys=[DataModelPredictionFeedback.subject_id],
+        back_populates="feedback_received",
     )

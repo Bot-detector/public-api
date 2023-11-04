@@ -80,31 +80,24 @@ CREATE TABLE Predictions (
 CREATE TABLE PredictionFeedback (
     id INT PRIMARY KEY AUTO_INCREMENT,
     ts TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    -- Add comments for clarity
     voter_id INT NOT NULL,
     subject_id INT NOT NULL,
     prediction VARCHAR(50) NOT NULL,
     confidence FLOAT NOT NULL,
     vote INT NOT NULL DEFAULT '0',
-    -- Add comments for clarity
     feedback_text TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
     reviewed TINYINT NOT NULL DEFAULT '0',
-    -- Add comments for clarity
     reviewer_id INT DEFAULT NULL,
     user_notified TINYINT NOT NULL DEFAULT '0',
-    -- Add comments for clarity
     proposed_label VARCHAR(50) DEFAULT NULL,
-    -- Add comments for clarity
     UNIQUE KEY Unique_Vote (
         prediction,
         subject_id,
         voter_id
     ) USING BTREE,
-    -- Add comments for clarity
     KEY Voter_ID (voter_id),
     KEY Subject_ID (subject_id),
     KEY Reviewer_ID (reviewer_id),
-    CONSTRAINT Subject_ID FOREIGN KEY (subject_id) REFERENCES Players (id) ON DELETE RESTRICT ON UPDATE RESTRICT,
-    -- Add comments for clarity
-    CONSTRAINT Voter_ID FOREIGN KEY (voter_id) REFERENCES Players (id) ON DELETE RESTRICT ON UPDATE RESTRICT -- Add comments for clarity
+    CONSTRAINT `FK_Subject_ID` FOREIGN KEY (`subject_id`) REFERENCES `Players` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    CONSTRAINT `FK_Voter_ID` FOREIGN KEY (`voter_id`) REFERENCES `Players` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT 
 );

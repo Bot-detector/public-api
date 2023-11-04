@@ -3,7 +3,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
-from src.app.models.feedback import Feedback
+from src.app.models.feedback import AppModelFeedback
 from src.app.views.input.feedback import PredictionFeedbackIn, PredictionFeedbackOut
 from src.app.views.response.feedback import PredictionFeedbackResponse
 from src.app.views.response.ok import Ok
@@ -31,17 +31,17 @@ async def get_feedback_score(
         HTTPException: Returns a 404 error with the message "Player not found" if no data is found for the user.
 
     """
-    feedback = Feedback(session)
+    feedback = AppModelFeedback(session)
     names = await asyncio.gather(*[to_jagex_name(n) for n in name])
     data = await feedback.get_feedback_responses(player_names=names)
     return data
 
 
-@router.post("/feedback", status_code=status.HTTP_201_CREATED, response_model=Ok)
-async def post_feedbacks(feedback: list[PredictionFeedbackIn]):
-    feedback_obj = Feedback(kafka_engine=feedback_engine)
-    data = await feedback_obj.parse_data(feedback)
-    if not data:
-        raise HTTPException(status.HTTP_400_BAD_REQUEST, detail="invalid data")
-    await feedback_obj.send_to_kafka(data)
-    return Ok()
+# @router.post("/feedback", status_code=status.HTTP_201_CREATED, response_model=Ok)
+# async def post_feedbacks(feedback: list[PredictionFeedbackIn]):
+#     feedback_obj = Feedback(kafka_engine=feedback_engine)
+#     data = await feedback_obj.parse_data(feedback)
+#     if not data:
+#         raise HTTPException(status.HTTP_400_BAD_REQUEST, detail="invalid data")
+#     await feedback_obj.send_to_kafka(data)
+#     return Ok()
