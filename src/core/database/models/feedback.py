@@ -12,7 +12,8 @@ from sqlalchemy import (
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 
-Base = declarative_base()
+from src.core.database.database import Base
+from src.core.database.models.player import Player as dbPlayer
 
 
 class DataModelPredictionFeedback(Base):
@@ -32,11 +33,11 @@ class DataModelPredictionFeedback(Base):
     proposed_label = Column(String(50))
     voter = relationship(
         "Player",  # Use the actual class name from Player model
-        foreign_keys=[DataModelPredictionFeedback.voter_id],
+        foreign_keys=[dbPlayer.id],
         back_populates="feedback_given",
     )
     subject = relationship(
         "Player",  # Use the actual class name from Player model
-        foreign_keys=[DataModelPredictionFeedback.subject_id],
+        foreign_keys=[dbPlayer.id],
         back_populates="feedback_received",
     )

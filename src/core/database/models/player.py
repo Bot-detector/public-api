@@ -2,7 +2,9 @@ from sqlalchemy import Boolean, Column, DateTime, Integer, Text
 from sqlalchemy.orm import relationship  # Import relationship
 
 from src.core.database.database import Base
-from src.core.database.models.feedback import DataModelPredictionFeedback
+from src.core.database.models.feedback import (
+    DataModelPredictionFeedback as dbDataModelPredictionFeedback,
+)
 
 
 class Player(Base):
@@ -25,11 +27,11 @@ class Player(Base):
     # Define the relationship in the Player model
     feedback_given = relationship(
         "DataModelPredictionFeedback",
-        foreign_keys=[DataModelPredictionFeedback.voter_id],
+        foreign_keys=[dbDataModelPredictionFeedback.voter_id],
         back_populates="voter",
     )
     feedback_received = relationship(
         "DataModelPredictionFeedback",
-        foreign_keys=[DataModelPredictionFeedback.subject_id],
+        foreign_keys=[dbDataModelPredictionFeedback.subject_id],
         back_populates="subject",
     )
