@@ -13,8 +13,12 @@ CREATE TABLE Players (
     ironman BOOLEAN,
     hardcore_ironman BOOLEAN,
     ultimate_ironman BOOLEAN,
-    normalized_name TEXT
+    normalized_name TEXT,
+    -- Add foreign keys for feedback_received and feedback_given
+    feedback_received INT,
+    feedback_given INT
 );
+
 -- Create a table for Reports
 CREATE TABLE Reports (
     ID BIGINT PRIMARY KEY AUTO_INCREMENT,
@@ -95,9 +99,13 @@ CREATE TABLE PredictionFeedback (
         subject_id,
         voter_id
     ) USING BTREE,
-    KEY Voter_ID (voter_id),
-    KEY Subject_ID (subject_id),
-    KEY Reviewer_ID (reviewer_id),
     CONSTRAINT `FK_Subject_ID` FOREIGN KEY (`subject_id`) REFERENCES `Players` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
     CONSTRAINT `FK_Voter_ID` FOREIGN KEY (`voter_id`) REFERENCES `Players` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT 
 );
+
+-- Add foreign key constraints to Players table
+ALTER TABLE Players
+ADD CONSTRAINT `FK_Feedback_Received` FOREIGN KEY (`feedback_received`) REFERENCES `PredictionFeedback` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE Players
+ADD CONSTRAINT `FK_Feedback_Given` FOREIGN KEY (`feedback_given`) REFERENCES `PredictionFeedback` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
