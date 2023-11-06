@@ -31,7 +31,7 @@ class AppModelFeedback:
                     feedback_voter.proposed_label,
                 ]
             )
-            query = query.select_from(player_name)
+            query = query.select_from(dbPlayer)
             query = query.join(
                 feedback_subject, feedback_subject.subject_id == player_name.id
             )
