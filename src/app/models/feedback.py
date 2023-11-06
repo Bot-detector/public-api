@@ -2,7 +2,6 @@ from sqlalchemy import select
 from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.expression import Select
-from src.app.models.player import Player as dbPlayer
 from src.core.database.models.feedback import DataModelPredictionFeedback as dbFeedback
 from src.app.views.response.feedback import PredictionFeedbackResponse
 
