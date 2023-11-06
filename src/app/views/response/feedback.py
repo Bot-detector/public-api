@@ -8,6 +8,5 @@ class PredictionFeedbackResponse(BaseModel):
     vote: int
     prediction: str
     confidence: Optional[float]
-    subject_id: int
     feedback_text: Optional[str]
     proposed_label: Optional[str]
