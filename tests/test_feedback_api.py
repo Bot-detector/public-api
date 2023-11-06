@@ -82,10 +82,10 @@ class TestFeedback(unittest.TestCase):
     # @given(st.lists(player_name_strategy(), min_size=10, max_size=20))
     def test_get_feedback_score(self):
         player_names_test_list = [f"Player{i}" for i in range(1, 100)]
-        response = requests.get(
-            "http://localhost:5000/v2/feedback/score",
-            params={"name": player_names_test_list},
-        )
+        # response = requests.get(
+        #     "http://localhost:5000/v2/feedback/score",
+        #     params={"name": player_names_test_list},
+        # )
         for player_name_test in player_names_test_list:
             response = requests.get(
                 "http://localhost:5000/v2/feedback/score",
