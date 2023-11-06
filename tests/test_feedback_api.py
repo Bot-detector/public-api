@@ -74,15 +74,36 @@ class TestFeedback(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["message"], "Feedback submitted successfully")
 
+    # # Custom strategy to generate player names starting with "Player" and a number
+    # def player_name_strategy():
+    #     player_number = st.integers(min_value=20, max_value=100)
+    #     return st.builds(lambda num: f"Player{num}", player_number)
+
+    # @given(st.lists(player_name_strategy(), min_size=10, max_size=20))
     def test_get_feedback_score(self):
+        player_names_test_list = [f"Player{i}" for i in range(1, 100)]
         response = requests.get(
-            "http://localhost:5000/v2/feedback/score", params={"name": ["Player1"]}
+            "http://localhost:5000/v2/feedback/score",
+            params={"name": player_names_test_list},
         )
+        for player_name_test in player_names_test_list:
+            response = requests.get(
+                "http://localhost:5000/v2/feedback/score",
+                params={"name": player_name_test},
+            )
+            self.assertEqual(response.status_code, 200)
+            data = response.json()
+            print(f"Test Data: {data}, Response: {response.json()}")
+            # Assert that the response is a dictionary
+            self.assertIsInstance(data, list)
+
         self.assertEqual(response.status_code, 200)
         data = response.json()
-
+        print(f"Test Data: {data}, Response: {response.json()}")
         # Assert that the response is a list
         self.assertIsInstance(data, list)
+
+        self.assertGreater(len(data), 0)
 
         # Check the structure of each feedback item in the list
         for feedback in data:

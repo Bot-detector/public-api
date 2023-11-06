@@ -1,52 +1,64 @@
-from sqlalchemy import select
-from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.sql.expression import Select
+from sqlalchemy.sql.expression import select
+from sqlalchemy.orm import aliased
+from sqlalchemy.engine import Result
 from src.core.database.models.feedback import DataModelPredictionFeedback as dbFeedback
+from src.core.database.models.player import Player as dbPlayer
 from src.app.views.response.feedback import PredictionFeedbackResponse
+import logging
 
 
 class AppModelFeedback:
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
+        self.logger = logging.getLogger("AppModelFeedback")
 
-    async def get_feedback_responses(
-        self, player_names: list[str]
-    ) -> list[PredictionFeedbackResponse]:
-        """
-        Retrieve feedback responses for a list of player names.
-
-        Args:
-            player_names (list[str]): A list of player names for which feedback responses are requested.
-
-        Returns:
-            list[FeedbackResponse]: A list of Pydantic BaseModel dictionaries containing feedback responses.
-        """
+    async def get_feedback_responses(self, player_names: tuple[str]):
         async with self.session:
-            query: Select = select(
+            feedback_voter: dbFeedback = aliased(dbFeedback, name="feedback_voter")
+            feedback_subject: dbFeedback = aliased(dbFeedback, name="feedback_subject")
+            player_name: dbPlayer = aliased(dbPlayer, name="player_name")
+
+            query = select(
                 [
-                    dbFeedback.vote,
-                    dbFeedback.prediction,
-                    dbFeedback.confidence,
-                    dbFeedback.subject_id,
-                    dbFeedback.feedback_text,
-                    dbFeedback.proposed_label,
+                    feedback_voter.vote,
+                    feedback_voter.prediction,
+                    feedback_voter.confidence,
+                    player_name.name.label(
+                        "player_name"
+                    ),  # Alias it with 'player_name'
+                    feedback_voter.feedback_text,
+                    feedback_voter.proposed_label,
                 ]
             )
-            query = query.where(dbFeedback.subject_id.in_(player_names))
-            result: Result = await self.session.execute(query)
-            await self.session.commit()
-
-        feedback_responses = [
-            PredictionFeedbackResponse(
-                vote=feedback.vote,
-                prediction=feedback.prediction,
-                confidence=feedback.confidence,
-                subject_id=feedback.subject_id,
-                feedback_text=feedback.feedback_text,
-                proposed_label=feedback.proposed_label,
+            query = query.select_from(player_name)
+            query = query.join(
+                feedback_subject, feedback_subject.subject_id == player_name.id
             )
-            for feedback in result.scalars()
-        ]
+            query = query.join(
+                feedback_voter, feedback_voter.voter_id == player_name.id
+            )
+            query = query.where(player_name.name.in_(player_names))
 
-        return feedback_responses
+            # debug
+            sql_statement = str(query)
+            sql_parameters = query.compile().params
+            self.logger.debug(f"SQL Statement: {sql_statement}")
+            self.logger.debug(f"SQL Parameters: {sql_parameters}")
+
+            result: Result = await self.session.execute(query)
+            self.logger.debug(f"Result: {result.scalars().all()}")
+            await self.session.commit()
+            # feedback_responses = [
+            #     PredictionFeedbackResponse(
+            #         player_name=feedback.name,
+            #         vote=feedback.vote,
+            #         prediction=feedback.prediction,
+            #         confidence=feedback.confidence,
+            #         feedback_text=feedback.feedback_text,
+            #         proposed_label=feedback.proposed_label,
+            #     )
+            #     for feedback in result.scalars().all()
+            # ]
+
+        return tuple(result.mappings())

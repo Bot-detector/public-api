@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -13,6 +14,7 @@ from src.core.kafka.feedback import feedback_engine
 
 router = APIRouter(tags=["feedback"])
 
+logger = logging.getLogger(__name__)
 
 @router.get("/feedback/score", response_model=list[PredictionFeedbackResponse])
 async def get_feedback_score(
@@ -33,6 +35,7 @@ async def get_feedback_score(
     """
     feedback = AppModelFeedback(session)
     names = await asyncio.gather(*[to_jagex_name(n) for n in name])
+    
     data = await feedback.get_feedback_responses(player_names=names)
     return data
 
