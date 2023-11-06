@@ -33,12 +33,10 @@ class AppModelFeedback:
             )
             query = query.select_from(dbPlayer)
             query = query.join(
-                feedback_subject, feedback_subject.subject_id == player_name.id
+                feedback_subject, feedback_subject.subject_id == dbPlayer.id
             )
-            query = query.join(
-                feedback_voter, feedback_voter.voter_id == player_name.id
-            )
-            query = query.where(player_name.name.in_(player_names))
+            query = query.join(feedback_voter, feedback_voter.voter_id == dbPlayer.id)
+            query = query.where(dbPlayer.name.in_(player_names))
 
             # debug
             sql_statement = str(query)
