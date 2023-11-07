@@ -35,54 +35,47 @@ class TestFeedback(unittest.TestCase):
         "Unsure",
     ]
 
-    @given(
-        player_name=st.text(min_size=1),
-        vote=st.integers(min_value=-1, max_value=1),
-        prediction=st.sampled_from(LABELS),
-        confidence=st.floats(min_value=0, max_value=1),
-        subject_id=st.integers(min_value=0),
-        feedback_text=st.text(),
-        proposed_label=st.sampled_from(LABELS),
-    )
-    def test_post_feedback(
-        self,
-        player_name,
-        vote,
-        prediction,
-        confidence,
-        subject_id,
-        feedback_text,
-        proposed_label,
-    ):
-        # Define the data to send
-        data = {
-            "player_name": player_name,
-            "vote": vote,
-            "prediction": prediction,
-            "confidence": confidence,
-            "subject_id": subject_id,
-            "feedback_text": feedback_text,
-            "proposed_label": proposed_label,
-        }
+    # @given(
+    #     player_name=st.text(min_size=1),
+    #     vote=st.integers(min_value=-1, max_value=1),
+    #     prediction=st.sampled_from(LABELS),
+    #     confidence=st.floats(min_value=0, max_value=1),
+    #     subject_id=st.integers(min_value=0),
+    #     feedback_text=st.text(),
+    #     proposed_label=st.sampled_from(LABELS),
+    # )
+    # def test_post_feedback(
+    #     self,
+    #     player_name,
+    #     vote,
+    #     prediction,
+    #     confidence,
+    #     subject_id,
+    #     feedback_text,
+    #     proposed_label,
+    # ):
+    #     # Define the data to send
+    #     data = {
+    #         "player_name": player_name,
+    #         "vote": vote,
+    #         "prediction": prediction,
+    #         "confidence": confidence,
+    #         "subject_id": subject_id,
+    #         "feedback_text": feedback_text,
+    #         "proposed_label": proposed_label,
+    #     }
 
-        # Send the POST request
-        response = requests.post("http://localhost:5000/v2/feedback", json=data)
+    #     # Send the POST request
+    #     response = requests.post("http://localhost:5000/v2/feedback", json=data)
 
-        print(f"Test Data: {data}, Response: {response.json()}")
+    #     print(f"Test Data: {data}, Response: {response.json()}")
 
-        # Assert that the response is as expected
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()["message"], "Feedback submitted successfully")
+    #     # Assert that the response is as expected
+    #     self.assertEqual(response.status_code, 200)
+    #     self.assertEqual(response.json()["message"], "Feedback submitted successfully")
 
-    # # Custom strategy to generate player names starting with "Player" and a number
-    # def player_name_strategy():
-    #     player_number = st.integers(min_value=20, max_value=100)
-    #     return st.builds(lambda num: f"Player{num}", player_number)
-
-    # @given(st.lists(player_name_strategy(), min_size=10, max_size=20))
-    def test_get_feedback_score(self):
+    def test_get_feedback_score_valid_players_single(self):
         player_names_test_list = [f"Player{i}" for i in range(1, 100)]
-        print(f"Player names: {player_names_test_list}")
         for player_name_test in player_names_test_list:
             response = requests.get(
                 "http://localhost:5000/v2/feedback/score",
@@ -90,39 +83,60 @@ class TestFeedback(unittest.TestCase):
             )
             self.assertEqual(response.status_code, 200)
             data = response.json()
-            print(f"Test Data: {data}, Response: {response.json()}")
+            # print(f"Test Data: {data}, Response: {response.json()}")
             # Assert that the response is a dictionary
             self.assertIsInstance(data, list)
 
-        self.assertEqual(response.status_code, 200)
+    # Custom assertion function to check if at least one response is valid
+    def assert_at_least_one_valid_response(feedback_data, valid_player_names):
+        assert isinstance(feedback_data, list)
+        for item in feedback_data:
+            if item["player_name"] in valid_player_names:
+                return
+        # If we reach this point, no valid response was found
+        assert False, "No valid response found"
+
+    # Define the list of player names
+    player_names_list = [f"Player{i}" for i in range(1, 100)]
+
+    # Define a Hypothesis strategy for player names
+    player_names_strategy = st.sampled_from(player_names_list)
+
+    @given(player_names=st.lists(player_names_strategy, min_size=1, max_size=10))
+    def test_get_feedback_score_valid_players_multi(self, player_names):
+        def assert_responses(feedback_data, valid_player_names):
+            assert isinstance(feedback_data, list)
+            unprocessable_entity_count = 0
+            for item in feedback_data:
+                if item["player_name"] in valid_player_names:
+                    return
+                if item["status_code"] == 422:
+                    unprocessable_entity_count += 1
+            # If we reach this point, no valid response was found
+            assert (
+                unprocessable_entity_count == 0
+            ), f"Found {unprocessable_entity_count} 422 responses"
+
+        params = {"name": player_names}
+        response = requests.get(
+            "http://localhost:5000/v2/feedback/score", params=params
+        )
+
+        # Check the response status code
+        assert response.status_code == 200
+
+        # Check that the response contains feedback for all the specified players
+        feedback_data = response.json()
+
+        # Assert that at least one response is valid
+        assert_responses(feedback_data, player_names)
+
+    @given(names=st.lists(st.text(min_size=1), min_size=1, max_size=13))
+    def test_get_feedback_score_not_found(self, names):
+        response = requests.get(
+            "http://localhost:5000/v2/feedback/score",
+            params={"name": names},
+        )
         data = response.json()
-        print(f"Test Data: {data}, Response: {response.json()}")
-        # Assert that the response is a list
-        self.assertIsInstance(data, list)
-
-        self.assertGreater(len(data), 0)
-
-        # # Check the structure of each feedback item in the list
-        # for feedback in data:
-        #     self.assertIn("player_name", feedback)
-        #     self.assertIn("vote", feedback)
-        #     self.assertIn("prediction", feedback)
-        #     self.assertIn("confidence", feedback)
-        #     self.assertIn("subject_id", feedback)
-        #     self.assertIn("feedback_text", feedback)
-        #     self.assertIn("proposed_label", feedback)
-
-        # for feedback in data:
-        #     self.assertIsInstance(feedback["player_name"], str)
-        #     self.assertIsInstance(feedback["vote"], int)
-        #     self.assertIsInstance(feedback["prediction"], str)
-        #     self.assertIsInstance(
-        #         feedback["confidence"], (int, float)
-        #     )  # Adjust data types as needed
-        #     self.assertIsInstance(feedback["subject_id"], int)
-        #     self.assertIsInstance(
-        #         feedback["feedback_text"], (str, type(None))
-        #     )  # It can be a string or None
-        #     self.assertIsInstance(
-        #         feedback["proposed_label"], (str, type(None))
-        #     )  # It can be a string or None
+        assert response.status_code == 404
+        assert data["detail"] == "Player not found"

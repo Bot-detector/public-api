@@ -82,7 +82,7 @@ class TestPostReports(unittest.TestCase):
         response = requests.post("http://localhost:5000/v2/reports", json=[{}])
 
         # Print the test data and response data for debugging
-        print(f"\nResponse:\n{response.json()}\n")
+        # print(f"\nResponse:\n{response.json()}\n")
 
         # Assert that the response status code is 422 (Unprocessable Entity)
         self.assertEqual(response.status_code, 422)
@@ -113,8 +113,8 @@ class TestPostReports(unittest.TestCase):
         # Assert that the response status code is 400 (Bad Data)
         self.assertEqual(response.status_code, 400)
 
-        # Print the response data for debugging
-        print(f"\nResponse:\n{response.json()}\n")
+        # # Print the response data for debugging
+        # print(f"\nResponse:\n{response.json()}\n")
 
 
 if __name__ == "__main__":
