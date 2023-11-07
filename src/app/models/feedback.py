@@ -39,12 +39,6 @@ class Feedback:
             query = query.join(feedback_voter, feedback_voter.voter_id == dbPlayer.id)
             query = query.where(player_name.name.in_(player_names))
 
-            # # debug
-            # sql_statement = str(query)
-            # sql_parameters = query.compile().params
-            # self.logger.debug(f"SQL Statement: {sql_statement}")
-            # self.logger.debug(f"SQL Parameters: {sql_parameters}")
-
             result: Result = await self.session.execute(query)
             await self.session.commit()
 
@@ -59,9 +53,6 @@ class Feedback:
             )
             for feedback in result.mappings().all()
         ]
-        # transform output to json
-        # output = result.mappings().all()
         logging.debug(f"Output result: {feedback_responses}")
-        # output = [o.get("Prediction") for o in output]
-        # output = jsonable_encoder(output)
+
         return feedback_responses
