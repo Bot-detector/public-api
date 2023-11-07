@@ -15,9 +15,7 @@ INSERT INTO
         ironman,
         hardcore_ironman,
         ultimate_ironman,
-        normalized_name,
-        feedback_received,
-        feedback_given
+        normalized_name
     )
 SELECT
     CONCAT('Player', id) AS name,
@@ -32,9 +30,7 @@ SELECT
     null ironman,
     null AS hardcore_ironman,
     null AS ultimate_ironman,
-    CONCAT('player', id) AS normalized_name,
-    (SELECT id FROM PredictionFeedback ORDER BY RAND() LIMIT 1) AS feedback_received,
-    (SELECT id FROM PredictionFeedback ORDER BY RAND() LIMIT 1) AS feedback_given
+    CONCAT('player', id) AS normalized_name
 FROM (
         SELECT (a.N + b.N * 10) AS id
         FROM (
@@ -99,9 +95,7 @@ SELECT
     null ironman,
     null AS hardcore_ironman,
     null AS ultimate_ironman,
-    CONCAT('player', id) AS normalized_name,
-    (SELECT id FROM PredictionFeedback ORDER BY RAND() LIMIT 1) AS feedback_received,
-    (SELECT id FROM PredictionFeedback ORDER BY RAND() LIMIT 1) AS feedback_given
+    CONCAT('player', id) AS normalized_name
 
 FROM (
         SELECT (a.N + b.N * 10 + 100) AS id
@@ -167,9 +161,7 @@ SELECT
     null ironman,
     null AS hardcore_ironman,
     null AS ultimate_ironman,
-    CONCAT('player', id) AS normalized_name,
-    (SELECT id FROM PredictionFeedback ORDER BY RAND() LIMIT 1) AS feedback_received,
-    (SELECT id FROM PredictionFeedback ORDER BY RAND() LIMIT 1) AS feedback_given
+    CONCAT('player', id) AS normalized_name
 FROM (
         SELECT (a.N + b.N * 10 + 200) AS id
         FROM (

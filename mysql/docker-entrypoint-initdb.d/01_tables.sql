@@ -13,10 +13,7 @@ CREATE TABLE Players (
     ironman BOOLEAN,
     hardcore_ironman BOOLEAN,
     ultimate_ironman BOOLEAN,
-    normalized_name TEXT,
-    -- Add foreign keys for feedback_received and feedback_given
-    feedback_received INT,
-    feedback_given INT
+    normalized_name TEXT
 );
 
 CREATE TABLE `Labels` (
@@ -110,10 +107,3 @@ CREATE TABLE PredictionFeedback (
     CONSTRAINT `FK_Subject_ID` FOREIGN KEY (`subject_id`) REFERENCES `Players` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
     CONSTRAINT `FK_Voter_ID` FOREIGN KEY (`voter_id`) REFERENCES `Players` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT 
 );
-
--- Add foreign key constraints to Players table
-ALTER TABLE Players
-ADD CONSTRAINT `FK_Feedback_Received` FOREIGN KEY (`feedback_received`) REFERENCES `PredictionFeedback` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
-
-ALTER TABLE Players
-ADD CONSTRAINT `FK_Feedback_Given` FOREIGN KEY (`feedback_given`) REFERENCES `PredictionFeedback` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
