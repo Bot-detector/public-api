@@ -18,24 +18,26 @@ class Feedback:
     async def get_feedback_responses(self, player_names: list[str]):
         async with self.session:
             print(f"Player names: {player_names}")
-            fv: dbFeedback = aliased(dbFeedback, name="feedback_voter")
-            fs: dbFeedback = aliased(dbFeedback, name="feedback_subject")
-            pn: dbPlayer = aliased(dbPlayer, name="player_name")
+            feedback_voter: dbFeedback = aliased(dbFeedback, name="feedback_voter")
+            feedback_subject: dbFeedback = aliased(dbFeedback, name="feedback_subject")
+            player_name: dbPlayer = aliased(dbPlayer, name="player_name")
 
             query = select(
                 [
-                    fv.vote,
-                    fv.prediction,
-                    fv.confidence,
-                    pn.name,
-                    fv.feedback_text,
-                    fv.proposed_label,
+                    feedback_voter.vote,
+                    feedback_voter.prediction,
+                    feedback_voter.confidence,
+                    player_name.name,
+                    feedback_voter.feedback_text,
+                    feedback_voter.proposed_label,
                 ]
             )
             query = query.select_from(dbPlayer)
-            query = query.join(fs, fs.subject_id == dbPlayer.id)
-            query = query.join(fv, fv.voter_id == dbPlayer.id)
-            query = query.where(pn.name.in_(player_names))
+            query = query.join(
+                feedback_subject, feedback_subject.subject_id == dbPlayer.id
+            )
+            query = query.join(feedback_voter, feedback_voter.voter_id == dbPlayer.id)
+            query = query.where(player_name.name.in_(player_names))
 
             # # debug
             # sql_statement = str(query)
