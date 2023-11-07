@@ -415,21 +415,6 @@ INSERT INTO playerdata.Labels (label) VALUES
     ('Zulrah_bot')
 ;
 
-SELECT 
-    pl1.id AS voter_id, 
-    pl2.id AS subject_id,
-    pr.prediction,
-    pr.predicted_confidence,
-    "" AS feedback_text,
-    CASE WHEN RAND() > 0.5 THEN 1 ELSE -1 END AS vote,
-    (SELECT label FROM Labels ORDER BY RAND() LIMIT 1) AS proposed_label
-FROM (SELECT * FROM Players ORDER BY RAND() LIMIT 1000) pl1
-JOIN (SELECT * FROM Players ORDER BY RAND() LIMIT 1000) pl2 ON pl1.id <> pl2.id
-JOIN Predictions pr ON pr.id = pl2.id
-ORDER BY RAND()
-LIMIT 100
-;
-
 INSERT INTO PredictionFeedback (voter_id, subject_id, prediction, confidence, feedback_text, vote, proposed_label)
 SELECT 
     pl1.id AS voter_id, 
