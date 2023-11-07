@@ -12,7 +12,3 @@ class PredictionFeedbackIn(BaseModel):
     subject_id: int = Field(..., example=1)
     feedback_text: Optional[str] = Field(None, example="Test feedback")
     proposed_label: Optional[str] = Field(None, example="Real_Player")
-
-
-class PredictionFeedbackOut(BaseModel):
-    message: str = Field(..., example="Feedback submitted successfully")
