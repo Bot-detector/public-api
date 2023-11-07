@@ -32,7 +32,7 @@ clean-test: ## cleanup pytests leftovers
 	rm -f output.xml
 
 test: clean-test ## Run pytest unit tests
-	python3 -m pytest --verbosity=1
+	python3 -m pytest --verbosity=1 -s
 
 test-report:
 	python3 -m pytest --junit-xml=pytest_report.xml
@@ -52,17 +52,15 @@ docker-build: ## Startup docker with build switch
 docker-build-detached: ## Startup docker with build switch
 	docker-compose up --build -d
 
-setup: venv-create requirements pre-commit-setup docker-build test-setup ## setup & run after downloaded repo
-
-setup-detached: venv-create requirements pre-commit-setup docker-build-detached test-setup ## setup & run after downloaded repo detached
+setup: test-setup requirements## setup requirements
 
 pre-commit-setup: ## Install pre-commit
 	python3 -m pip install pre-commit
 	pre-commit --version
 
-test-setup: ## installs pytest singular package for local testing
-	python3 -m pip install pytest
-	python3 -m pip install requests
+test-setup: pre-commit-setup## installs pytest singular package for local testing
+	python3 -m pip install pytest 
+	python3 -m pip install requests 
 	python3 -m pip install hypothesis
 
 requirements: ## installs all requirements
@@ -82,7 +80,7 @@ docs: # opens your browser to the webapps testing docs
 	xdg-open http://localhost:5000/docs
 	. http://localhost:5000/docs
 
-venv-create: venv-remove ## cleans the .venv then creates a venv in the folder .venv
+venv-create: ## creates a venv in the folder .venv
 	python3 -m venv .venv
 
 venv-remove: ## removes the .venv folder
