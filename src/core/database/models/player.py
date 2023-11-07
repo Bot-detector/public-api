@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, DateTime, Integer, Text, ForeignKey
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, Text
 
 from src.core.database.database import Base
 
@@ -19,10 +19,10 @@ class Player(Base):
     hardcore_ironman = Column(Boolean)
     ultimate_ironman = Column(Boolean)
     normalized_name = Column(Text)
-    feedback_received = Column(
-        Integer, ForeignKey("FK_Feedback_Received"), nullable=False
-    )
-    feedback_given = Column(Integer, ForeignKey("FK_Feedback_Given"), nullable=False)
+    # feedback_received = Column(
+    #     Integer, ForeignKey("FK_Feedback_Received"), nullable=False
+    # )
+    # feedback_given = Column(Integer, ForeignKey("FK_Feedback_Given"), nullable=False)
 
     # Define the relationship in the Player model
     # feedback_given = relationship(

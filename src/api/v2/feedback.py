@@ -5,7 +5,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from src.app.models.feedback import Feedback
-from src.app.views.input.feedback import PredictionFeedbackIn, PredictionFeedbackOut
+from src.app.views.input.feedback import PredictionFeedbackIn
 from src.app.views.response.feedback import PredictionFeedbackResponse
 from src.app.views.response.ok import Ok
 from src.core.fastapi.dependencies.session import get_session
