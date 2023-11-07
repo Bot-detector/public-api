@@ -4,7 +4,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
-from src.app.models.feedback import AppModelFeedback
+from src.app.models.feedback import Feedback
 from src.app.views.input.feedback import PredictionFeedbackIn, PredictionFeedbackOut
 from src.app.views.response.feedback import PredictionFeedbackResponse
 from src.app.views.response.ok import Ok
@@ -15,6 +15,7 @@ from src.core.kafka.feedback import feedback_engine
 router = APIRouter(tags=["feedback"])
 
 logger = logging.getLogger(__name__)
+
 
 @router.get("/feedback/score", response_model=list[PredictionFeedbackResponse])
 async def get_feedback_score(
@@ -33,9 +34,9 @@ async def get_feedback_score(
         HTTPException: Returns a 404 error with the message "Player not found" if no data is found for the user.
 
     """
-    feedback = AppModelFeedback(session)
+    feedback = Feedback(session)
     names = await asyncio.gather(*[to_jagex_name(n) for n in name])
-    
+
     data = await feedback.get_feedback_responses(player_names=names)
     return data
 

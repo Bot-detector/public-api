@@ -1,17 +1,19 @@
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.sql.expression import select
-from sqlalchemy.orm import aliased
-from sqlalchemy.engine import Result
-from src.core.database.models.feedback import DataModelPredictionFeedback as dbFeedback
-from src.core.database.models.player import Player as dbPlayer
-from src.app.views.response.feedback import PredictionFeedbackResponse
 import logging
 
+from sqlalchemy.engine import Result
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import aliased
+from sqlalchemy.sql.expression import select
 
-class AppModelFeedback:
+from src.app.views.response.feedback import PredictionFeedbackResponse
+from src.core.database.models.feedback import DataModelPredictionFeedback as dbFeedback
+from src.core.database.models.player import Player as dbPlayer
+
+
+class Feedback:
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
-        self.logger = logging.getLogger("AppModelFeedback")
+        self.logger = logging.getLogger("Feedback")
 
     async def get_feedback_responses(self, player_names: list[str]):
         async with self.session:
