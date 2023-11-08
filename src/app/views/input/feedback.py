@@ -1,7 +1,6 @@
 import re
 from typing import List, Optional
 
-from fastapi import Query
 from pydantic import BaseModel, Field
 
 
