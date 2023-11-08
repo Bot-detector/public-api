@@ -237,11 +237,11 @@ SELECT
     "" AS feedback_text,
     CASE WHEN RAND() > 0.5 THEN 1 ELSE -1 END AS vote,
     (SELECT label FROM Labels ORDER BY RAND() LIMIT 1) AS proposed_label
-FROM (SELECT * FROM Players ORDER BY RAND() LIMIT 1000) pl1
-JOIN (SELECT * FROM Players ORDER BY RAND() LIMIT 1000) pl2 ON pl1.id <> pl2.id
+FROM (SELECT * FROM Players WHERE id BETWEEN 1 AND 100 ORDER BY RAND()) pl1
+JOIN (SELECT * FROM Players WHERE id BETWEEN 1 AND 100 ORDER BY RAND()) pl2 ON pl1.id <> pl2.id
 JOIN Predictions pr ON pr.id = pl2.id
 ORDER BY RAND()
-LIMIT 100;
+LIMIT 1000;
 
 UPDATE PredictionFeedback
     SET proposed_label = prediction
