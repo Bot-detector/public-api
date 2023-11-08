@@ -1,7 +1,8 @@
 from fastapi.encoders import jsonable_encoder
-from sqlalchemy import select
+from sqlalchemy import select, text
 from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import aliased
 from sqlalchemy.sql.expression import Select
 
 from src.core.database.models.prediction import Prediction as dbPrediction
@@ -38,9 +39,13 @@ class Prediction:
 
         """
         async with self.session:
-            query: Select = select(dbPrediction)
-            query = query.select_from(dbPrediction)
-            query = query.where(dbPrediction.name == user_name)
+            prediction_db: dbPrediction = aliased(dbPrediction, name="prediction_db")
+
+            query: Select = select(prediction_db)
+            query = query.select_from(prediction_db)
+            query = query.where(
+                text("prediction_db.name IN :name").bindparams(name=user_name)
+            )  # prevent sql injection
             result: Result = await self.session.execute(query)
             await self.session.commit()
 
