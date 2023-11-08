@@ -79,7 +79,7 @@ class TestFeedback(unittest.TestCase):
         player_names_test_list = [f"Player{i}" for i in range(1, 100)]
         for player_name_test in player_names_test_list:
             response = requests.get(
-                "http://localhost:5000/v2/feedback/score",
+                "http://localhost:5000/v2/players/feedback/score",
                 params={"name": player_name_test},
             )
             # print(f"Test player: {player_name_test}, Response: {response.json()}")
@@ -89,7 +89,7 @@ class TestFeedback(unittest.TestCase):
         player_names_test_list = [f"Player{i}" for i in range(1, 100)]
         for player_name_test in player_names_test_list:
             response = requests.get(
-                "http://localhost:5000/v2/feedback/score",
+                "http://localhost:5000/v2/players/feedback/score",
                 params={"name": player_name_test},
             )
             json_data = response.json()
@@ -110,7 +110,7 @@ class TestFeedback(unittest.TestCase):
     def test_get_feedback_score_valid_players_multi(self, player_names):
         params = {"name": player_names}
         response = requests.get(
-            "http://localhost:5000/v2/feedback/score", params=params
+            "http://localhost:5000/v2/players/feedback/score", params=params
         )
         print(f"Test player: {player_names}, Response: {response.json()}")
         # Check that the response contains feedback for all the specified players
@@ -120,7 +120,7 @@ class TestFeedback(unittest.TestCase):
     def test_get_feedback_score_not_found(self, player_names):
         print(f"Test player: {player_names}")
         response = requests.get(
-            "http://localhost:5000/v2/feedback/score",
+            "http://localhost:5000/v2/players/feedback/score",
             params={"name": player_names},
         )
         print(f"Test player: {player_names}, Response: {response.json()}")
