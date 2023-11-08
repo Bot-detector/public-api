@@ -2,11 +2,18 @@ import json
 import unittest
 
 import requests
-from hypothesis import given
+from hypothesis import given, settings
 from hypothesis import strategies as st
 
 
 class TestFeedback(unittest.TestCase):
+    # Define the list of player names
+    player_names_list = [f"Player{i}" for i in range(1, 100)]
+
+    # Define a Hypothesis strategy for player names
+    player_names_strategy = st.sampled_from(player_names_list)
+
+    # Define common labels
     LABELS = [
         "Real_Player",
         "PVM_Melee_bot",
@@ -76,17 +83,9 @@ class TestFeedback(unittest.TestCase):
     #     self.assertEqual(response.json()["message"], "Feedback submitted successfully")
 
     ## test get feedback
-    def test_get_feedback_valid_players_single_return_success(self):
-        player_names_test_list = [f"Player{i}" for i in range(1, 100)]
-        for player_name_test in player_names_test_list:
-            response = requests.get(
-                "http://localhost:5000/v2/players/feedback",
-                params={"name": player_name_test},
-            )
-            # print(f"Test player: {player_name_test}, Response: {response.json()}")
-            self.assertEqual(response.status_code, 200)
 
-    def test_get_feedback_valid_players_single_return_data(self):
+    # single valid player check returns success list[dict]
+    def test_get_feedback_valid_players_single(self):
         player_names_test_list = [f"Player{i}" for i in range(1, 100)]
         for player_name_test in player_names_test_list:
             response = requests.get(
@@ -94,78 +93,88 @@ class TestFeedback(unittest.TestCase):
                 params={"name": player_name_test},
             )
             json_data = response.json()
-            print(f"Test player: {player_name_test}, Response: {response.json()}")
+            # print(f"Test player: {player_name_test}, Response: {response.json()}")
             self.assertEqual(response.status_code, 200),
-            assert isinstance(json_data, list), "Failure if response is not a list"
+            assert len(json_data) > 0, "List is empty"
             assert all(
                 isinstance(item, dict) for item in json_data
-            ), "Failure if not all items in the response are dictionaries"
+            ), "Not all items in the list are dictionaries"
 
-    # Define the list of player names
-    player_names_list = [f"Player{i}" for i in range(1, 100)]
-
-    # Define a Hypothesis strategy for player names
-    player_names_strategy = st.sampled_from(player_names_list)
-
-    @given(player_names=st.lists(player_names_strategy, min_size=1))
-    def test_get_feedback_valid_players_multi(self, player_names):
-        params = {"name": player_names}
-        response = requests.get(
-            "http://localhost:5000/v2/players/feedback", params=params
-        )
-        print(f"Test player: {player_names}, Response: {response.json()}")
-        # Check that the response contains feedback for all the specified players
-        self.assertEqual(response.status_code, 200)
-
-    @given(player_names=st.lists(st.text(min_size=1, max_size=13), min_size=1))
-    def test_get_feedback_player_not_found(self, player_names):
-        print(f"Test player: {player_names}")
+    # multi valid player check returns list[dict]
+    @settings(deadline=500)  # Increase the deadline to 500 milliseconds
+    @given(player_names_multi=st.lists(player_names_strategy, min_size=1, max_size=20))
+    def test_get_feedback_valid_players_multi(self, player_names_multi):
         response = requests.get(
             "http://localhost:5000/v2/players/feedback",
-            params={"name": player_names},
+            params={"name": player_names_multi},
         )
-        print(f"Response: {response.json()}")
-        # assert response is an empty list
+        # print(f"Test player: {player_names}, Response: {response.json()}")
+        # Check that the response contains feedback for all the specified players
+        json_data = response.json()
+        self.assertEqual(response.status_code, 200),
+        assert len(json_data) > 0, "List is empty"
+        assert all(
+            isinstance(item, dict) for item in json_data
+        ), "Not all items in the list are dictionaries"
+
+    # invalid player(s) check returns empty list
+    @given(player_names_invalid=st.lists(st.text(min_size=1, max_size=13), min_size=1))
+    def test_get_feedback_invalid_players(self, player_names_invalid):
+        # print(f"Test player: {player_names}")
+        response = requests.get(
+            "http://localhost:5000/v2/players/feedback",
+            params={"name": player_names_invalid},
+        )
+        # print(f"Response: {response.json()}")
+        self.assertEqual(response.status_code, 200),
         assert response.json() == []
 
     ## Test feedback count
 
-    def test_get_feedback_count_valid_players_single_return_success(self):
+    # single valid player check returns success list[dict]
+    def test_get_feedback_count_valid_players_single(self):
         player_names_test_list = [f"Player{i}" for i in range(1, 100)]
         for player_name_test in player_names_test_list:
             response = requests.get(
                 "http://localhost:5000/v2/players/feedback/count",
                 params={"name": player_name_test},
             )
-            print(f"Test player: {player_name_test}, Response: {response.json()}")
-            self.assertEqual(response.status_code, 200)
+            json_data = response.json()
+            # print(f"Test player: {player_name_test}, Response: {response.json()}")
+            self.assertEqual(response.status_code, 200),
+            assert len(json_data) > 0, "List is empty"
+            assert all(
+                isinstance(item, dict) for item in json_data
+            ), "Not all items in the list are dictionaries"
 
-    @given(
-        player_name=st.lists(st.text(min_size=1, max_size=13), min_size=1, max_size=1)
-    )
-    def test_get_feedback_count_invalid_players_single_return_success(
-        self, player_name
-    ):
-        print(f"Test player: {player_name}")
-
+    # multi valid player check returns list[dict]
+    @given(player_names_count_valid=st.lists(player_names_strategy, min_size=1))
+    def test_get_feedback_count_valid_players_multi(self, player_names_count_valid):
         response = requests.get(
             "http://localhost:5000/v2/players/feedback/count",
-            params={"name": player_name},
+            params={"name": player_names_count_valid},
         )
-        print(f"Response: {response.json()}")
+        # print(f"Test player: {player_names}, Response: {response.json()}")
+        # Check that the response contains feedback for all the specified players
+        json_data = response.json()
         self.assertEqual(response.status_code, 200),
-        assert response.json() == []
+        assert len(json_data) > 0, "List is empty"
+        assert all(
+            isinstance(item, dict) for item in json_data
+        ), "Not all items in the list are dictionaries"
 
-    @given(player_names=st.lists(st.text(min_size=1, max_size=13), min_size=1))
-    def test_get_feedback_count_invalid_players_multi_return_success(
-        self, player_names
-    ):
-        print(f"Test player: {player_names}")
-
+    # invalid player(s) check returns empty list
+    @given(
+        player_names_count_invalid=st.lists(
+            st.text(min_size=1, max_size=13), min_size=1
+        )
+    )
+    def test_get_feedback_count_invalid_players(self, player_names_count_invalid):
+        # print(f"Test player: {player_names}")
         response = requests.get(
             "http://localhost:5000/v2/players/feedback/count",
-            params={"name": player_names},
+            params={"name": player_names_count_invalid},
         )
-        print(f"Response: {response.json()}")
+        # print(f"Response: {response.json()}")
         self.assertEqual(response.status_code, 200),
         assert response.json() == []

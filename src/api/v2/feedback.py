@@ -1,5 +1,6 @@
 import asyncio
-import logging
+
+# import logging
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -15,11 +16,11 @@ from src.core.fastapi.dependencies.to_jagex_name import to_jagex_name
 
 router = APIRouter(tags=["feedback"])
 
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
 
 
 @router.get("/players/feedback", response_model=list[FeedbackResponse])
-async def get_feedback_score(
+async def get_feedback(
     name: list[Annotated[str, Field(..., min_length=1, max_length=13)]] = Query(
         ...,
         min_length=1,
@@ -43,18 +44,13 @@ async def get_feedback_score(
     """
     feedback = Feedback(session)
     names = await asyncio.gather(*[to_jagex_name(n) for n in name])
-
-    if not names:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Player not found"
-        )
-    data = await feedback.get_feedback_responses(player_names=names)
+    data = await feedback.get_feedback(player_names=names)
 
     return data
 
 
 @router.get("/players/feedback/count", response_model=list[FeedbackCountResponse])
-async def get_feedback_score(
+async def get_feedback_count(
     name: list[Annotated[str, Field(..., min_length=1, max_length=13)]] = Query(
         ...,
         min_length=1,

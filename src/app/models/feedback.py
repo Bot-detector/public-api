@@ -1,4 +1,4 @@
-import logging
+# import logging
 
 from sqlalchemy import func
 from sqlalchemy.engine import Result
@@ -6,7 +6,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import aliased
 from sqlalchemy.sql.expression import select
 
-from src.app.views.response.feedback import Feedback, FeedbackCount
+from src.app.views.response.feedback import Feedback as ResponseFeedback
+from src.app.views.response.feedback import FeedbackCount
 from src.core.database.models.feedback import DataModelPredictionFeedback as dbFeedback
 from src.core.database.models.player import Player as dbPlayer
 
@@ -14,11 +15,11 @@ from src.core.database.models.player import Player as dbPlayer
 class Feedback:
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
-        self.logger = logging.getLogger("Feedback")
+        # self.logger = logging.getLogger("Feedback")
 
-    async def get_feedback_responses(self, player_names: list[str]):
+    async def get_feedback(self, player_names: list[str]):
         async with self.session:
-            print(f"Player names: {player_names}")
+            # print(f"Player names: {player_names}")
             feedback_voter: dbFeedback = aliased(dbFeedback, name="feedback_voter")
             feedback_subject: dbFeedback = aliased(dbFeedback, name="feedback_subject")
             player_name: dbPlayer = aliased(dbPlayer, name="player_name")
@@ -43,8 +44,9 @@ class Feedback:
             result: Result = await self.session.execute(query)
             await self.session.commit()
 
+        result_set = result.mappings().all()
         feedback_responses = [
-            Feedback(
+            ResponseFeedback(
                 player_name=feedback.name,
                 vote=feedback.vote,
                 prediction=feedback.prediction,
@@ -52,16 +54,16 @@ class Feedback:
                 feedback_text=feedback.feedback_text,
                 proposed_label=feedback.proposed_label,
             )
-            for feedback in result.mappings().all()
+            for feedback in result_set
         ]
 
-        logging.debug(f"Output result: {feedback_responses}")
+        # logging.debug(f"Output result: {feedback_responses}")
 
         return feedback_responses
 
     async def get_feedback_count(self, player_names: list[str]):
         async with self.session:
-            print(f"Player names: {player_names}")
+            # print(f"Player names: {player_names}")
             feedback_voter: dbFeedback = aliased(dbFeedback, name="feedback_voter")
             # feedback_subject: dbFeedback = aliased(dbFeedback, name="feedback_subject")
             # player_name: dbPlayer = aliased(dbPlayer, name="player_name")
@@ -125,6 +127,6 @@ class Feedback:
             )
             for feedback in result_set
         ]
-        logging.debug(f"Output result feedbackcount model: {feedbackcount_responses}")
+        # logging.debug(f"Output result feedbackcount model: {feedbackcount_responses}")
 
         return feedbackcount_responses

@@ -1,7 +1,6 @@
 from typing import Optional
 
 from pydantic import BaseModel
-from pydantic.fields import Field
 
 
 class Feedback(BaseModel):
