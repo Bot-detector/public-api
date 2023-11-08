@@ -17,7 +17,7 @@ router = APIRouter(tags=["feedback"])
 logger = logging.getLogger(__name__)
 
 
-@router.get("/feedback/score", response_model=list[FeedbackResponse])
+@router.get("/players/feedback/score", response_model=list[FeedbackResponse])
 async def get_feedback_score(
     name: list[Annotated[str, Field(..., min_length=1, max_length=13)]] = Query(
         ...,
@@ -51,7 +51,7 @@ async def get_feedback_score(
     return data
 
 
-# @router.post("/feedback", status_code=status.HTTP_201_CREATED, response_model=Ok)
+# @router.post("/players/feedback", status_code=status.HTTP_201_CREATED, response_model=Ok)
 # async def post_feedbacks(feedback: list[PredictionFeedbackIn]):
 #     feedback_obj = Feedback(kafka_engine=feedback_engine)
 #     data = await feedback_obj.parse_data(feedback)
