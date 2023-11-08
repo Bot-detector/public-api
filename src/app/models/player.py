@@ -1,4 +1,4 @@
-from sqlalchemy import func, select
+from sqlalchemy import func, select, text
 from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import aliased
@@ -32,6 +32,7 @@ class Player:
             # Create aliases for the tables
             reporting_player: dbPlayer = aliased(dbPlayer, name="reporting_player")
             reported_player: dbPlayer = aliased(dbPlayer, name="reported_player")
+            report_db: dbReport = aliased(dbReport, name="report_db")
 
             query: Select = select(
                 [
@@ -39,22 +40,24 @@ class Player:
                     reported_player.possible_ban,
                     reported_player.confirmed_ban,
                     reported_player.confirmed_player,
-                    dbReport.manual_detect,
+                    report_db.manual_detect,
                 ]
             )
-            query = query.select_from(dbReport)
+            query = query.select_from(report_db)
             query = query.join(
-                reporting_player, dbReport.reportingID == reporting_player.id
+                reporting_player, report_db.reportingID == reporting_player.id
             )
             query = query.join(
-                reported_player, dbReport.reportedID == reported_player.id
+                reported_player, report_db.reportedID == reported_player.id
             )
-            query = query.where(reporting_player.name.in_(player_names))
+            query = query.where(
+                text("reporting_player.name IN :names").bindparams(names=player_names)
+            )  # prevent sql injection
             query = query.group_by(
                 reported_player.possible_ban,
                 reported_player.confirmed_ban,
                 reported_player.confirmed_player,
-                dbReport.manual_detect,
+                report_db.manual_detect,
             )
             result: Result = await self.session.execute(query)
             await self.session.commit()
