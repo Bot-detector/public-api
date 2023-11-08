@@ -75,21 +75,22 @@ class TestFeedback(unittest.TestCase):
     #     self.assertEqual(response.status_code, 200)
     #     self.assertEqual(response.json()["message"], "Feedback submitted successfully")
 
-    def test_get_feedback_score_valid_players_single_return_success(self):
+    ## test get feedback
+    def test_get_feedback_valid_players_single_return_success(self):
         player_names_test_list = [f"Player{i}" for i in range(1, 100)]
         for player_name_test in player_names_test_list:
             response = requests.get(
-                "http://localhost:5000/v2/players/feedback/score",
+                "http://localhost:5000/v2/players/feedback",
                 params={"name": player_name_test},
             )
             # print(f"Test player: {player_name_test}, Response: {response.json()}")
             self.assertEqual(response.status_code, 200)
 
-    def test_get_feedback_score_valid_players_single_return_data(self):
+    def test_get_feedback_valid_players_single_return_data(self):
         player_names_test_list = [f"Player{i}" for i in range(1, 100)]
         for player_name_test in player_names_test_list:
             response = requests.get(
-                "http://localhost:5000/v2/players/feedback/score",
+                "http://localhost:5000/v2/players/feedback",
                 params={"name": player_name_test},
             )
             json_data = response.json()
@@ -107,22 +108,64 @@ class TestFeedback(unittest.TestCase):
     player_names_strategy = st.sampled_from(player_names_list)
 
     @given(player_names=st.lists(player_names_strategy, min_size=1))
-    def test_get_feedback_score_valid_players_multi(self, player_names):
+    def test_get_feedback_valid_players_multi(self, player_names):
         params = {"name": player_names}
         response = requests.get(
-            "http://localhost:5000/v2/players/feedback/score", params=params
+            "http://localhost:5000/v2/players/feedback", params=params
         )
         print(f"Test player: {player_names}, Response: {response.json()}")
         # Check that the response contains feedback for all the specified players
         self.assertEqual(response.status_code, 200)
 
     @given(player_names=st.lists(st.text(min_size=1, max_size=13), min_size=1))
-    def test_get_feedback_score_not_found(self, player_names):
+    def test_get_feedback_player_not_found(self, player_names):
         print(f"Test player: {player_names}")
         response = requests.get(
-            "http://localhost:5000/v2/players/feedback/score",
+            "http://localhost:5000/v2/players/feedback",
             params={"name": player_names},
         )
-        print(f"Test player: {player_names}, Response: {response.json()}")
+        print(f"Response: {response.json()}")
         # assert response is an empty list
+        assert response.json() == []
+
+    ## Test feedback count
+
+    def test_get_feedback_count_valid_players_single_return_success(self):
+        player_names_test_list = [f"Player{i}" for i in range(1, 100)]
+        for player_name_test in player_names_test_list:
+            response = requests.get(
+                "http://localhost:5000/v2/players/feedback/count",
+                params={"name": player_name_test},
+            )
+            print(f"Test player: {player_name_test}, Response: {response.json()}")
+            self.assertEqual(response.status_code, 200)
+
+    @given(
+        player_name=st.lists(st.text(min_size=1, max_size=13), min_size=1, max_size=1)
+    )
+    def test_get_feedback_count_invalid_players_single_return_success(
+        self, player_name
+    ):
+        print(f"Test player: {player_name}")
+
+        response = requests.get(
+            "http://localhost:5000/v2/players/feedback/count",
+            params={"name": player_name},
+        )
+        print(f"Response: {response.json()}")
+        self.assertEqual(response.status_code, 200),
+        assert response.json() == []
+
+    @given(player_names=st.lists(st.text(min_size=1, max_size=13), min_size=1))
+    def test_get_feedback_count_invalid_players_multi_return_success(
+        self, player_names
+    ):
+        print(f"Test player: {player_names}")
+
+        response = requests.get(
+            "http://localhost:5000/v2/players/feedback/count",
+            params={"name": player_names},
+        )
+        print(f"Response: {response.json()}")
+        self.assertEqual(response.status_code, 200),
         assert response.json() == []

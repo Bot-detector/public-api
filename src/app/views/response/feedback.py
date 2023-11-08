@@ -4,10 +4,17 @@ from pydantic import BaseModel
 from pydantic.fields import Field
 
 
-class FeedbackResponse(BaseModel):
-    # player_name: str
+class Feedback(BaseModel):
+    player_name: str
+    vote: int
+    prediction: str
+    confidence: Optional[float]
+    feedback_text: Optional[str]
+    proposed_label: Optional[str]
+
+
+class FeedbackCount(BaseModel):
     count: int
-    # prediction: str
-    # confidence: Optional[float]
-    # feedback_text: Optional[str]
-    # proposed_label: Optional[str]
+    possible_ban: bool
+    confirmed_ban: bool
+    confirmed_player: bool
