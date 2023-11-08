@@ -1,9 +1,10 @@
-from pydantic import BaseModel
-from pydantic.fields import Field
 from typing import Optional
 
+from pydantic import BaseModel
+from pydantic.fields import Field
 
-class PredictionFeedbackResponse(BaseModel):
+
+class FeedbackResponse(BaseModel):
     player_name: str
     vote: int
     prediction: str

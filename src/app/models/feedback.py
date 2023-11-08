@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import aliased
 from sqlalchemy.sql.expression import select
 
-from src.app.views.response.feedback import PredictionFeedbackResponse
+from src.app.views.response.feedback import FeedbackResponse
 from src.core.database.models.feedback import DataModelPredictionFeedback as dbFeedback
 from src.core.database.models.player import Player as dbPlayer
 
@@ -43,7 +43,7 @@ class Feedback:
             await self.session.commit()
 
         feedback_responses = [
-            PredictionFeedbackResponse(
+            FeedbackResponse(
                 player_name=feedback.name,
                 vote=feedback.vote,
                 prediction=feedback.prediction,
