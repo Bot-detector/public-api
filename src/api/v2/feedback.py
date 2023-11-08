@@ -3,23 +3,29 @@ import logging
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
+from pydantic.fields import Field
 
 from src.app.models.feedback import Feedback
-from src.app.views.input.feedback import PredictionFeedbackIn
-from src.app.views.response.feedback import PredictionFeedbackResponse
+from src.app.views.input.feedback import FeedbackInput
+from src.app.views.response.feedback import FeedbackResponse
 from src.app.views.response.ok import Ok
 from src.core.fastapi.dependencies.session import get_session
 from src.core.fastapi.dependencies.to_jagex_name import to_jagex_name
-from src.core.kafka.feedback import feedback_engine
 
 router = APIRouter(tags=["feedback"])
 
 logger = logging.getLogger(__name__)
 
 
-@router.get("/feedback/score", response_model=list[PredictionFeedbackResponse])
+@router.get("/feedback/score", response_model=list[FeedbackResponse])
 async def get_feedback_score(
-    name: Annotated[list[str], Query(..., max_length=13)], session=Depends(get_session)
+    name: list[Annotated[str, Field(..., min_length=1, max_length=13)]] = Query(
+        ...,
+        min_length=1,
+        description="Name of the player",
+        example=["Player1", "Player2"],
+    ),
+    session=Depends(get_session),
 ):
     """
     Post feedback data for a user.
@@ -36,12 +42,12 @@ async def get_feedback_score(
     """
     feedback = Feedback(session)
     names = await asyncio.gather(*[to_jagex_name(n) for n in name])
-
-    data = await feedback.get_feedback_responses(player_names=names)
-    if not data:
+    if not names:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Player not found"
         )
+    data = await feedback.get_feedback_responses(player_names=names)
+
     return data
 
 
