@@ -1,5 +1,6 @@
 import logging
 
+from sqlalchemy import func
 from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import aliased
@@ -24,7 +25,7 @@ class Feedback:
 
             query = select(
                 [
-                    feedback_voter.vote,
+                    func.count(feedback_voter.vote).label("count"),
                     feedback_voter.prediction,
                     feedback_voter.confidence,
                     player_name.name,
@@ -38,18 +39,18 @@ class Feedback:
             )
             query = query.join(feedback_voter, feedback_voter.voter_id == dbPlayer.id)
             query = query.where(player_name.name.in_(player_names))
-
+            query = query.group_by(feedback_voter.vote)
             result: Result = await self.session.execute(query)
             await self.session.commit()
 
         feedback_responses = [
             FeedbackResponse(
-                player_name=feedback.name,
-                vote=feedback.vote,
-                prediction=feedback.prediction,
-                confidence=feedback.confidence,
-                feedback_text=feedback.feedback_text,
-                proposed_label=feedback.proposed_label,
+                # player_name=feedback.name,
+                count=feedback.vote,
+                # prediction=feedback.prediction,
+                # confidence=feedback.confidence,
+                # feedback_text=feedback.feedback_text,
+                # proposed_label=feedback.proposed_label,
             )
             for feedback in result.mappings().all()
         ]

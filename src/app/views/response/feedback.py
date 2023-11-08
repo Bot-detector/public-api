@@ -5,9 +5,9 @@ from pydantic.fields import Field
 
 
 class FeedbackResponse(BaseModel):
-    player_name: str
-    vote: int
-    prediction: str
-    confidence: Optional[float]
-    feedback_text: Optional[str]
-    proposed_label: Optional[str]
+    # player_name: str
+    count: int
+    # prediction: str
+    # confidence: Optional[float]
+    # feedback_text: Optional[str]
+    # proposed_label: Optional[str]
