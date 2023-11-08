@@ -1,6 +1,6 @@
 # import logging
 
-from sqlalchemy import func
+from sqlalchemy import func, text
 from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import aliased
@@ -34,13 +34,18 @@ class Feedback:
                     feedback_voter.proposed_label,
                 ]
             )
-            query = query.select_from(dbPlayer)
+            query = query.select_from(player_name)
             query = query.join(
-                feedback_subject, feedback_subject.subject_id == dbPlayer.id
+                feedback_subject, feedback_subject.subject_id == player_name.id
             )
-            query = query.join(feedback_voter, feedback_voter.voter_id == dbPlayer.id)
-            query = query.where(player_name.name.in_(player_names))
-
+            query = query.join(
+                feedback_voter, feedback_voter.voter_id == player_name.id
+            )
+            query = query.where(
+                text("player_name.name IN :names").bindparams(
+                    names=player_names
+                )  # prevent sql injection
+            )
             result: Result = await self.session.execute(query)
             await self.session.commit()
 
@@ -65,8 +70,6 @@ class Feedback:
         async with self.session:
             # print(f"Player names: {player_names}")
             feedback_voter: dbFeedback = aliased(dbFeedback, name="feedback_voter")
-            # feedback_subject: dbFeedback = aliased(dbFeedback, name="feedback_subject")
-            # player_name: dbPlayer = aliased(dbPlayer, name="player_name")
             reported_player: dbPlayer = aliased(dbPlayer, name="reported_player")
 
             # Revised code
@@ -92,7 +95,9 @@ class Feedback:
             query = query.join(
                 reported_player, subquery.c.voter_id == reported_player.id
             )
-            query = query.where(reported_player.name.in_(player_names))
+            query = query.where(
+                text("reported_player.name IN :names").bindparams(names=player_names)
+            )  # prevent sql injection
 
             result: Result = await self.session.execute(query)
             await self.session.commit()
@@ -100,23 +105,6 @@ class Feedback:
         result_set = (
             result.mappings().all()
         )  # needs to be saved to get it into a list to properly iterate over it
-        # logging.debug(f"Output result mappings: {result_set}")
-        # logging.debug(f"Output result count: {len(result_set)}")
-        # logging.debug(f"Output result type: {type(result_set)}")
-        # for feedback in result_set:
-        #     # get each fields
-        #     logging.debug(
-        #         f'count: {feedback["count"]}, type: {type(feedback["count"])}'
-        #     )
-        #     logging.debug(
-        #         f'possible_ban: {feedback["possible_ban"]}, type: {type(feedback["possible_ban"])}'
-        #     )
-        #     logging.debug(
-        #         f'confirmed_ban: {feedback["confirmed_ban"]}, type: {type(feedback["confirmed_ban"])}'
-        #     )
-        #     logging.debug(
-        #         f'confirmed_player: {feedback["confirmed_player"]}, type: {type(feedback["confirmed_player"])}'
-        #     )
 
         feedbackcount_responses = [
             FeedbackCount(
