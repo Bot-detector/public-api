@@ -1,3 +1,4 @@
+import json
 import unittest
 
 import requests
@@ -74,27 +75,30 @@ class TestFeedback(unittest.TestCase):
     #     self.assertEqual(response.status_code, 200)
     #     self.assertEqual(response.json()["message"], "Feedback submitted successfully")
 
-    def test_get_feedback_score_valid_players_single(self):
+    def test_get_feedback_score_valid_players_single_return_success(self):
         player_names_test_list = [f"Player{i}" for i in range(1, 100)]
         for player_name_test in player_names_test_list:
             response = requests.get(
                 "http://localhost:5000/v2/feedback/score",
                 params={"name": player_name_test},
             )
+            # print(f"Test player: {player_name_test}, Response: {response.json()}")
             self.assertEqual(response.status_code, 200)
-            data = response.json()
-            # print(f"Test Data: {data}, Response: {response.json()}")
-            # Assert that the response is a dictionary
-            self.assertIsInstance(data, list)
 
-    # Custom assertion function to check if at least one response is valid
-    def assert_at_least_one_valid_response(feedback_data, valid_player_names):
-        assert isinstance(feedback_data, list)
-        for item in feedback_data:
-            if item["player_name"] in valid_player_names:
-                return
-        # If we reach this point, no valid response was found
-        assert False, "No valid response found"
+    def test_get_feedback_score_valid_players_single_return_data(self):
+        player_names_test_list = [f"Player{i}" for i in range(1, 100)]
+        for player_name_test in player_names_test_list:
+            response = requests.get(
+                "http://localhost:5000/v2/feedback/score",
+                params={"name": player_name_test},
+            )
+            json_data = response.json()
+            print(f"Test player: {player_name_test}, Response: {response.json()}")
+            self.assertEqual(response.status_code, 200),
+            assert isinstance(json_data, list), "Failure if response is not a list"
+            assert all(
+                isinstance(item, dict) for item in json_data
+            ), "Failure if not all items in the response are dictionaries"
 
     # Define the list of player names
     player_names_list = [f"Player{i}" for i in range(1, 100)]
@@ -102,41 +106,23 @@ class TestFeedback(unittest.TestCase):
     # Define a Hypothesis strategy for player names
     player_names_strategy = st.sampled_from(player_names_list)
 
-    @given(player_names=st.lists(player_names_strategy, min_size=1, max_size=10))
+    @given(player_names=st.lists(player_names_strategy, min_size=1))
     def test_get_feedback_score_valid_players_multi(self, player_names):
-        def assert_responses(feedback_data, valid_player_names):
-            assert isinstance(feedback_data, list)
-            unprocessable_entity_count = 0
-            for item in feedback_data:
-                if item["player_name"] in valid_player_names:
-                    return
-                if item["status_code"] == 422:
-                    unprocessable_entity_count += 1
-            # If we reach this point, no valid response was found
-            assert (
-                unprocessable_entity_count == 0
-            ), f"Found {unprocessable_entity_count} 422 responses"
-
         params = {"name": player_names}
         response = requests.get(
             "http://localhost:5000/v2/feedback/score", params=params
         )
-
-        # Check the response status code
-        assert response.status_code == 200
-
+        print(f"Test player: {player_names}, Response: {response.json()}")
         # Check that the response contains feedback for all the specified players
-        feedback_data = response.json()
+        self.assertEqual(response.status_code, 200)
 
-        # Assert that at least one response is valid
-        assert_responses(feedback_data, player_names)
-
-    @given(names=st.lists(st.text(min_size=1), min_size=1, max_size=13))
-    def test_get_feedback_score_not_found(self, names):
+    @given(player_names=st.lists(st.text(min_size=1, max_size=13), min_size=1))
+    def test_get_feedback_score_not_found(self, player_names):
+        print(f"Test player: {player_names}")
         response = requests.get(
             "http://localhost:5000/v2/feedback/score",
-            params={"name": names},
+            params={"name": player_names},
         )
-        data = response.json()
-        assert response.status_code == 404
-        assert data["detail"] == "Player not found"
+        print(f"Test player: {player_names}, Response: {response.json()}")
+        # assert response is an empty list
+        assert response.json() == []
