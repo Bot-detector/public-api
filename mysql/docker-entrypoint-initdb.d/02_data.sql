@@ -17,7 +17,7 @@ INSERT INTO
         normalized_name
     )
 SELECT
-    CONCAT('Player', id) AS name,
+    CONCAT('player', id) AS name,
     NOW() - INTERVAL FLOOR(RAND() * 365) DAY AS created_at,
     NOW() - INTERVAL FLOOR(RAND() * 365) DAY AS updated_at,
     1 AS possible_ban,
@@ -124,7 +124,7 @@ CREATE PROCEDURE INSERTROWS(NUM INT) BEGIN
     SET @multiplier = FLOOR(51 + RAND() * 50);
     INSERT INTO Predictions
     SET
-        name = CONCAT('Player', i),
+        name = CONCAT('player', i),
         created = NOW() - INTERVAL FLOOR(RAND() * 365) DAY,
         predicted_confidence = @multiplier,
         prediction = CASE @rand
