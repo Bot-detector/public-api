@@ -54,6 +54,8 @@ docker-build-detached: ## Startup docker with build switch
 
 setup: test-setup requirements## setup requirements
 
+setup-detached: test-setup requirements docker-build-detached ## setup & run after downloaded repo detached
+
 pre-commit-setup: ## Install pre-commit
 	python3 -m pip install pre-commit
 	pre-commit --version
