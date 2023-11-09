@@ -13,13 +13,13 @@ class TestPlayerAPI(TestCase):
         url = "http://localhost:5000/v2/players/report/score"
         params = {}
         # build params
-        params["name"] = ["Player1"]
+        params["name"] = ["player1"]
         score = requests.get(url, params)
         assert score.status_code == 200
 
     def test_invalid_player_returns_success(self):
         url = "http://localhost:5000/v2/players/report/score"
-        params = {"name": [""]}
+        params = {"name": ["abdefg"]}
         score = requests.get(url, params)
         assert score.status_code == 200
 
@@ -27,7 +27,7 @@ class TestPlayerAPI(TestCase):
         url = "http://localhost:5000/v2/players/report/score"
         params = {}
         # build params
-        params["name"] = ["Player1"]
+        params["name"] = ["player1"]
         score = requests.get(url, params)
         json_data = json.loads(score.text)
         error = f"Invalid response return type, expected list[dict]"
@@ -38,7 +38,7 @@ class TestPlayerAPI(TestCase):
         url = "http://localhost:5000/v2/players/report/score"
         params = {}
         # build params
-        params["name"] = [""]
+        params["name"] = ["abcdefg"]
         score = requests.get(url, params)
         # get first element because conversion makes it in a list
         json_data = json.loads(score.text)
