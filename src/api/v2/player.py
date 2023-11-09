@@ -2,6 +2,7 @@ import asyncio
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query
+from pydantic.fields import Field
 
 from src.app.models.player import Player
 from src.app.views.response.report_kc import KCResponse
@@ -11,9 +12,15 @@ from src.core.fastapi.dependencies.to_jagex_name import to_jagex_name
 router = APIRouter(tags=["Player"])
 
 
-@router.get("/players/score", response_model=list[KCResponse])
+@router.get("/players/report/score", response_model=list[KCResponse])
 async def get_players_kc(
-    name: Annotated[list[str], Query(...)], session=Depends(get_session)
+    name: list[Annotated[str, Field(..., min_length=1, max_length=13)]] = Query(
+        ...,
+        min_length=1,
+        description="Name of the player",
+        example=["Player1", "Player2"],
+    ),
+    session=Depends(get_session),
 ):
     """
     Get Kill Count (KC) data for multiple player names.
