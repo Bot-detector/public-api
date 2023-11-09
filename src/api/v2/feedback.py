@@ -14,12 +14,12 @@ from src.app.views.response.ok import Ok
 from src.core.fastapi.dependencies.session import get_session
 from src.core.fastapi.dependencies.to_jagex_name import to_jagex_name
 
-router = APIRouter(tags=["feedback"])
+router = APIRouter(tags=["Feedback"])
 
 # logger = logging.getLogger(__name__)
 
 
-@router.get("/players/feedback", response_model=list[FeedbackResponse])
+@router.get("/player/feedback", response_model=list[FeedbackResponse])
 async def get_feedback(
     name: list[Annotated[str, Field(..., min_length=1, max_length=13)]] = Query(
         ...,
@@ -49,8 +49,8 @@ async def get_feedback(
     return data
 
 
-@router.get("/players/feedback/count", response_model=list[FeedbackCountResponse])
-async def get_feedback_count(
+@router.get("/player/feedback/score", response_model=list[FeedbackCountResponse])
+async def get_feedback_score(
     name: list[Annotated[str, Field(..., min_length=1, max_length=13)]] = Query(
         ...,
         min_length=1,
@@ -74,7 +74,7 @@ async def get_feedback_count(
     """
     feedback = Feedback(session)
     names = await asyncio.gather(*[to_jagex_name(n) for n in name])
-    data = await feedback.get_feedback_count(player_names=names)
+    data = await feedback.get_feedback_score(player_names=names)
 
     return data
 

@@ -89,7 +89,7 @@ class TestFeedback(unittest.TestCase):
         player_names_test_list = [f"Player{i}" for i in range(1, 100)]
         for player_name_test in player_names_test_list:
             response = requests.get(
-                "http://localhost:5000/v2/players/feedback",
+                "http://localhost:5000/v2/player/feedback",
                 params={"name": player_name_test},
             )
             json_data = response.json()
@@ -105,7 +105,7 @@ class TestFeedback(unittest.TestCase):
     @given(player_names_multi=st.lists(player_names_strategy, min_size=1, max_size=20))
     def test_get_feedback_valid_players_multi(self, player_names_multi):
         response = requests.get(
-            "http://localhost:5000/v2/players/feedback",
+            "http://localhost:5000/v2/player/feedback",
             params={"name": player_names_multi},
         )
         # print(f"Test player: {player_names}, Response: {response.json()}")
@@ -122,7 +122,7 @@ class TestFeedback(unittest.TestCase):
     def test_get_feedback_invalid_players(self, player_names_invalid):
         # print(f"Test player: {player_names}")
         response = requests.get(
-            "http://localhost:5000/v2/players/feedback",
+            "http://localhost:5000/v2/player/feedback",
             params={"name": player_names_invalid},
         )
         # print(f"Response: {response.json()}")
@@ -132,11 +132,11 @@ class TestFeedback(unittest.TestCase):
     ## Test feedback count
 
     # single valid player check returns success list[dict]
-    def test_get_feedback_count_valid_players_single(self):
+    def test_get_feedback_score_valid_players_single(self):
         player_names_test_list = [f"Player{i}" for i in range(1, 100)]
         for player_name_test in player_names_test_list:
             response = requests.get(
-                "http://localhost:5000/v2/players/feedback/count",
+                "http://localhost:5000/v2/player/feedback/score",
                 params={"name": player_name_test},
             )
             json_data = response.json()
@@ -149,9 +149,9 @@ class TestFeedback(unittest.TestCase):
 
     # multi valid player check returns list[dict]
     @given(player_names_count_valid=st.lists(player_names_strategy, min_size=1))
-    def test_get_feedback_count_valid_players_multi(self, player_names_count_valid):
+    def test_get_feedback_score_valid_players_multi(self, player_names_count_valid):
         response = requests.get(
-            "http://localhost:5000/v2/players/feedback/count",
+            "http://localhost:5000/v2/player/feedback/score",
             params={"name": player_names_count_valid},
         )
         # print(f"Test player: {player_names}, Response: {response.json()}")
@@ -172,7 +172,7 @@ class TestFeedback(unittest.TestCase):
     def test_get_feedback_count_invalid_players(self, player_names_count_invalid):
         # print(f"Test player: {player_names}")
         response = requests.get(
-            "http://localhost:5000/v2/players/feedback/count",
+            "http://localhost:5000/v2/player/feedback/score",
             params={"name": player_names_count_invalid},
         )
         # print(f"Response: {response.json()}")

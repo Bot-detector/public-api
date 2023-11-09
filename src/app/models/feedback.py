@@ -66,7 +66,7 @@ class Feedback:
 
         return feedback_responses
 
-    async def get_feedback_count(self, player_names: list[str]):
+    async def get_feedback_score(self, player_names: list[str]):
         async with self.session:
             # print(f"Player names: {player_names}")
             feedback_voter: dbFeedback = aliased(dbFeedback, name="feedback_voter")
