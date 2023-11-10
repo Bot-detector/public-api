@@ -1,19 +1,11 @@
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
-class Feedback(BaseModel):
-    player_name: str
-    vote: int
-    prediction: str
-    confidence: Optional[float]
-    feedback_text: Optional[str]
-    proposed_label: Optional[str]
-
-
-class FeedbackCount(BaseModel):
+class FeedbackScore(BaseModel):
     count: int
     possible_ban: bool
     confirmed_ban: bool
     confirmed_player: bool
+    vote: Optional[int] = Field(None, ge=-1, le=1)

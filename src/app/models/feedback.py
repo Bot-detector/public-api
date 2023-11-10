@@ -1,87 +1,53 @@
+import logging
+
 from sqlalchemy import func
 from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import aliased
-from sqlalchemy.sql.expression import select
+from sqlalchemy.sql.expression import Select, select
 
-from src.app.views.response.feedback import Feedback as ResponseFeedback
-from src.app.views.response.feedback import FeedbackCount
+from src.app.views.response.feedback import FeedbackScore
 from src.core.database.models.feedback import DataModelPredictionFeedback as dbFeedback
 from src.core.database.models.player import Player as dbPlayer
+
+logger = logging.getLogger(__name__)
 
 
 class Feedback:
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
 
-    async def get_feedback(self, player_names: list[str]):
+    async def get_feedback_score(self, player_names: list[str], vote: bool):
         async with self.session:
-            feedback_voter: dbFeedback = aliased(dbFeedback, name="feedback_voter")
-            feedback_subject: dbFeedback = aliased(dbFeedback, name="feedback_subject")
+            # dbFeedback
+            feedback_voter: dbPlayer = aliased(dbPlayer, name="feedback_voter")
+            feedback_subject: dbPlayer = aliased(dbPlayer, name="feedback_subject")
 
-            query = select(
-                [
-                    feedback_voter.vote,
-                    feedback_voter.prediction,
-                    feedback_voter.confidence,
-                    dbPlayer.name,
-                    feedback_voter.feedback_text,
-                    feedback_voter.proposed_label,
-                ]
-            )
-            query = query.select_from(dbPlayer)
+            select_columns = [
+                func.count(func.distinct(feedback_subject.id)).label("count"),
+                feedback_subject.possible_ban,
+                feedback_subject.confirmed_ban,
+                feedback_subject.confirmed_player,
+            ]
+            if vote:
+                select_columns.append(dbFeedback.vote.label("vote"))
+
+            query: Select = select(select_columns)
+            query = query.select_from(dbFeedback)
+            query = query.join(feedback_voter, dbFeedback.voter_id == feedback_voter.id)
             query = query.join(
-                feedback_subject, dbPlayer.id == feedback_subject.subject_id
+                feedback_subject, dbFeedback.subject_id == feedback_subject.id
             )
-            query = query.join(feedback_voter, dbPlayer.id == feedback_voter.voter_id)
-            query = query.where(dbPlayer.name.in_(player_names))
-            result: Result = await self.session.execute(query)
-            await self.session.commit()
+            query = query.where(feedback_voter.name.in_(player_names))
+            group_by_columns = [
+                feedback_subject.possible_ban,
+                feedback_subject.confirmed_ban,
+                feedback_subject.confirmed_player,
+            ]
+            if vote:
+                group_by_columns.append(dbFeedback.vote)
 
-        result_set = result.mappings().all()
-        feedback_responses = [
-            ResponseFeedback(
-                player_name=feedback.name,
-                vote=feedback.vote,
-                prediction=feedback.prediction,
-                confidence=feedback.confidence,
-                feedback_text=feedback.feedback_text,
-                proposed_label=feedback.proposed_label,
-            )
-            for feedback in result_set
-        ]
-
-        return feedback_responses
-
-    async def get_feedback_score(self, player_names: list[str]):
-        async with self.session:
-            feedback_db: dbFeedback = aliased(dbFeedback, name="feedback_db")
-            player_db: dbPlayer = aliased(dbPlayer, name="player_db")
-
-            # Revised code
-            subquery_feedback_db = (
-                select(
-                    [
-                        func.count(feedback_db.vote).label("count"),
-                        feedback_db.voter_id,
-                    ]
-                )
-                .group_by(feedback_db.voter_id)
-                .subquery()
-            )
-
-            query = select(
-                [
-                    subquery_feedback_db.c.count,
-                    player_db.possible_ban,
-                    player_db.confirmed_ban,
-                    player_db.confirmed_player,
-                ]
-            )
-            query = query.join(
-                player_db, subquery_feedback_db.c.voter_id == player_db.id
-            )
-            query = query.where(player_db.name.in_(player_names))
+            query = query.group_by(*group_by_columns)
             result: Result = await self.session.execute(query)
             await self.session.commit()
 
@@ -89,14 +55,20 @@ class Feedback:
             result.mappings().all()
         )  # needs to be saved to get it into a list to properly iterate over it
 
-        feedbackcount_responses = [
-            FeedbackCount(
-                count=feedback["count"],
-                possible_ban=feedback["possible_ban"],
-                confirmed_ban=feedback["confirmed_ban"],
-                confirmed_player=feedback["confirmed_player"],
+        logger.debug(f"result_set: {result_set}")
+
+        feedbackscore_responses = [
+            FeedbackScore(
+                **{
+                    **{
+                        "count": feedback["count"],
+                        "possible_ban": feedback["possible_ban"],
+                        "confirmed_ban": feedback["confirmed_ban"],
+                        "confirmed_player": feedback["confirmed_player"],
+                    },
+                    **({"vote": feedback["vote"]} if vote else {}),
+                }
             )
             for feedback in result_set
         ]
-
-        return feedbackcount_responses
+        return feedbackscore_responses
