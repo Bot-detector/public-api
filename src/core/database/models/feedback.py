@@ -1,12 +1,12 @@
 from sqlalchemy import (
-    Column,
-    Integer,
     TIMESTAMP,
-    ForeignKey,
-    String,
+    Column,
     Float,
-    Text,
+    ForeignKey,
+    Integer,
     SmallInteger,
+    String,
+    Text,
 )
 
 from src.core.database.database import Base
@@ -29,13 +29,3 @@ class DataModelPredictionFeedback(Base):
     reviewer_id = Column(Integer)
     user_notified = Column(SmallInteger, nullable=False, server_default="0")
     proposed_label = Column(String(50))
-    # voter = relationship(
-    #     "Player",  # Use the actual class name from Player model
-    #     foreign_keys=[dbPlayer.id],
-    #     back_populates="feedback_given",
-    # )
-    # subject = relationship(
-    #     "Player",  # Use the actual class name from Player model
-    #     foreign_keys=[dbPlayer.id],
-    #     back_populates="feedback_received",
-    # )
