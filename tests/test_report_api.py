@@ -26,7 +26,7 @@ max_ts = current_time
 unique_reporter = str(uuid4()).replace("-", "")[:13]
 
 
-class TestPostReports(unittest.TestCase):
+class TestPostReportAPI(unittest.TestCase):
     @given(
         lists(
             fixed_dictionaries(
