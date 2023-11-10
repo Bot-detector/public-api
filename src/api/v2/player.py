@@ -12,7 +12,7 @@ from src.core.fastapi.dependencies.to_jagex_name import to_jagex_name
 router = APIRouter(tags=["Player"])
 
 
-@router.get("/players/report/score", response_model=list[KCResponse])
+@router.get("/player/report/score", response_model=list[KCResponse])
 async def get_players_kc(
     name: list[Annotated[str, Field(..., min_length=1, max_length=13)]] = Query(
         ...,

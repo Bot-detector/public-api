@@ -10,7 +10,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 class TestPlayerAPI(TestCase):
     def test_valid_player_returns_success(self):
-        url = "http://localhost:5000/v2/players/report/score"
+        url = "http://localhost:5000/v2/player/report/score"
         params = {}
         # build params
         params["name"] = ["player1"]
@@ -18,13 +18,13 @@ class TestPlayerAPI(TestCase):
         assert score.status_code == 200
 
     def test_invalid_player_returns_success(self):
-        url = "http://localhost:5000/v2/players/report/score"
+        url = "http://localhost:5000/v2/player/report/score"
         params = {"name": ["abdefg"]}
         score = requests.get(url, params)
         assert score.status_code == 200
 
     def test_valid_player_returns_data(self):
-        url = "http://localhost:5000/v2/players/report/score"
+        url = "http://localhost:5000/v2/player/report/score"
         params = {}
         # build params
         params["name"] = ["player1"]
@@ -35,7 +35,7 @@ class TestPlayerAPI(TestCase):
         assert len(json_data) > 0
 
     def test_invalid_player_returns_empty(self):
-        url = "http://localhost:5000/v2/players/report/score"
+        url = "http://localhost:5000/v2/player/report/score"
         params = {}
         # build params
         params["name"] = ["abcdefg"]
