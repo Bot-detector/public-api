@@ -22,30 +22,24 @@ class Feedback:
             # print(f"Player names: {player_names}")
             feedback_voter: dbFeedback = aliased(dbFeedback, name="feedback_voter")
             feedback_subject: dbFeedback = aliased(dbFeedback, name="feedback_subject")
-            player_name: dbPlayer = aliased(dbPlayer, name="player_name")
+            player_db: dbPlayer = aliased(dbPlayer, name="player_db")
 
             query = select(
                 [
                     feedback_voter.vote,
                     feedback_voter.prediction,
                     feedback_voter.confidence,
-                    player_name.name,
+                    player_db.name,
                     feedback_voter.feedback_text,
                     feedback_voter.proposed_label,
                 ]
             )
-            query = query.select_from(player_name)
+            query = query.select_from(player_db)
             query = query.join(
-                feedback_subject, feedback_subject.subject_id == player_name.id
+                feedback_subject, player_db.id == feedback_subject.subject_id
             )
-            query = query.join(
-                feedback_voter, feedback_voter.voter_id == player_name.id
-            )
-            query = query.where(
-                text("player_name.name IN :names").bindparams(
-                    names=player_names
-                )  # prevent sql injection
-            )
+            query = query.join(feedback_voter, player_db.id == feedback_voter.voter_id)
+            query = query.where(player_db.name.in_(player_names))
             result: Result = await self.session.execute(query)
             await self.session.commit()
 
@@ -69,36 +63,33 @@ class Feedback:
     async def get_feedback_score(self, player_names: list[str]):
         async with self.session:
             # print(f"Player names: {player_names}")
-            feedback_voter: dbFeedback = aliased(dbFeedback, name="feedback_voter")
-            reported_player: dbPlayer = aliased(dbPlayer, name="reported_player")
+            feedback_db: dbFeedback = aliased(dbFeedback, name="feedback_db")
+            player_db: dbPlayer = aliased(dbPlayer, name="player_db")
 
             # Revised code
-            subquery = (
+            subquery_feedback_db = (
                 select(
                     [
-                        func.count(feedback_voter.vote).label("count"),
-                        feedback_voter.voter_id,
+                        func.count(feedback_db.vote).label("count"),
+                        feedback_db.voter_id,
                     ]
                 )
-                .group_by(feedback_voter.voter_id)
+                .group_by(feedback_db.voter_id)
                 .subquery()
             )
 
             query = select(
                 [
-                    subquery.c.count,
-                    reported_player.possible_ban,
-                    reported_player.confirmed_ban,
-                    reported_player.confirmed_player,
+                    subquery_feedback_db.c.count,
+                    player_db.possible_ban,
+                    player_db.confirmed_ban,
+                    player_db.confirmed_player,
                 ]
             )
             query = query.join(
-                reported_player, subquery.c.voter_id == reported_player.id
+                player_db, player_db.id == subquery_feedback_db.c.voter_id
             )
-            query = query.where(
-                text("reported_player.name IN :names").bindparams(names=player_names)
-            )  # prevent sql injection
-
+            query = query.where(player_db.name.in_(player_names))
             result: Result = await self.session.execute(query)
             await self.session.commit()
 
