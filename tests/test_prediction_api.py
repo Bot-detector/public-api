@@ -12,7 +12,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 class TestPredictionAPI(TestCase):
     def test_valid_player_breakdown_false_returns_success(self):
-        url = "http://localhost:5000/v2/prediction"
+        url = "http://localhost:5000/v2/player/prediction"
         params = {}
         # build params
         params["name"] = ["Player1"]
@@ -21,7 +21,7 @@ class TestPredictionAPI(TestCase):
         assert score.status_code == 200
 
     def test_valid_player_breakdown_false_returns_empty_property(self):
-        url = "http://localhost:5000/v2/prediction"
+        url = "http://localhost:5000/v2/player/prediction"
         params = {}
         # build params
         params["name"] = ["Player1"]
@@ -33,7 +33,7 @@ class TestPredictionAPI(TestCase):
         assert not json_data["predictions_breakdown"]
 
     def test_valid_player_breakdown_true_returns_success(self):
-        url = "http://localhost:5000/v2/prediction"
+        url = "http://localhost:5000/v2/player/prediction"
         params = {}
         # build params
         params["name"] = ["Player1"]
@@ -42,7 +42,7 @@ class TestPredictionAPI(TestCase):
         assert score.status_code == 200
 
     def test_valid_player_breakdown_true_returns_populated_property(self):
-        url = "http://localhost:5000/v2/prediction"
+        url = "http://localhost:5000/v2/player/prediction"
         params = {}
         # build params
         params["name"] = ["Player1"]
@@ -55,7 +55,7 @@ class TestPredictionAPI(TestCase):
 
     @given(st.text(min_size=0, max_size=2))
     def test_invalid_min_player_name_length_returns_unknown(self, name):
-        url = "http://localhost:5000/v2/prediction"
+        url = "http://localhost:5000/v2/player/prediction"
         # build params
         params = {"name": [name]}
         params["breakdown"] = False
@@ -64,7 +64,7 @@ class TestPredictionAPI(TestCase):
 
     @given(st.text(min_size=14, max_size=None))
     def test_invalid_max_player_name_length_returns_unkonwn(self, name):
-        url = "http://localhost:5000/v2/prediction"
+        url = "http://localhost:5000/v2/player/prediction"
         # build params
         params = {"name": [name]}
         params["breakdown"] = False
@@ -72,7 +72,7 @@ class TestPredictionAPI(TestCase):
         assert response.status_code == 404
 
     def test_invalid_player_breakdown_true_returns_unknown(self):
-        url = "http://localhost:5000/v2/prediction"
+        url = "http://localhost:5000/v2/player/prediction"
         params = {}
         # build params
         params["name"] = [""]
@@ -81,7 +81,7 @@ class TestPredictionAPI(TestCase):
         assert response.status_code == 404
 
     def test_invalid_player_breakdown_false_returns_player_not_found(self):
-        url = "http://localhost:5000/v2/prediction"
+        url = "http://localhost:5000/v2/player/prediction"
         params = {}
         # build params
         params["name"] = [""]
@@ -93,7 +93,7 @@ class TestPredictionAPI(TestCase):
         assert json_data["detail"] == "Player not found"
 
     def test_invalid_player_breakdown_true_returns_player_not_found(self):
-        url = "http://localhost:5000/v2/prediction"
+        url = "http://localhost:5000/v2/player/prediction"
         params = {}
         # build params
         params["name"] = [""]

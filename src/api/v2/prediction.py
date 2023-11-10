@@ -11,7 +11,7 @@ router = APIRouter(tags=["Prediction"])
 # logger = logging.getLogger(__name__)
 
 
-@router.get("/prediction", response_model=list[PredictionResponse])
+@router.get("/player/prediction", response_model=list[PredictionResponse])
 async def get_prediction(
     user_name: str = Depends(to_jagex_name),
     breakdown: bool = Query(...),
