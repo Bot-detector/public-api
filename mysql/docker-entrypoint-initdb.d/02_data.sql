@@ -1,6 +1,7 @@
 USE playerdata;
 
 -- Insert data into the Players table
+
 INSERT INTO
     Players (
         name,
@@ -17,41 +18,197 @@ INSERT INTO
         normalized_name
     )
 SELECT
-    name,
-    created_at,
-    updated_at,
-    possible_ban,
-    confirmed_ban,
-    IF(possible_ban = 0 AND confirmed_ban = 0 AND RAND() < 0.25, 1, 0) AS confirmed_player,
-    label_id,
-    label_jagex,
-    ironman,
-    hardcore_ironman,
-    ultimate_ironman,
-    normalized_name
+    CONCAT('Player', id) AS name,
+    NOW() - INTERVAL FLOOR(RAND(42) * 365) DAY AS created_at,
+    NOW() - INTERVAL FLOOR(RAND(42) * 365) DAY AS updated_at,
+    1 AS possible_ban,
+    0 AS confirmed_ban,
+    0 AS confirmed_player,
+    0 AS label_id,
+    ROUND(RAND(42) * 1) AS label_jagex,
+    -- Random label_jagex between 0 and 2 (inclusive)
+    null ironman,
+    null AS hardcore_ironman,
+    null AS ultimate_ironman,
+    CONCAT('player', id) AS normalized_name
 FROM (
-    SELECT
-        CONCAT('player', id) AS name,
-        NOW() - INTERVAL FLOOR(RAND() * 365) DAY AS created_at,
-        NOW() - INTERVAL FLOOR(RAND() * 365) DAY AS updated_at,
-        IF(RAND() < 0.5, 1, 0) AS possible_ban,  -- 50% chance of being possibly banned
-        IF(RAND() < 0.5, 1, 0) AS confirmed_ban,  -- 50% chance of being confirmed banned
-        0 AS label_id,
-        ROUND(RAND() * 1) AS label_jagex,
-        null AS ironman,
-        null AS hardcore_ironman,
-        null AS ultimate_ironman,
-        CONCAT('player', id) AS normalized_name
-    FROM (
-            SELECT id
-            FROM (
-                SELECT 1 + a.i + b.i * 10 AS id
-                FROM (SELECT 0 AS i UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) AS a
-                CROSS JOIN (SELECT 0 AS i UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) AS b
-            ) AS numbers
-            WHERE id <= 100
-        ) AS players
-) AS players_with_ban_status;
+        SELECT (a.N + b.N * 10) AS id
+        FROM (
+                SELECT 0 AS N
+                UNION
+                SELECT 1
+                UNION
+                SELECT 2
+                UNION
+                SELECT 3
+                UNION
+                SELECT 4
+                UNION
+                SELECT 5
+                UNION
+                SELECT 6
+                UNION
+                SELECT 7
+                UNION
+                SELECT 8
+                UNION
+                SELECT
+                    9
+            ) AS a, (
+                SELECT 0 AS N
+                UNION
+                SELECT 1
+                UNION
+                SELECT 2
+                UNION
+                SELECT 3
+                UNION
+                SELECT 4
+                UNION
+                SELECT 5
+                UNION
+                SELECT 6
+                UNION
+                SELECT 7
+                UNION
+                SELECT 8
+                UNION
+                SELECT
+                    9
+            ) AS b
+    ) AS numbers
+union
+SELECT
+    CONCAT('Player', id) AS name,
+    NOW() - INTERVAL FLOOR(RAND(42) * 365) DAY AS created_at,
+    NOW() - INTERVAL FLOOR(RAND(42) * 365) DAY AS updated_at,
+    1 AS possible_ban,
+    -- 50% chance of possible_ban being true
+    1 AS confirmed_ban,
+    -- 30% chance of confirmed_ban being true, with possible_ban and label_jagex=2
+    0 AS confirmed_player,
+    -- 80% chance of confirmed_player being true
+    0 AS label_id,
+    -- Random label_id between 0 and 2 (inclusive)
+    2 AS label_jagex,
+    -- Random label_jagex between 0 and 2 (inclusive)
+    null ironman,
+    null AS hardcore_ironman,
+    null AS ultimate_ironman,
+    CONCAT('player', id) AS normalized_name
+
+FROM (
+        SELECT (a.N + b.N * 10 + 100) AS id
+        FROM (
+                SELECT 0 AS N
+                UNION
+                SELECT 1
+                UNION
+                SELECT 2
+                UNION
+                SELECT 3
+                UNION
+                SELECT 4
+                UNION
+                SELECT 5
+                UNION
+                SELECT 6
+                UNION
+                SELECT 7
+                UNION
+                SELECT 8
+                UNION
+                SELECT
+                    9
+            ) AS a, (
+                SELECT 0 AS N
+                UNION
+                SELECT 1
+                UNION
+                SELECT 2
+                UNION
+                SELECT 3
+                UNION
+                SELECT 4
+                UNION
+                SELECT 5
+                UNION
+                SELECT 6
+                UNION
+                SELECT 7
+                UNION
+                SELECT 8
+                UNION
+                SELECT
+                    9
+            ) AS b
+    ) AS numbers
+union
+SELECT
+    CONCAT('Player', id) AS name,
+    NOW() - INTERVAL FLOOR(RAND(42) * 365) DAY AS created_at,
+    NOW() - INTERVAL FLOOR(RAND(42) * 365) DAY AS updated_at,
+    0 AS possible_ban,
+    -- 50% chance of possible_ban being true
+    0 AS confirmed_ban,
+    -- 30% chance of confirmed_ban being true, with possible_ban and label_jagex=2
+    1 AS confirmed_player,
+    -- 80% chance of confirmed_player being true
+    0 AS label_id,
+    -- Random label_id between 0 and 2 (inclusive)
+    0 AS label_jagex,
+    -- Random label_jagex between 0 and 2 (inclusive)
+    null ironman,
+    null AS hardcore_ironman,
+    null AS ultimate_ironman,
+    CONCAT('player', id) AS normalized_name
+FROM (
+        SELECT (a.N + b.N * 10 + 200) AS id
+        FROM (
+                SELECT 0 AS N
+                UNION
+                SELECT 1
+                UNION
+                SELECT 2
+                UNION
+                SELECT 3
+                UNION
+                SELECT 4
+                UNION
+                SELECT 5
+                UNION
+                SELECT 6
+                UNION
+                SELECT 7
+                UNION
+                SELECT 8
+                UNION
+                SELECT
+                    9
+            ) AS a, (
+                SELECT 0 AS N
+                UNION
+                SELECT 1
+                UNION
+                SELECT 2
+                UNION
+                SELECT 3
+                UNION
+                SELECT 4
+                UNION
+                SELECT 5
+                UNION
+                SELECT 6
+                UNION
+                SELECT 7
+                UNION
+                SELECT 8
+                UNION
+                SELECT
+                    9
+            ) AS b
+    ) AS numbers;
+
 -- Insert data into the Reports table
 
 INSERT INTO
@@ -80,51 +237,51 @@ INSERT INTO
         equip_ge_value
     )
 SELECT
-    NOW() - INTERVAL FLOOR(RAND() * 365) DAY AS created_at,
+    NOW() - INTERVAL FLOOR(RAND(42) * 365) DAY AS created_at,
     p1.id AS reportedID,
     p2.id AS reportingID,
-    ROUND(RAND() * 1000) AS region_id,
+    ROUND(RAND(42) * 1000) AS region_id,
     -- Random region_id
-    ROUND(RAND() * 1000) AS x_coord,
+    ROUND(RAND(42) * 1000) AS x_coord,
     -- Random x_coord
-    ROUND(RAND() * 1000) AS y_coord,
+    ROUND(RAND(42) * 1000) AS y_coord,
     -- Random y_coord
-    ROUND(RAND() * 1000) AS z_coord,
+    ROUND(RAND(42) * 1000) AS z_coord,
     -- Random z_coord
-    NOW() - INTERVAL FLOOR(RAND() * 365) DAY AS timestamp,
-    ROUND(RAND()) AS manual_detect,
+    NOW() - INTERVAL FLOOR(RAND(42) * 365) DAY AS timestamp,
+    ROUND(RAND(42)) AS manual_detect,
     -- Random manual_detect (0 or 1)
-    ROUND(RAND() * 1000) AS on_members_world,
+    ROUND(RAND(42) * 1000) AS on_members_world,
     -- Random on_members_world
-    ROUND(RAND()) AS on_pvp_world,
+    ROUND(RAND(42)) AS on_pvp_world,
     -- Random on_pvp_world (0 or 1)
-    ROUND(RAND() * 100) AS world_number,
+    ROUND(RAND(42) * 100) AS world_number,
     -- Random world_number
-    ROUND(RAND() * 1000) AS equip_head_id,
+    ROUND(RAND(42) * 1000) AS equip_head_id,
     -- Random equip_head_id
-    ROUND(RAND() * 1000) AS equip_amulet_id,
+    ROUND(RAND(42) * 1000) AS equip_amulet_id,
     -- Random equip_amulet_id
-    ROUND(RAND() * 1000) AS equip_torso_id,
+    ROUND(RAND(42) * 1000) AS equip_torso_id,
     -- Random equip_torso_id
-    ROUND(RAND() * 1000) AS equip_legs_id,
+    ROUND(RAND(42) * 1000) AS equip_legs_id,
     -- Random equip_legs_id
-    ROUND(RAND() * 1000) AS equip_boots_id,
+    ROUND(RAND(42) * 1000) AS equip_boots_id,
     -- Random equip_boots_id
-    ROUND(RAND() * 1000) AS equip_cape_id,
+    ROUND(RAND(42) * 1000) AS equip_cape_id,
     -- Random equip_cape_id
-    ROUND(RAND() * 1000) AS equip_hands_id,
+    ROUND(RAND(42) * 1000) AS equip_hands_id,
     -- Random equip_hands_id
-    ROUND(RAND() * 1000) AS equip_weapon_id,
+    ROUND(RAND(42) * 1000) AS equip_weapon_id,
     -- Random equip_weapon_id
-    ROUND(RAND() * 1000) AS equip_shield_id,
+    ROUND(RAND(42) * 1000) AS equip_shield_id,
     -- Random equip_shield_id
-    ROUND(RAND() * 10000) AS equip_ge_value -- Random equip_ge_value
+    ROUND(RAND(42) * 10000) AS equip_ge_value -- Random equip_ge_value
 FROM Players p1
     CROSS JOIN Players p2
 WHERE
     p1.id <> p2.id -- Ensure reportedID and reportingID are different
 ORDER BY
-    RAND() -- Randomize the order of the combinations
+    RAND(42) -- Randomize the order of the combinations
 LIMIT
     10000 -- Limit the number of combinations to insert
 ;
@@ -134,12 +291,12 @@ DELIMITER $$
 CREATE PROCEDURE INSERTROWS(NUM INT) BEGIN 
     DECLARE i INT;
     SET i = 1;
-    WHILE i <= num DO SET @rand = FLOOR(1 + RAND() * 25);
-    SET @multiplier = FLOOR(51 + RAND() * 50);
+    WHILE i <= num DO SET @rand = FLOOR(1 + RAND(42) * 25);
+    SET @multiplier = FLOOR(51 + RAND(42) * 50);
     INSERT INTO Predictions
     SET
         name = CONCAT('player', i),
-        created = NOW() - INTERVAL FLOOR(RAND() * 365) DAY,
+        created = NOW() - INTERVAL FLOOR(RAND(42) * 365) DAY,
         predicted_confidence = @multiplier,
         prediction = CASE @rand
             WHEN 1 THEN 'real_player'
@@ -247,18 +404,18 @@ SELECT
     pl1.id AS voter_id, 
     pl2.id AS subject_id,
     pr.prediction,
-    RAND() AS confidence, -- Generate a random confidence value between 0 and 1
+    RAND(42) AS confidence, -- Generate a random confidence value between 0 and 1
     "" AS feedback_text,
     CASE 
-        WHEN RAND() < 0.33 THEN -1
-        WHEN RAND() < 0.66 THEN 0
+        WHEN RAND(42) < 0.33 THEN -1
+        WHEN RAND(42) < 0.66 THEN 0
         ELSE 1
     END AS vote,
-    (SELECT label FROM Labels ORDER BY RAND() LIMIT 1) AS proposed_label
-FROM (SELECT * FROM Players ORDER BY RAND() LIMIT 1000) pl1
-JOIN (SELECT * FROM Players ORDER BY RAND() LIMIT 1000) pl2 ON pl1.id <> pl2.id
+    (SELECT label FROM Labels ORDER BY RAND(42) LIMIT 1) AS proposed_label
+FROM (SELECT * FROM Players ORDER BY RAND(42) LIMIT 1000) pl1
+JOIN (SELECT * FROM Players ORDER BY RAND(42) LIMIT 1000) pl2 ON pl1.id <> pl2.id
 JOIN Predictions pr ON pr.id = pl2.id
-ORDER BY RAND()
+ORDER BY RAND(42)
 LIMIT 100;
 
 UPDATE PredictionFeedback
