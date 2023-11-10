@@ -1,5 +1,4 @@
 # import logging
-
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from src.app.models.prediction import Prediction
@@ -13,7 +12,7 @@ router = APIRouter(tags=["Prediction"])
 
 @router.get("/player/prediction", response_model=list[PredictionResponse])
 async def get_prediction(
-    user_name: str = Depends(to_jagex_name),
+    name: str = Query(..., min_length=1, max_length=13),
     breakdown: bool = Query(...),
     session=Depends(get_session),
 ):
@@ -32,6 +31,7 @@ async def get_prediction(
 
     """
     prediction = Prediction(session=session)
+    user_name = await to_jagex_name(name)
     data = await prediction.get_prediction(user_name=user_name)
     if not data:
         raise HTTPException(

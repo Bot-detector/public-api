@@ -50,19 +50,14 @@ class Prediction:
             prediction_db: dbPrediction = aliased(dbPrediction, name="prediction_db")
             query: Select = select(prediction_db)
             query = query.select_from(prediction_db)
-            query = query.where(
-                text("prediction_db.name = :name").bindparams(name=user_name)
-            )  # prevent sql injection
+            query = query.where(prediction_db.name == user_name)
             result: Result = await self.session.execute(query)
             await self.session.commit()
 
         output = result.mappings().all()
-        # verify prediction data exists
-        if all("Prediction" not in o for o in output):
-            output = [object_as_dict(o["prediction_db"]) for o in output]
-            output = jsonable_encoder(output)
-        # verify output is not empty list of none
-        if all(o is None for o in output):
+        if output is None:
             return None
+        output = [object_as_dict(o["prediction_db"]) for o in output]
+        output = jsonable_encoder(output)
 
         return output
