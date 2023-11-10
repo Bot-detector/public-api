@@ -17,27 +17,41 @@ INSERT INTO
         normalized_name
     )
 SELECT
-    CONCAT('player', id) AS name,
-    NOW() - INTERVAL FLOOR(RAND() * 365) DAY AS created_at,
-    NOW() - INTERVAL FLOOR(RAND() * 365) DAY AS updated_at,
-    1 AS possible_ban,
-    0 AS confirmed_ban,
-    0 AS confirmed_player,
-    0 AS label_id,
-    ROUND(RAND() * 1) AS label_jagex,
-    null AS ironman,
-    null AS hardcore_ironman,
-    null AS ultimate_ironman,
-    CONCAT('player', id) AS normalized_name
+    name,
+    created_at,
+    updated_at,
+    possible_ban,
+    confirmed_ban,
+    IF(possible_ban = 0 AND confirmed_ban = 0 AND RAND() < 0.25, 1, 0) AS confirmed_player,
+    label_id,
+    label_jagex,
+    ironman,
+    hardcore_ironman,
+    ultimate_ironman,
+    normalized_name
 FROM (
-        SELECT id
-        FROM (
-            SELECT 1 + a.i + b.i * 10 AS id
-            FROM (SELECT 0 AS i UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) AS a
-            CROSS JOIN (SELECT 0 AS i UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) AS b
-        ) AS numbers
-        WHERE id <= 100
-    ) AS players;
+    SELECT
+        CONCAT('player', id) AS name,
+        NOW() - INTERVAL FLOOR(RAND() * 365) DAY AS created_at,
+        NOW() - INTERVAL FLOOR(RAND() * 365) DAY AS updated_at,
+        IF(RAND() < 0.5, 1, 0) AS possible_ban,  -- 50% chance of being possibly banned
+        IF(RAND() < 0.5, 1, 0) AS confirmed_ban,  -- 50% chance of being confirmed banned
+        0 AS label_id,
+        ROUND(RAND() * 1) AS label_jagex,
+        null AS ironman,
+        null AS hardcore_ironman,
+        null AS ultimate_ironman,
+        CONCAT('player', id) AS normalized_name
+    FROM (
+            SELECT id
+            FROM (
+                SELECT 1 + a.i + b.i * 10 AS id
+                FROM (SELECT 0 AS i UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) AS a
+                CROSS JOIN (SELECT 0 AS i UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) AS b
+            ) AS numbers
+            WHERE id <= 100
+        ) AS players
+) AS players_with_ban_status;
 -- Insert data into the Reports table
 
 INSERT INTO
@@ -235,7 +249,11 @@ SELECT
     pr.prediction,
     RAND() AS confidence, -- Generate a random confidence value between 0 and 1
     "" AS feedback_text,
-    CASE WHEN RAND() > 0.5 THEN 1 ELSE -1 END AS vote,
+    CASE 
+        WHEN RAND() < 0.33 THEN -1
+        WHEN RAND() < 0.66 THEN 0
+        ELSE 1
+    END AS vote,
     (SELECT label FROM Labels ORDER BY RAND() LIMIT 1) AS proposed_label
 FROM (SELECT * FROM Players WHERE id BETWEEN 1 AND 100 ORDER BY RAND()) pl1
 JOIN (SELECT * FROM Players WHERE id BETWEEN 1 AND 100 ORDER BY RAND()) pl2 ON pl1.id <> pl2.id
