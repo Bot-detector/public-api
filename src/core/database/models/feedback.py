@@ -11,10 +11,8 @@ from sqlalchemy import (
 
 from src.core.database.database import Base
 
-# from src.core.database.models.player import Player as dbPlayer
 
-
-class DataModelPredictionFeedback(Base):
+class PredictionFeedback(Base):
     __tablename__ = "PredictionFeedback"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
