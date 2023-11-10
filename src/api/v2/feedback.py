@@ -19,34 +19,34 @@ router = APIRouter(tags=["Feedback"])
 # logger = logging.getLogger(__name__)
 
 
-@router.get("/player/feedback", response_model=list[FeedbackResponse])
-async def get_feedback(
-    name: list[Annotated[str, Field(..., min_length=1, max_length=13)]] = Query(
-        ...,
-        min_length=1,
-        description="Name of the player",
-        example=["Player1", "Player2"],
-    ),
-    session=Depends(get_session),
-):
-    """
-    Post feedback data for a user.
+# @router.get("/player/feedback", response_model=list[FeedbackResponse])
+# async def get_feedback(
+#     name: list[Annotated[str, Field(..., min_length=1, max_length=13)]] = Query(
+#         ...,
+#         min_length=1,
+#         description="Name of the player",
+#         example=["Player1", "Player2"],
+#     ),
+#     session=Depends(get_session),
+# ):
+#     """
+#     Post feedback data for a user.
 
-    Args:
-        feedback (FeedbackIn): The feedback data to post.
+#     Args:
+#         feedback (FeedbackIn): The feedback data to post.
 
-    Returns:
-        FeedbackOut: An object containing the posted feedback data.
+#     Returns:
+#         FeedbackOut: An object containing the posted feedback data.
 
-    Raises:
-        HTTPException: Returns a 404 error with the message "Player not found" if no data is found for the user.
+#     Raises:
+#         HTTPException: Returns a 404 error with the message "Player not found" if no data is found for the user.
 
-    """
-    feedback = Feedback(session)
-    names = await asyncio.gather(*[to_jagex_name(n) for n in name])
-    data = await feedback.get_feedback(player_names=names)
+#     """
+#     feedback = Feedback(session)
+#     names = await asyncio.gather(*[to_jagex_name(n) for n in name])
+#     data = await feedback.get_feedback(player_names=names)
 
-    return data
+#     return data
 
 
 @router.get("/player/feedback/score", response_model=list[FeedbackCountResponse])
