@@ -87,7 +87,7 @@ class Feedback:
                 ]
             )
             query = query.join(
-                player_db, player_db.id == subquery_feedback_db.c.voter_id
+                player_db, subquery_feedback_db.c.voter_id == player_db.id
             )
             query = query.where(player_db.name.in_(player_names))
             result: Result = await self.session.execute(query)

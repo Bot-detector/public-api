@@ -6,7 +6,7 @@ from hypothesis import given, settings
 from hypothesis import strategies as st
 
 
-class TestFeedback(unittest.TestCase):
+class TestFeedbackAPI(unittest.TestCase):
     # Define the list of player names
     player_names_list = [f"Player{i}" for i in range(1, 100)]
 
