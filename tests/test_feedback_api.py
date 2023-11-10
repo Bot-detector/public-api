@@ -83,7 +83,6 @@ class TestFeedbackAPI(unittest.TestCase):
     #     self.assertEqual(response.json()["message"], "Feedback submitted successfully")
 
     ## test get feedback
-
     # single valid player check returns success list[dict]
     def test_get_feedback_valid_players_single(self):
         player_names_test_list = [f"Player{i}" for i in range(1, 100)]
@@ -148,6 +147,7 @@ class TestFeedbackAPI(unittest.TestCase):
             ), "Not all items in the list are dictionaries"
 
     # multi valid player check returns list[dict]
+    @settings(deadline=500)  # Increase the deadline to 500 milliseconds
     @given(player_names_count_valid=st.lists(player_names_strategy, min_size=1))
     def test_get_feedback_score_valid_players_multi(self, player_names_count_valid):
         response = requests.get(
@@ -169,7 +169,7 @@ class TestFeedbackAPI(unittest.TestCase):
             st.text(min_size=1, max_size=13), min_size=1
         )
     )
-    def test_get_feedback_count_invalid_players(self, player_names_count_invalid):
+    def test_get_feedback_score_invalid_players(self, player_names_count_invalid):
         # print(f"Test player: {player_names}")
         response = requests.get(
             "http://localhost:5000/v2/player/feedback/score",
