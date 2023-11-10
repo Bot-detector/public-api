@@ -1,15 +1,11 @@
-# import logging
-
 from fastapi.encoders import jsonable_encoder
-from sqlalchemy import select, text
+from sqlalchemy import select
 from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import aliased, class_mapper
 from sqlalchemy.sql.expression import Select
 
 from src.core.database.models.prediction import Prediction as dbPrediction
-
-# logger = logging.getLogger(__name__)
 
 
 def object_as_dict(obj):
