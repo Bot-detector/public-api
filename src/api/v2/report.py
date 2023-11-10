@@ -9,7 +9,7 @@ from src.core.kafka.report import report_engine
 router = APIRouter(tags=["Report"])
 
 
-@router.post("/reports", status_code=status.HTTP_201_CREATED, response_model=Ok)
+@router.post("/report", status_code=status.HTTP_201_CREATED, response_model=Ok)
 async def post_reports(detection: list[Detection]):
     report = Report(kafka_engine=report_engine)
     data = await report.parse_data(detection)

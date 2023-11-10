@@ -67,7 +67,7 @@ class TestPostReports(unittest.TestCase):
     )
     def test_post_reports(self, test_data):
         # Make POST request to /reports endpoint
-        response = requests.post("http://localhost:5000/v2/reports", json=test_data)
+        response = requests.post("http://localhost:5000/v2/report", json=test_data)
 
         # Print the test data and response data for debugging
         if response.status_code != 201:
@@ -79,7 +79,7 @@ class TestPostReports(unittest.TestCase):
         # Modify test_data to make it invalid
 
         # Make POST request to /reports endpoint
-        response = requests.post("http://localhost:5000/v2/reports", json=[{}])
+        response = requests.post("http://localhost:5000/v2/report", json=[{}])
 
         # Print the test data and response data for debugging
         # print(f"\nResponse:\n{response.json()}\n")
@@ -108,7 +108,7 @@ class TestPostReports(unittest.TestCase):
         ]
 
         # Make POST request to /reports endpoint with bad data
-        response = requests.post("http://localhost:5000/v2/reports", json=bad_data)
+        response = requests.post("http://localhost:5000/v2/report", json=bad_data)
 
         # Assert that the response status code is 400 (Bad Data)
         self.assertEqual(response.status_code, 400)
