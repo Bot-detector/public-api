@@ -12,7 +12,17 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 class TestPlayerAPI(TestCase):
     # Define the list of player names
-    player_names_list = [f"Player{i}" for i in range(1, 100)]
+    # fmt: off
+    player_ids = [
+        3, 5, 19, 23, 26, 29, 30, 34, 34, 38, 39, 42, 42, 45, 46, 52, 52, 57, 57, 58,
+        58, 69, 74, 78, 79, 80, 81, 81, 82, 85, 92, 92, 95, 98, 98, 100, 108, 112, 112,
+        113, 114, 116, 121, 123, 123, 124, 134, 139, 141, 142, 146, 146, 149, 154, 156,
+        157, 158, 158, 161, 162, 166, 168, 171, 173, 178, 180, 181, 187, 190, 191, 195,
+        197, 199, 202, 202, 202, 204, 206, 207, 208, 212, 215, 220, 222, 222, 225, 226,
+        226, 233, 236, 242, 261, 264, 265, 266, 268, 268, 276, 277, 282
+    ]
+    # fmt: on
+    player_names_list = [f"player{i}" for i in player_ids]
 
     # Define a Hypothesis strategy for player names
     player_names_strategy = st.sampled_from(player_names_list)
