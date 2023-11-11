@@ -54,7 +54,7 @@ services:
     container_name: database
     build:
       context: ./mysql
-    image: bot-detector/mysql:latest
+    image: bot-detector/mysql
     environment:
       - MYSQL_ROOT_PASSWORD=root_bot_buster
     volumes:
