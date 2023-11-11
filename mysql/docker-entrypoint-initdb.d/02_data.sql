@@ -135,7 +135,8 @@ DELIMITER $$
 CREATE PROCEDURE InsertRandomPredictions(NUM INT) BEGIN 
     DECLARE i INT;
     SET i = 1;
-    WHILE i <= num DO SET @rand = FLOOR(1 + RAND(42) * 25);
+    WHILE i <= num DO 
+    SET @rand = FLOOR(1 + RAND(42) * 25);
     SET @multiplier = FLOOR(51 + RAND(42) * 50);
     INSERT INTO Predictions
     SET
