@@ -11,6 +11,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 class TestPlayerAPI(TestCase):
+    URL = "http://localhost:5000/v2/player/report/score"
     # Define the list of player names
     # fmt: off
     player_ids = [
@@ -35,10 +36,8 @@ class TestPlayerAPI(TestCase):
     def test_get_player_report_score_valid_players_multi(
         self, player_names_count_valid
     ):
-        response = requests.get(
-            "http://localhost:5000/v2/player/report/score",
-            params={"name": player_names_count_valid},
-        )
+        params = {"name": player_names_count_valid}
+        response = requests.get(url=self.URL, params=params)
 
         if response.status_code != 200:
             print(
@@ -58,10 +57,8 @@ class TestPlayerAPI(TestCase):
         )
     )
     def test_get_player_report_score_invalid_players(self, player_names_count_invalid):
-        response = requests.get(
-            "http://localhost:5000/v2/player/report/score",
-            params={"name": player_names_count_invalid},
-        )
+        params = {"name": player_names_count_invalid}
+        response = requests.get(url=self.URL, params=params)
         if response.status_code != 200:
             print(
                 f"\nTest Data:\n{player_names_count_invalid}\nResponse:\n{response.json()}\n"
