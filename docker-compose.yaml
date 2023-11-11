@@ -42,6 +42,7 @@ services:
     container_name: kafka_setup
     build:
       context: ./kafka_setup
+    image: kafka_setup
     environment:
       - KAFKA_BROKER=kafka:9092
     networks:
@@ -54,7 +55,7 @@ services:
     container_name: database
     build:
       context: ./mysql
-    image: bot-detector/mysql
+    image: mysql
     environment:
       - MYSQL_ROOT_PASSWORD=root_bot_buster
     volumes:
@@ -67,7 +68,6 @@ services:
       - botdetector-network
 
   public_api:
-    image: bot-detector/public_api
     container_name: public_api
     build:
       context: .
@@ -76,6 +76,7 @@ services:
       args:
         root_path: /
         api_port: 5000
+    image: public_api
     # command: bash -c "apt update && apt install -y curl && sleep infinity"
     command: uvicorn src.core.server:app --host 0.0.0.0 --reload --reload-include src/*
     volumes:
