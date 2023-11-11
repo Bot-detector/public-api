@@ -7,6 +7,7 @@ from hypothesis import strategies as st
 
 
 class TestFeedbackAPI(unittest.TestCase):
+    URL = "http://localhost:5000/v2/player/feedback/score"
     # Define the list of player names
     # fmt: off
     player_ids = [
@@ -18,10 +19,10 @@ class TestFeedbackAPI(unittest.TestCase):
         226, 233, 236, 242, 261, 264, 265, 266, 268, 268, 276, 277, 282
     ]
     # fmt: on
-    player_names_list = [f"player{i}" for i in player_ids]
+    players = [f"player{i}" for i in player_ids]
 
     # Define a Hypothesis strategy for player names
-    player_names_strategy = st.sampled_from(player_names_list)
+    player_names_strategy = st.sampled_from(players)
 
     # Define common labels
     LABELS = [
@@ -59,10 +60,8 @@ class TestFeedbackAPI(unittest.TestCase):
         player_names_count_valid=st.lists(player_names_strategy, min_size=1, max_size=5)
     )
     def test_get_feedback_score_valid_players(self, player_names_count_valid):
-        response = requests.get(
-            "http://localhost:5000/v2/player/feedback/score",
-            params={"name": player_names_count_valid},
-        )
+        params = {"name": player_names_count_valid}
+        response = requests.get(url=self.URL, params=params)
         # print(f"Test player: {player_names}, Response: {response.json()}")
         # Check that the response contains feedback for all the specified players
         json_data = response.json()
@@ -79,10 +78,8 @@ class TestFeedbackAPI(unittest.TestCase):
         )
     )
     def test_get_feedback_score_invalid_players(self, player_names_count_invalid):
-        response = requests.get(
-            "http://localhost:5000/v2/player/feedback/score",
-            params={"name": player_names_count_invalid},
-        )
+        params = {"name": player_names_count_invalid}
+        response = requests.get(url=self.URL, params=params)
 
         if response.status_code != 200:
             print(
