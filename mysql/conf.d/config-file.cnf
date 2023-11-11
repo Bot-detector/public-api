@@ -6,7 +6,7 @@ slow_query_log = 1
 long_query_time = 20
 interactive_timeout = 60
 wait_timeout = 30
-expire_logs_days = 7
+binlog_expire_logs_seconds = 604800 # this is 7 days
 performance_schema = 1
 
 user = mysql
@@ -28,7 +28,8 @@ innodb_buffer_pool_instances = 8
 innodb_stats_on_metadata = 0
 
 innodb_log_buffer_size = 1G
-innodb_log_file_size = 512M
+# innodb_log_file_size = 512M # deprecated 
+innodb_redo_log_capacity = 536870912  # This is 512MB in bytes
 innodb_page_size = 16384
 innodb_log_write_ahead_size = 16384
 innodb_rollback_on_timeout = 1
