@@ -23,18 +23,18 @@ BEGIN
             normalized_name
         )
         SELECT
-            UUID() AS name,
-            NOW() - INTERVAL FLOOR(RAND() * 365) DAY AS created_at,
-            NOW() - INTERVAL FLOOR(RAND() * 365) DAY AS updated_at,
+            UUID() AS name, # updated later
+            NOW() AS created_at, # updated later
+            NOW() AS updated_at, # updated later
             possible_ban,
             confirmed_ban,
             confirmed_player,
             0 AS label_id, 
-            ROUND(RAND() * 1) AS label_jagex,
+            ROUND(RAND() * 1) AS label_jagex, # doesn't matter?
             null AS ironman,
             null AS hardcore_ironman,
             null AS ultimate_ironman,
-            UUID() AS normalized_name
+            UUID() AS normalized_name # updated later
         FROM dual;
 
         SET i = i + 1;
@@ -51,6 +51,8 @@ call InsertRandomPlayers(100, 0,0,1);
 UPDATE Players
 SET
     name = CONCAT('player', id),
+    created_at = NOW() - INTERVAL FLOOR(RAND(42) * 365) DAY,
+    updated_at = NOW() - INTERVAL FLOOR(RAND(41) * 365) DAY,
     normalized_name = CONCAT('player', id)
 ;
 
@@ -130,79 +132,41 @@ LIMIT
     10000 -- Limit the number of combinations to insert
 ;
 
-DELIMITER $$
-
-CREATE PROCEDURE InsertRandomPredictions(NUM INT) BEGIN 
-    DECLARE i INT;
-    SET i = 1;
-    WHILE i <= num DO 
-    SET @rand = FLOOR(1 + RAND(42) * 25);
-    SET @multiplier = FLOOR(51 + RAND(42) * 50);
-    INSERT INTO Predictions
-    SET
-        name = CONCAT('player', i),
-        created = NOW() - INTERVAL FLOOR(RAND(42) * 365) DAY,
-        predicted_confidence = @multiplier,
-        prediction = CASE @rand
-            WHEN 1 THEN 'real_player'
-            WHEN 2 THEN 'pvm_melee_bot'
-            WHEN 3 THEN 'smithing_bot'
-            WHEN 4 THEN 'magic_bot'
-            WHEN 5 THEN 'fishing_bot'
-            WHEN 6 THEN 'mining_bot'
-            WHEN 7 THEN 'crafting_bot'
-            WHEN 8 THEN 'pvm_ranged_magic_bot'
-            WHEN 9 THEN 'pvm_ranged_bot'
-            WHEN 10 THEN 'hunter_bot'
-            WHEN 11 THEN 'fletching_bot'
-            WHEN 12 THEN 'clue_scroll_bot'
-            WHEN 13 THEN 'lms_bot'
-            WHEN 14 THEN 'agility_bot'
-            WHEN 15 THEN 'wintertodt_bot'
-            WHEN 16 THEN 'runecrafting_bot'
-            WHEN 17 THEN 'zalcano_bot'
-            WHEN 18 THEN 'woodcutting_bot'
-            WHEN 19 THEN 'thieving_bot'
-            WHEN 20 THEN 'soul_wars_bot'
-            WHEN 21 THEN 'cooking_bot'
-            WHEN 22 THEN 'vorkath_bot'
-            WHEN 23 THEN 'barrows_bot'
-            WHEN 24 THEN 'herblore_bot'
-            ELSE 'unknown_bot'
-        END,
-        real_player = IF(@rand = 1, 1, 0) * @multiplier,
-        pvm_melee_bot = IF(@rand = 2, 1, 0) * @multiplier,
-        smithing_bot = IF(@rand = 3, 1, 0) * @multiplier,
-        magic_bot = IF(@rand = 4, 1, 0) * @multiplier,
-        fishing_bot = IF(@rand = 5, 1, 0) * @multiplier,
-        mining_bot = IF(@rand = 6, 1, 0) * @multiplier,
-        crafting_bot = IF(@rand = 7, 1, 0) * @multiplier,
-        pvm_ranged_magic_bot = IF(@rand = 8, 1, 0) * @multiplier,
-        pvm_ranged_bot = IF(@rand = 9, 1, 0) * @multiplier,
-        hunter_bot = IF(@rand = 10, 1, 0) * @multiplier,
-        fletching_bot = IF (@rand = 11, 1, 0) * @multiplier,
-        clue_scroll_bot = IF (@rand = 12, 1, 0) * @multiplier,
-        lms_bot = IF (@rand = 13, 1, 0) * @multiplier,
-        agility_bot = IF (@rand = 14, 1, 0) * @multiplier,
-        wintertodt_bot = IF (@rand = 15, 1, 0) * @multiplier,
-        runecrafting_bot = IF (@rand = 16, 1, 0) * @multiplier,
-        zalcano_bot = IF (@rand = 17, 1, 0) * @multiplier,
-        woodcutting_bot = IF (@rand = 18, 1, 0) * @multiplier,
-        thieving_bot = IF (@rand = 19, 1, 0) * @multiplier,
-        soul_wars_bot = IF (@rand = 20, 1, 0) * @multiplier,
-        cooking_bot = IF (@rand = 21, 1, 0) * @multiplier,
-        vorkath_bot = IF (@rand = 22, 1, 0) * @multiplier,
-        barrows_bot = IF (@rand = 23, 1, 0) * @multiplier,
-        herblore_bot = IF (@rand = 24, 1, 0) * @multiplier,
-        unknown_bot = IF (@rand = 25, 1, 0) * @multiplier;
-    SET i = i + 1;
-    END WHILE;
-    END$$ 
-
-
-DELIMITER ;
-
-CALL InsertRandomPredictions(250);
+INSERT INTO Predictions (name, predicted_confidence, prediction)
+SELECT 
+    name, 
+    FLOOR(RAND(6)*(100-1)+1),
+    CASE FLOOR(RAND(6)*(25-1)+1)
+        WHEN 1 THEN 'real_player'
+        WHEN 2 THEN 'pvm_melee_bot'
+        WHEN 3 THEN 'smithing_bot'
+        WHEN 4 THEN 'magic_bot'
+        WHEN 5 THEN 'fishing_bot'
+        WHEN 6 THEN 'mining_bot'
+        WHEN 7 THEN 'crafting_bot'
+        WHEN 8 THEN 'pvm_ranged_magic_bot'
+        WHEN 9 THEN 'pvm_ranged_bot'
+        WHEN 10 THEN 'hunter_bot'
+        WHEN 11 THEN 'fletching_bot'
+        WHEN 12 THEN 'clue_scroll_bot'
+        WHEN 13 THEN 'lms_bot'
+        WHEN 14 THEN 'agility_bot'
+        WHEN 15 THEN 'wintertodt_bot'
+        WHEN 16 THEN 'runecrafting_bot'
+        WHEN 17 THEN 'zalcano_bot'
+        WHEN 18 THEN 'woodcutting_bot'
+        WHEN 19 THEN 'thieving_bot'
+        WHEN 20 THEN 'soul_wars_bot'
+        WHEN 21 THEN 'cooking_bot'
+        WHEN 22 THEN 'vorkath_bot'
+        WHEN 23 THEN 'barrows_bot'
+        WHEN 24 THEN 'herblore_bot'
+        ELSE 'unknown_bot'
+    END 
+FROM `Players` 
+ORDER BY RAND(42) 
+LIMIT 250
+;
 
 INSERT INTO playerdata.Labels (label) VALUES
     ('Agility_bot'),
