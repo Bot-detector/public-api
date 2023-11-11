@@ -31,6 +31,13 @@ clean-test: ## cleanup pytests leftovers
 	rm -f test-results.html
 	rm -f output.xml
 
+docker-clean:
+	@read -p "Are you sure you want to prune all Docker data (y/n)? " -n 1 -r; \
+	echo; \
+	if [[ $$REPLY =~ ^[Yy]$$ ]]; then \
+		docker system prune -a -f; \
+	fi
+
 test: clean-test ## Run pytest unit tests
 	python3 -m pytest --verbosity=1 -s
 
