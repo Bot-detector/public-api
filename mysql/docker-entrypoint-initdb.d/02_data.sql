@@ -248,11 +248,11 @@ SELECT
     pl1.id AS voter_id, 
     pl2.id AS subject_id,
     pr.prediction,
-    RAND(42) AS confidence, -- Generate a random confidence value between 0 and 1
+    FLOOR(RAND(6)*(100-1)+1)/100 AS confidence, -- Generate a random confidence value between 0 and 1
     "" AS feedback_text,
     CASE 
-        WHEN RAND(42) < 0.33 THEN -1
-        WHEN RAND(42) < 0.66 THEN 0
+        WHEN FLOOR(RAND(6)*(100-1)+1) < 33 THEN -1
+        WHEN FLOOR(RAND(6)*(100-1)+1) < 66 THEN 0
         ELSE 1
     END AS vote,
     (SELECT label FROM Labels ORDER BY RAND(42) LIMIT 1) AS proposed_label
