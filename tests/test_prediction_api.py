@@ -41,7 +41,7 @@ class TestPredictionAPI(TestCase):
         response = requests.get(url=self.URL, params=params)
         if response.status_code != 200:
             print(
-                f"\nTest Data:\n{player_names_count_valid}\nBreakdown:\n{breakdown}\nResponse:\n{response.json()}\n"
+                f"Url:\n{self.URL}\nTest Data:\n{player_names_count_valid}\nBreakdown:\n{breakdown}\nResponse:\n{response.json()}\n"
             )
         json_data = response.json()
         self.assertEqual(response.status_code, 200),
@@ -75,11 +75,11 @@ class TestPredictionAPI(TestCase):
         params = {"name": player_names_count_invalid, "breakdown": breakdown}
         response = requests.get(url=self.URL, params=params)
 
-        if response.status_code != 200:
+        if response.status_code != 404:
             print(
-                f"\nTest Data:\n{player_names_count_invalid}\nBreakdown:\n{breakdown}\nResponse:\n{response.json()}\n"
+                f"Url:\n{self.URL}\nTest Data:\n{player_names_count_invalid}\nBreakdown:\n{breakdown}\nResponse:\n{response.json()}\n"
             )
 
         # print(f"Response: {response.json()}")
-        self.assertEqual(response.status_code, 200),
-        assert response.json() == []
+        self.assertEqual(response.status_code, 404),
+        self.assertEqual(response.json(), {"detail": "Player not found"})
