@@ -112,11 +112,11 @@ class TestPostReportAPI(unittest.TestCase):
         # Make POST request to /reports endpoint with bad data
         response = requests.post(url=self.URL, json=bad_data)
 
+        if response.status_code != 400:
+            print(f"\nBad Data:\n{bad_data}\nResponse:\n{response.json()}\n")
+
         # Assert that the response status code is 400 (Bad Data)
         self.assertEqual(response.status_code, 400)
-
-        # # Print the response data for debugging
-        # print(f"\nResponse:\n{response.json()}\n")
 
 
 if __name__ == "__main__":

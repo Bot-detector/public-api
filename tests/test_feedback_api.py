@@ -62,7 +62,10 @@ class TestFeedbackAPI(unittest.TestCase):
     def test_get_feedback_score_valid_players(self, player_names_count_valid):
         params = {"name": player_names_count_valid}
         response = requests.get(url=self.URL, params=params)
-        # print(f"Test player: {player_names}, Response: {response.json()}")
+        if response.status_code != 200:
+            print(
+                f"Test player: {player_names_count_valid}, Response: {response.json()} Status code: {response.status_code}"
+            )
         # Check that the response contains feedback for all the specified players
         json_data = response.json()
         self.assertEqual(response.status_code, 200),
