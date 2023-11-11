@@ -97,3 +97,6 @@ venv-remove: ## removes the .venv folder
 
 test-loud: ## runs pytest with verbose output
 	python3 -m pytest --verbose -s
+
+pre-commit:
+	pre-commit run --all-files
