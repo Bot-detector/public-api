@@ -132,7 +132,7 @@ LIMIT
     10000 -- Limit the number of combinations to insert
 ;
 
-INSERT INTO Predictions (name, predicted_confidence, prediction)
+INSERT INTO Predictions (name, predicted_confidence, prediction, created)
 SELECT 
     name, 
     FLOOR(RAND(6)*(100-1)+1),
@@ -162,7 +162,11 @@ SELECT
         WHEN 23 THEN 'barrows_bot'
         WHEN 24 THEN 'herblore_bot'
         ELSE 'unknown_bot'
-    END 
+    END ,
+    FROM_UNIXTIME(
+        TIMESTAMPDIFF(SECOND, '2020-01-01 00:00:00', '2022-12-31 23:59:59') * RAND(42) 
+        + UNIX_TIMESTAMP('2020-01-01 00:00:00')
+    )
 FROM `Players` 
 ORDER BY RAND(42) 
 LIMIT 250
