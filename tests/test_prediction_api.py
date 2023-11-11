@@ -11,6 +11,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 class TestPredictionAPI(TestCase):
+    URL = "http://localhost:5000/v2/player/prediction"
     # fmt: off
     player_ids = [
         1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 24,
@@ -35,10 +36,9 @@ class TestPredictionAPI(TestCase):
     )
     def test_get_prediction_valid_players(self, prediction_tuple):
         player_names_count_valid, breakdown = prediction_tuple
-        response = requests.get(
-            "http://localhost:5000/v2/player/prediction",
-            params={"name": player_names_count_valid, "breakdown": breakdown},
-        )
+
+        params = {"name": player_names_count_valid, "breakdown": breakdown}
+        response = requests.get(url=self.URL, params=params)
         if response.status_code != 200:
             print(
                 f"\nTest Data:\n{player_names_count_valid}\nBreakdown:\n{breakdown}\nResponse:\n{response.json()}\n"
@@ -72,10 +72,8 @@ class TestPredictionAPI(TestCase):
     def test_get_prediction_invalid_players(self, prediction_tuple):
         player_names_count_invalid, breakdown = prediction_tuple
 
-        response = requests.get(
-            "http://localhost:5000/v2/player/feedback/score",
-            params={"name": player_names_count_invalid, "breakdown": breakdown},
-        )
+        params = {"name": player_names_count_invalid, "breakdown": breakdown}
+        response = requests.get(url=self.URL, params=params)
 
         if response.status_code != 200:
             print(
