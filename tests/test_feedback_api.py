@@ -53,47 +53,6 @@ class TestFeedbackAPI(unittest.TestCase):
         "Unsure",
     ]
 
-    # @given(
-    #     player_name=st.text(min_size=1),
-    #     vote=st.integers(min_value=-1, max_value=1),
-    #     prediction=st.sampled_from(LABELS),
-    #     confidence=st.floats(min_value=0, max_value=1),
-    #     subject_id=st.integers(min_value=0),
-    #     feedback_text=st.text(),
-    #     proposed_label=st.sampled_from(LABELS),
-    # )
-    # def test_post_feedback(
-    #     self,
-    #     player_name,
-    #     vote,
-    #     prediction,
-    #     confidence,
-    #     subject_id,
-    #     feedback_text,
-    #     proposed_label,
-    # ):
-    #     # Define the data to send
-    #     data = {
-    #         "player_name": player_name,
-    #         "vote": vote,
-    #         "prediction": prediction,
-    #         "confidence": confidence,
-    #         "subject_id": subject_id,
-    #         "feedback_text": feedback_text,
-    #         "proposed_label": proposed_label,
-    #     }
-
-    #     # Send the POST request
-    #     response = requests.post("http://localhost:5000/v2/feedback", json=data)
-
-    #     print(f"Test Data: {data}, Response: {response.json()}")
-
-    #     # Assert that the response is as expected
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertEqual(response.json()["message"], "Feedback submitted successfully")
-
-    ## Test feedback score
-
     # multi valid player check returns list[dict]
     @settings(deadline=500)  # Increase the deadline to 500 milliseconds
     @given(
