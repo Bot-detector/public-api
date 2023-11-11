@@ -30,7 +30,7 @@ BEGIN
             confirmed_ban,
             confirmed_player,
             0 AS label_id, 
-            ROUND(RAND() * 1) AS label_jagex, # doesn't matter?
+            ROUND(RAND() * 1) AS label_jagex, -- doesn't matter?
             null AS ironman,
             null AS hardcore_ironman,
             null AS ultimate_ironman,
