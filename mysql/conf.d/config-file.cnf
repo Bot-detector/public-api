@@ -21,7 +21,7 @@ default-authentication-plugin=caching_sha2_password
 
 # InnoDB variables
 
-innodb_buffer_pool_size = 16G
+innodb_buffer_pool_size = 1G
 innodb_rollback_on_timeout = 1
 innodb_file_per_table = 1
 innodb_buffer_pool_instances = 8
