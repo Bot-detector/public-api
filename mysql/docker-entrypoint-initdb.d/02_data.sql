@@ -23,9 +23,9 @@ BEGIN
             normalized_name
         )
         SELECT
-            UUID() AS name, # updated later
-            NOW() AS created_at, # updated later
-            NOW() AS updated_at, # updated later
+            UUID() AS name, -- updated later
+            NOW() AS created_at, -- updated later
+            NOW() AS updated_at, -- updated later
             possible_ban,
             confirmed_ban,
             confirmed_player,
@@ -34,7 +34,7 @@ BEGIN
             null AS ironman,
             null AS hardcore_ironman,
             null AS ultimate_ironman,
-            UUID() AS normalized_name # updated later
+            UUID() AS normalized_name -- updated later
         FROM dual;
 
         SET i = i + 1;
