@@ -110,7 +110,7 @@ class TestPostReportAPI(unittest.TestCase):
         # Check if the response status code is 400
         if response.status_code != 400:
             print(f"status:\n{response.status_code}")
-            print(f"data: {bad_data}\nresponse:\n{response.json()}")
+            print(f"data:\n{bad_data}\nresponse:\n{response.json()}")
 
         self.assertEqual(response.status_code, 400)
 
