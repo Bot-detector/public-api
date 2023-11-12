@@ -71,8 +71,8 @@ class TestPostReportAPI(unittest.TestCase):
 
         # Check if the response status code is 201
         if response.status_code != 201:
-            print({"status": response.status_code})
-            print({"test_data": test_data, "response": response.json()})
+            print(f"status:\n{response.status_code}")
+            print(f"test_data:\n{test_data}\nresponse:\n{response.json()}")
 
         self.assertEqual(response.status_code, 201)
 
@@ -81,8 +81,8 @@ class TestPostReportAPI(unittest.TestCase):
 
         # Check if the response status code is 422
         if response.status_code != 422:
-            print({"status": response.status_code})
-            print({"response": response.json()})
+            print(f"status:\n{response.status_code}")
+            print(f"response:\n{response.json()}")
 
         self.assertEqual(response.status_code, 422)
 
@@ -109,8 +109,8 @@ class TestPostReportAPI(unittest.TestCase):
 
         # Check if the response status code is 400
         if response.status_code != 400:
-            print({"status": response.status_code})
-            print({"data": bad_data, "response": response.json()})
+            print(f"status:\n{response.status_code}")
+            print(f"data: {bad_data}\nresponse:\n{response.json()}")
 
         self.assertEqual(response.status_code, 400)
 

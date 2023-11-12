@@ -38,8 +38,8 @@ class TestPredictionAPI(TestCase):
 
         # Check if the response status code is 200
         if response.status_code != 200:
-            print({"status": response.status_code})
-            print({"params": params, "response": response.json()})
+            print(f"status:\n{response.status_code}")
+            print(f"params:\n{params}\nresponse:\n{response.json()}")
 
         # Check that the response contains report scores for all specified players
         json_data: list[dict] = response.json()
@@ -74,8 +74,8 @@ class TestPredictionAPI(TestCase):
         response = requests.get(url=self.API_ENDPOINT, params=params)
 
         if response.status_code != 404:
-            print({"status": response.status_code})
-            print({"params": params, "response": response.json()})
+            print(f"status:\n{response.status_code}")
+            print(f"params:\n{params}\nresponse:\n{response.json()}")
 
         self.assertEqual(response.status_code, 404)
 
