@@ -1,20 +1,15 @@
-import json
-import os
-import sys
-from unittest import TestCase
+import unittest
 
 import requests
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+class TestPlayerAPI(unittest.TestCase):
+    API_ENDPOINT = "http://localhost:5000/v2/player/report/score"
 
-class TestPlayerAPI(TestCase):
-    URL = "http://localhost:5000/v2/player/report/score"
-    # Define the list of player names
     # fmt: off
-    player_ids = [
+    PLAYER_IDS = [
         3, 5, 19, 23, 26, 29, 30, 34, 34, 38, 39, 42, 42, 45, 46, 52, 52, 57, 57, 58,
         58, 69, 74, 78, 79, 80, 81, 81, 82, 85, 92, 92, 95, 98, 98, 100, 108, 112, 112,
         113, 114, 116, 121, 123, 123, 124, 134, 139, 141, 142, 146, 146, 149, 154, 156,
@@ -23,45 +18,53 @@ class TestPlayerAPI(TestCase):
         226, 233, 236, 242, 261, 264, 265, 266, 268, 268, 276, 277, 282
     ]
     # fmt: on
-    player_names_list = [f"player{i}" for i in player_ids]
 
     # Define a Hypothesis strategy for player names
-    player_names_strategy = st.sampled_from(player_names_list)
+    PLAYERS = [f"player{i}" for i in PLAYER_IDS]
+    PLAYER_NAME_STRATEGY = st.sampled_from(PLAYERS)
 
-    # multi valid player check returns list[dict]
-    @settings(deadline=500)  # Increase the deadline to 500 milliseconds
-    @given(
-        player_names_count_valid=st.lists(player_names_strategy, min_size=1, max_size=5)
-    )
-    def test_get_player_report_score_valid_players_multi(
-        self, player_names_count_valid
-    ):
-        params = {"name": player_names_count_valid}
-        response = requests.get(url=self.URL, params=params)
+    # Test valid players and check if report scores are returned
+    @settings(deadline=500)
+    @given(valid_player_names=st.lists(PLAYER_NAME_STRATEGY, min_size=1, max_size=5))
+    def test_valid_players(self, valid_player_names):
+        params = {"name": valid_player_names}
+        response = requests.get(url=self.API_ENDPOINT, params=params)
 
+        # Check if the response status code is 200
         if response.status_code != 200:
-            print(
-                f"\nTest Data:\n{player_names_count_valid}\nResponse:\n{response.json()}\n"
-            )
-        json_data = response.json()
-        self.assertEqual(response.status_code, 200),
-        assert len(json_data) > 0, "List is empty"
-        assert all(
-            isinstance(item, dict) for item in json_data
-        ), "Not all items in the list are dictionaries"
+            print({"status": response.status_code})
+            print({"params": params, "response": response.json()})
 
-    # invalid player(s) check returns empty list
+        # Check that the response contains report scores for all specified players
+        json_data = response.json()
+        self.assertEqual(response.status_code, 200)
+
+        error = "List is empty"
+        assert len(json_data) > 0, error
+
+        error = "Not all items in the list are dictionaries"
+        assert all(isinstance(item, dict) for item in json_data), error
+
+    # Test invalid players and check if response is an empty list
     @given(
-        player_names_count_invalid=st.lists(
+        invalid_player_names=st.lists(
             st.text(min_size=1, max_size=13), min_size=1, max_size=5
         )
     )
-    def test_get_player_report_score_invalid_players(self, player_names_count_invalid):
-        params = {"name": player_names_count_invalid}
-        response = requests.get(url=self.URL, params=params)
+    def test_invalid_players(self, invalid_player_names):
+        params = {"name": invalid_player_names}
+        response = requests.get(url=self.API_ENDPOINT, params=params)
+
+        # Check if the response status code is 200
         if response.status_code != 200:
-            print(
-                f"\nTest Data:\n{player_names_count_invalid}\nResponse:\n{response.json()}\n"
-            )
-        self.assertEqual(response.status_code, 200),
+            print({"status": response.status_code})
+            print({"params": params, "response": response.json()})
+
+        # Check that the response is an empty list
+        self.assertEqual(response.status_code, 200)
         assert response.json() == []
+
+
+# Run the tests
+if __name__ == "__main__":
+    unittest.main()
