@@ -40,8 +40,8 @@ class TestFeedbackAPI(unittest.TestCase):
 
         # Check if the response status code is 200
         if response.status_code != 200:
-            print(f"status:\n{response.status_code}")
-            print(f"params:\n{params}\nresponse:\n{response.json()}")
+            print({"status": response.status_code})
+            print({"params": params, "response": response.json()})
 
         # Check that the response contains report scores for all specified players
         json_data = response.json()
@@ -64,8 +64,8 @@ class TestFeedbackAPI(unittest.TestCase):
 
         # Check if the response status code is 200
         if response.status_code != 200:
-            print(f"status:\n{response.status_code}")
-            print(f"params:\n{params}\nresponse:\n{response.json()}")
+            print({"status": response.status_code})
+            print({"params": params, "response": response.json()})
 
         # Check that the response is an empty list
         self.assertEqual(response.status_code, 200)
