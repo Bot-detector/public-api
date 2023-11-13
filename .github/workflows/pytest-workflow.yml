@@ -43,9 +43,15 @@ jobs:
         with:
           python-version: "3.11.6"
 
+      - name: install testing requirements
+        run: |
+          python3 -m pip install pytest 
+          python3 -m pip install requests 
+          python3 -m pip install hypothesis
+
       - name: Setup Docker Containers
         run: |
-          make setup-detached
+          docker-compose --verbose up --build -d
 
       - name: Check API is Up
         uses: cygnetdigital/wait_for_response@v2.0.0
@@ -57,7 +63,7 @@ jobs:
 
       - name: Generate Pytest Report
         run: |
-          make test-report
+          python3 -m pytest --junit-xml=pytest_report.xml
 
         # https://github.com/marketplace/actions/pytest-results-actions
       - name: Surface Failing Tests

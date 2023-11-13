@@ -42,6 +42,7 @@ services:
     container_name: kafka_setup
     build:
       context: ./kafka_setup
+    image: kafka_setup
     environment:
       - KAFKA_BROKER=kafka:9092
     networks:
@@ -54,7 +55,7 @@ services:
     container_name: database
     build:
       context: ./mysql
-    image: bot-detector/mysql:latest
+    image: mysql
     environment:
       - MYSQL_ROOT_PASSWORD=root_bot_buster
     volumes:
@@ -65,9 +66,13 @@ services:
       - 3306:3306
     networks:
       - botdetector-network
+    healthcheck:
+      test: "mysqladmin ping -h localhost -u root -proot_bot_buster"
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   public_api:
-    image: bot-detector/public_api
     container_name: public_api
     build:
       context: .
@@ -76,8 +81,11 @@ services:
       args:
         root_path: /
         api_port: 5000
+    image: public_api
     # command: bash -c "apt update && apt install -y curl && sleep infinity"
     command: uvicorn src.core.server:app --host 0.0.0.0 --reload --reload-include src/*
+    volumes:
+      - ./src:/project/src
     ports:
       - 5000:5000
     networks:
@@ -92,8 +100,10 @@ services:
     # env_file:
     #   - .env
     depends_on:
-      - kafka_setup
-      - mysql
-
+      kafka:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+        
 networks:
   botdetector-network:

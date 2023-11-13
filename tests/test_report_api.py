@@ -10,7 +10,6 @@ from hypothesis.strategies import (
     integers,
     just,
     lists,
-    none,
     one_of,
     sampled_from,
     text,
@@ -26,7 +25,9 @@ max_ts = current_time
 unique_reporter = str(uuid4()).replace("-", "")[:13]
 
 
-class TestPostReports(unittest.TestCase):
+class TestPostReportAPI(unittest.TestCase):
+    API_ENDPOINT = "http://localhost:5000/v2/report"
+
     @given(
         lists(
             fixed_dictionaries(
@@ -66,29 +67,26 @@ class TestPostReports(unittest.TestCase):
         )
     )
     def test_post_reports(self, test_data):
-        # Make POST request to /reports endpoint
-        response = requests.post("http://localhost:5000/v2/reports", json=test_data)
+        response = requests.post(url=self.API_ENDPOINT, json=test_data)
 
-        # Print the test data and response data for debugging
+        # Check if the response status code is 201
         if response.status_code != 201:
-            print(f"\nTest Data:\n{test_data}\nResponse:\n{response.json()}\n")
-        # Assert that the response status code is 201 (Created)
+            print({"status": response.status_code})
+            print({"test_data": test_data, "response": response.json()})
+
         self.assertEqual(response.status_code, 201)
 
     def test_post_reports_unprocessable_entity(self):
-        # Modify test_data to make it invalid
+        response = requests.post(url=self.API_ENDPOINT, json=[{}])
 
-        # Make POST request to /reports endpoint
-        response = requests.post("http://localhost:5000/v2/reports", json=[{}])
+        # Check if the response status code is 422
+        if response.status_code != 422:
+            print({"status": response.status_code})
+            print({"response": response.json()})
 
-        # Print the test data and response data for debugging
-        print(f"\nResponse:\n{response.json()}\n")
-
-        # Assert that the response status code is 422 (Unprocessable Entity)
         self.assertEqual(response.status_code, 422)
 
     def test_post_reports_bad_data(self):
-        # Define the bad data
         bad_data = [
             {
                 "reporter": "0",
@@ -107,14 +105,14 @@ class TestPostReports(unittest.TestCase):
             }
         ]
 
-        # Make POST request to /reports endpoint with bad data
-        response = requests.post("http://localhost:5000/v2/reports", json=bad_data)
+        response = requests.post(url=self.API_ENDPOINT, json=bad_data)
 
-        # Assert that the response status code is 400 (Bad Data)
+        # Check if the response status code is 400
+        if response.status_code != 400:
+            print({"status": response.status_code})
+            print({"data": bad_data, "response": response.json()})
+
         self.assertEqual(response.status_code, 400)
-
-        # Print the response data for debugging
-        print(f"\nResponse:\n{response.json()}\n")
 
 
 if __name__ == "__main__":

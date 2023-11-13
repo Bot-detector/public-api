@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 
-class KCResponse(BaseModel):
+class ReportScoreResponse(BaseModel):
     count: int
     possible_ban: bool
     confirmed_ban: bool

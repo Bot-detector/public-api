@@ -5,8 +5,8 @@ from hypothesis import given, settings
 from hypothesis import strategies as st
 
 
-class TestPlayerAPI(unittest.TestCase):
-    API_ENDPOINT = "http://localhost:5000/v2/player/report/score"
+class TestFeedbackAPI(unittest.TestCase):
+    API_ENDPOINT = "http://localhost:5000/v2/player/feedback/score"
 
     # fmt: off
     PLAYER_IDS = [
@@ -17,13 +17,21 @@ class TestPlayerAPI(unittest.TestCase):
         197, 199, 202, 202, 202, 204, 206, 207, 208, 212, 215, 220, 222, 222, 225, 226,
         226, 233, 236, 242, 261, 264, 265, 266, 268, 268, 276, 277, 282
     ]
+
+    COMMON_LABELS = [
+        "Real_Player", "PVM_Melee_bot", "Smithing_bot", "Magic_bot", "Fishing_bot",
+        "Mining_bot", "Crafting_bot", "PVM_Ranged_Magic_bot", "Hunter_bot", "Fletching_bot",
+        "LMS_bot", "Agility_bot", "Wintertodt_bot", "Runecrafting_bot", "Zalcano_bot",
+        "Woodcutting_bot", "Thieving_bot", "Soul_Wars_bot", "Cooking_bot", "Vorkath_bot",
+        "Barrows_bot", "Herblore_bot", "Zlrah_bot", "Unknown_bot", "Something_else", "Unsure"
+    ]
     # fmt: on
 
     # Define a Hypothesis strategy for player names
     PLAYERS = [f"player{i}" for i in PLAYER_IDS]
     PLAYER_NAME_STRATEGY = st.sampled_from(PLAYERS)
 
-    # Test valid players and check if report scores are returned
+    # Test valid players and check if feedback scores are returned
     @settings(deadline=500)
     @given(valid_player_names=st.lists(PLAYER_NAME_STRATEGY, min_size=1, max_size=5))
     def test_valid_players(self, valid_player_names):
@@ -45,7 +53,6 @@ class TestPlayerAPI(unittest.TestCase):
         error = "Not all items in the list are dictionaries"
         assert all(isinstance(item, dict) for item in json_data), error
 
-    # Test invalid players and check if response is an empty list
     @given(
         invalid_player_names=st.lists(
             st.text(min_size=1, max_size=13), min_size=1, max_size=5
@@ -65,6 +72,5 @@ class TestPlayerAPI(unittest.TestCase):
         assert response.json() == []
 
 
-# Run the tests
 if __name__ == "__main__":
     unittest.main()

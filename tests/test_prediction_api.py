@@ -1,105 +1,82 @@
-import json
-import os
-import sys
 from unittest import TestCase
 
 import hypothesis.strategies as st
 import requests
-from hypothesis import given
-
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from hypothesis import given, settings
 
 
 class TestPredictionAPI(TestCase):
-    def test_valid_player_breakdown_false_returns_success(self):
-        url = "http://localhost:5000/v2/prediction"
-        params = {}
-        # build params
-        params["name"] = ["Player1"]
-        params["breakdown"] = False
-        score = requests.get(url, params)
-        assert score.status_code == 200
+    API_ENDPOINT = "http://localhost:5000/v2/player/prediction"
 
-    def test_valid_player_breakdown_false_returns_empty_property(self):
-        url = "http://localhost:5000/v2/prediction"
-        params = {}
-        # build params
-        params["name"] = ["Player1"]
-        params["breakdown"] = False
-        score = requests.get(url, params)
-        # get first element because conversion makes it in a list
-        json_data = (json.loads(score.text))[0]
-        # should be an empty list, empty dicts return False
-        assert not json_data["predictions_breakdown"]
+    # fmt: off
+    PLAYER_IDS = [
+        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 24,
+        25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 37, 38, 39, 41, 43, 44, 45, 46, 47, 48,
+        50, 51, 52, 53, 54, 56, 57, 58, 59, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 72, 73,
+        76, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97,
+        98, 99, 100, 102, 103, 104, 105, 106, 107, 108, 109, 113, 114, 115
+    ]
+    # fmt: on
 
-    def test_valid_player_breakdown_true_returns_success(self):
-        url = "http://localhost:5000/v2/prediction"
-        params = {}
-        # build params
-        params["name"] = ["Player1"]
-        params["breakdown"] = True
-        score = requests.get(url, params)
-        assert score.status_code == 200
+    # Define a Hypothesis strategy for player names
+    PLAYERS = [f"player{i}" for i in PLAYER_IDS]
+    PLAYER_NAME_STRATEGY = st.sampled_from(PLAYERS)
 
-    def test_valid_player_breakdown_true_returns_populated_property(self):
-        url = "http://localhost:5000/v2/prediction"
-        params = {}
-        # build params
-        params["name"] = ["Player1"]
-        params["breakdown"] = True
-        score = requests.get(url, params)
-        # get first element because conversion makes it in a list
-        json_data = (json.loads(score.text))[0]
-        # should return a populated dictionary, should be True
-        assert bool(json_data["predictions_breakdown"])
+    # multi valid check returns list[dict]
+    @settings(deadline=500)  # Increase the deadline to 500 milliseconds
+    @given(
+        prediction_tuple=st.tuples(
+            st.lists(PLAYER_NAME_STRATEGY, min_size=1, max_size=5),
+            st.booleans(),
+        )
+    )
+    def test_valid_players(self, prediction_tuple):
+        player_names_count_valid, breakdown = prediction_tuple
 
-    @given(st.text(min_size=0, max_size=2))
-    def test_invalid_min_player_name_length_returns_unknown(self, name):
-        url = "http://localhost:5000/v2/prediction"
-        # build params
-        params = {"name": [name]}
-        params["breakdown"] = False
-        response = requests.get(url, params)
-        assert response.status_code == 404
+        params = {"name": player_names_count_valid, "breakdown": breakdown}
+        response = requests.get(url=self.API_ENDPOINT, params=params)
 
-    @given(st.text(min_size=14, max_size=None))
-    def test_invalid_max_player_name_length_returns_unkonwn(self, name):
-        url = "http://localhost:5000/v2/prediction"
-        # build params
-        params = {"name": [name]}
-        params["breakdown"] = False
-        response = requests.get(url, params)
-        assert response.status_code == 404
+        # Check if the response status code is 200
+        if response.status_code != 200:
+            print({"status": response.status_code})
+            print({"params": params, "response": response.json()})
 
-    def test_invalid_player_breakdown_true_returns_unknown(self):
-        url = "http://localhost:5000/v2/prediction"
-        params = {}
-        # build params
-        params["name"] = [""]
-        params["breakdown"] = True
-        response = requests.get(url, params)
-        assert response.status_code == 404
+        # Check that the response contains report scores for all specified players
+        json_data: list[dict] = response.json()
+        self.assertEqual(response.status_code, 200)
 
-    def test_invalid_player_breakdown_false_returns_player_not_found(self):
-        url = "http://localhost:5000/v2/prediction"
-        params = {}
-        # build params
-        params["name"] = [""]
-        params["breakdown"] = False
-        score = requests.get(url, params)
-        # get first element because conversion makes it in a list
-        json_data = json.loads(score.text)
-        # should be an empty list, empty dicts return False
-        assert json_data["detail"] == "Player not found"
+        error = "List is empty"
+        assert len(json_data) > 0, error
 
-    def test_invalid_player_breakdown_true_returns_player_not_found(self):
-        url = "http://localhost:5000/v2/prediction"
-        params = {}
-        # build params
-        params["name"] = [""]
-        params["breakdown"] = True
-        score = requests.get(url, params)
-        # get first element because conversion makes it in a list
-        json_data = json.loads(score.text)
-        # should be an empty list, empty dicts return False
-        assert json_data["detail"] == "Player not found"
+        error = "Not all items in the list are dictionaries"
+        assert all(isinstance(item, dict) for item in json_data), error
+
+        for item in json_data:
+            predictions_breakdown = item.get("predictions_breakdown", {})
+            if breakdown:
+                error = "'predictions_breakdown' is not a populated dictionary"
+                assert predictions_breakdown, error
+            else:
+                error = "'predictions_breakdown' is not an empty dictionary"
+                assert not predictions_breakdown, error
+
+    # invalid player(s) check returns empty list
+    @given(
+        prediction_tuple=st.tuples(
+            st.lists(st.text(min_size=1, max_size=13), min_size=1, max_size=5),
+            st.booleans(),
+        )
+    )
+    def test_invalid_players(self, prediction_tuple):
+        player_names_count_invalid, breakdown = prediction_tuple
+
+        params = {"name": player_names_count_invalid, "breakdown": breakdown}
+        response = requests.get(url=self.API_ENDPOINT, params=params)
+
+        if response.status_code != 404:
+            print({"status": response.status_code})
+            print({"params": params, "response": response.json()})
+
+        self.assertEqual(response.status_code, 404)
+
+        self.assertEqual(response.json(), {"detail": "Player not found"})

@@ -1,5 +1,5 @@
 USE playerdata;
-
+-- Create a table for Players
 CREATE TABLE Players (
     id INT PRIMARY KEY AUTO_INCREMENT,
     name TEXT,
@@ -16,6 +16,15 @@ CREATE TABLE Players (
     normalized_name TEXT
 );
 
+CREATE TABLE `Labels` (
+    `id` int NOT NULL AUTO_INCREMENT,
+    `label` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `Unique_label` (`label`) USING BTREE
+)
+;
+
+-- Create a table for Reports
 CREATE TABLE Reports (
     ID BIGINT PRIMARY KEY AUTO_INCREMENT,
     created_at TIMESTAMP,
@@ -43,8 +52,7 @@ CREATE TABLE Reports (
     CONSTRAINT `FK_Reported_Players_id` FOREIGN KEY (`reportedID`) REFERENCES `Players` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
     CONSTRAINT `FK_Reporting_Players_id` FOREIGN KEY (`reportingID`) REFERENCES `Players` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 );
-
-
+-- Create a table for Predictions
 CREATE TABLE Predictions (
     id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(12),
@@ -76,4 +84,26 @@ CREATE TABLE Predictions (
     barrows_bot DECIMAL(5, 2) DEFAULT 0,
     herblore_bot DECIMAL(5, 2) DEFAULT 0,
     unknown_bot DECIMAL(5, 2) DEFAULT 0
+);
+-- Create a table for Feedback
+CREATE TABLE PredictionFeedback (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    ts TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    voter_id INT NOT NULL,
+    subject_id INT NOT NULL,
+    prediction VARCHAR(50) NOT NULL,
+    confidence FLOAT NOT NULL,
+    vote INT NOT NULL DEFAULT '0',
+    feedback_text TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+    reviewed TINYINT NOT NULL DEFAULT '0',
+    reviewer_id INT DEFAULT NULL,
+    user_notified TINYINT NOT NULL DEFAULT '0',
+    proposed_label VARCHAR(50) DEFAULT NULL,
+    UNIQUE KEY Unique_Vote (
+        prediction,
+        subject_id,
+        voter_id
+    ) USING BTREE,
+    CONSTRAINT `FK_Subject_ID` FOREIGN KEY (`subject_id`) REFERENCES `Players` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    CONSTRAINT `FK_Voter_ID` FOREIGN KEY (`voter_id`) REFERENCES `Players` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT 
 );
