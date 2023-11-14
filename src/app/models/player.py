@@ -1,3 +1,6 @@
+import logging
+import time
+
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy import func, select
 from sqlalchemy.engine import Result
@@ -5,15 +8,44 @@ from sqlalchemy.ext.asyncio import AsyncResult, AsyncSession
 from sqlalchemy.orm import aliased
 from sqlalchemy.sql.expression import Select
 
+from src.app.views.input.feedback import FeedbackInput
 from src.core.database.models.feedback import PredictionFeedback as dbFeedback
 from src.core.database.models.player import Player as dbPlayer
 from src.core.database.models.prediction import Prediction as dbPrediction
 from src.core.database.models.report import Report as dbReport
+from src.core.fastapi.dependencies.to_jagex_name import to_jagex_name
+
+logger = logging.getLogger(__name__)
 
 
 class Player:
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
+
+    def _to_jagex_name(self, feedback: FeedbackInput):
+        formatted_name = to_jagex_name(feedback.player_name)
+        # name should be 1-13 characters
+        if (
+            formatted_name is not None
+            and len(formatted_name) > 0
+            and len(formatted_name) < 14
+        ):
+            feedback.player_name = formatted_name
+            return feedback
+        else:
+            return None
+
+    async def parse_feedback(self, feedback: FeedbackInput):
+        """
+        Validate feedback data
+        """
+
+        data = self._to_jagex_name(feedback)
+        if not data:
+            logger.warning("invalid name")
+            return None
+
+        return data
 
     async def get_report_score(self, player_names: tuple[str]):
         """
@@ -101,3 +133,40 @@ class Player:
             result: AsyncResult = await self.session.execute(query)
             result = result.scalars().all()
         return jsonable_encoder(result)
+
+    async def post_feedback(self, feedback: FeedbackInput):
+        async with self.session:
+            # check if the player name is anonymoususer
+            if feedback.player_name == "anonymoususer":
+                # check if the player exists
+                anonymous_user_query = select(dbPlayer).where(
+                    dbPlayer.name == "anonymoususer"
+                )
+                anonymous_user_insert = dbPlayer(name="anonymoususer")
+                anonymous_result: AsyncResult = await self.session.execute(anonymous_user_query)
+                # create anonymoususer if it does not exist
+                if not anonymous_result.scalar():
+                    anonymous_result: AsyncResult = await self.session.execute(anonymous_user_insert)
+
+                    await self.session.commit()
+
+            # check if the player exists
+            player = await self.session.execute(
+                select(dbPlayer).where(dbPlayer.name == feedback.player_name)
+            )
+
+            # create player if it does not exist
+            if not player.scalar():
+                self.session.add(dbPlayer(name=feedback.player_name))
+                await self.session.commit()
+
+            # if the subject exists create a new feedback entry else create a new player and feedback entry
+            subject = await self.session.execute(
+                select(dbPlayer).where(dbPlayer.name == feedback.subject_id)
+            )
+
+            # no clue what else?
+
+            self.session.add(dbFeedback(**feedback.dict()))
+            await self.session.commit()
+        return
