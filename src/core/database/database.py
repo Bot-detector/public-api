@@ -11,7 +11,9 @@ engine = create_async_engine(
     pool_timeout=settings.POOL_TIMEOUT,
     pool_recycle=settings.POOL_RECYCLE,
     echo=(settings.ENV != "PRD"),
+    pool_pre_ping=True,
 )
+
 # Create a session factory
 SessionFactory = sessionmaker(
     bind=engine,
