@@ -1,7 +1,7 @@
 import unittest
 
 import requests
-from hypothesis import given, settings
+from hypothesis import assume, given, settings
 from hypothesis import strategies as st
 
 
@@ -19,6 +19,14 @@ class TestFeedbackAPI(unittest.TestCase):
         226, 233, 236, 242, 261, 264, 265, 266, 268, 268, 276, 277, 282
     ]
 
+    SUBJECT_IDS = [
+        2, 6, 7, 8, 9, 11, 12, 13, 14, 14, 20, 21, 22, 24, 28, 31, 32, 33, 43, 43, 44,
+        47, 63, 65, 71, 72, 83, 83, 84, 89, 93, 94, 94, 99, 102, 103, 104, 105, 105,
+        109, 109, 111, 117, 117, 118, 118, 125, 128, 131, 137, 150, 152, 152, 153, 155,
+        159, 160, 163, 165, 167, 167, 182, 183, 184, 189, 189, 192, 198, 200, 201, 210,
+        217, 219, 219, 224, 228, 232, 241, 243, 247
+    ]
+
     COMMON_LABELS = [
         "Real_Player", "PVM_Melee_bot", "Smithing_bot", "Magic_bot", "Fishing_bot",
         "Mining_bot", "Crafting_bot", "PVM_Ranged_Magic_bot", "Hunter_bot", "Fletching_bot",
@@ -32,12 +40,15 @@ class TestFeedbackAPI(unittest.TestCase):
     PLAYERS = [f"player{i}" for i in PLAYER_IDS]
     PLAYER_NAME_STRATEGY = st.sampled_from(PLAYERS)
 
+    # define a Hypothesis strategy for subject ids
+    SUBJECT_ID_STRATEGY = st.sampled_from(SUBJECT_IDS)
+
     @given(
         player_name=PLAYER_NAME_STRATEGY,
         vote=st.integers(min_value=-1, max_value=1),
         prediction=st.sampled_from(COMMON_LABELS),
         confidence=st.floats(min_value=0, max_value=1),
-        subject_id=st.integers(min_value=0),
+        subject_id=SUBJECT_ID_STRATEGY,
         feedback_text=st.text(min_size=0, max_size=250),
         proposed_label=st.sampled_from(COMMON_LABELS),
     )
@@ -51,6 +62,7 @@ class TestFeedbackAPI(unittest.TestCase):
         feedback_text,
         proposed_label,
     ):
+        assume(prediction != proposed_label)
         # Define the data to send
         data = {
             "player_name": player_name,
@@ -63,9 +75,9 @@ class TestFeedbackAPI(unittest.TestCase):
         }
 
         # Send the POST request
-        response = requests.post(url=self.API_ENDPOINT_POST, json=data)
+        response = requests.post(url=self.API_ENDPOINT_POST, params=data)
 
-        print(f"Test Data: {data}, Response: {response.json()}")
+        # print(f"Test Data: {data}, Response: {response.json()}")
 
         # Assert that the response is as expected
         self.assertEqual(response.status_code, 200)

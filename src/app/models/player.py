@@ -136,21 +136,40 @@ class Player:
 
     async def post_feedback(self, feedback: FeedbackInput):
         async with self.session:
-            # check if the player exists
+            # check player exists
             user_query = select(dbPlayer).where(dbPlayer.name == feedback.player_name)
-            user_insert = dbPlayer(name=feedback.player_name)
             user_result: AsyncResult = await self.session.execute(user_query)
+
             # create player if it does not exist
+            user_insert = dbPlayer(name=feedback.player_name)
             if not user_result.scalar():
-                user_result: AsyncResult = await self.session.execute(user_insert)
+                logger.info(f"creating new feedback player {feedback.player_name}")
+                user_insert_result: AsyncResult = await self.session.execute(user_insert)
+                user_result: AsyncResult = await self.session.execute(user_query)
 
-            # if the subject exists create a new feedback entry else create a new player and feedback entry
-            subject = await self.session.execute(
-                select(dbPlayer).where(dbPlayer.name == feedback.subject_id)
-            )
+            # check subject_id exists in dbPlayer
+            subject_query = select(dbPlayer).where(dbPlayer.id == feedback.subject_id)
+            subject_result: AsyncResult = await self.session.execute(subject_query)
+            if not subject_result.scalar():
+                logger.warning("invalid subject_id")
+                return None
 
-            # no clue what else?
+            # if the subject exists create a new feedback entry
+            if subject_result.scalar():
+                logger.info(f"creating new feedback for {feedback.subject_id}")
+                subject_insert_feedback = dbFeedback(
+                    voter_id=user_result.scalar().id,
+                    subject_id=feedback.subject_id,
+                    vote=feedback.vote,
+                    prediction=feedback.prediction,
+                    confidence=feedback.confidence,
+                    feedback_text=feedback.feedback_text,
+                    proposed_label=feedback.proposed_label,
+                )
+                subject_feedback_result: AsyncResult = await self.session.execute(subject_insert_feedback)
 
-            self.session.add(dbFeedback(**feedback.dict()))
-            await self.session.commit()
+            if subject_feedback_result.rowcount < 1:
+                logger.error("invalid feedback given")
+                return None
+
         return

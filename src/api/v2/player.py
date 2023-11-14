@@ -107,7 +107,7 @@ async def get_prediction(
     return [PredictionResponse.from_data(d, breakdown) for d in data]
 
 
-@router.get("/player/feedback", response_model=Ok, status_code=status.HTTP_201_CREATED)
+@router.post("/player/feedback", response_model=Ok, status_code=status.HTTP_201_CREATED)
 async def get_feedback(
     feedback: FeedbackInput,
     session=Depends(get_session),
