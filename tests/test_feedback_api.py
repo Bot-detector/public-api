@@ -38,7 +38,7 @@ class TestFeedbackAPI(unittest.TestCase):
         prediction=st.sampled_from(COMMON_LABELS),
         confidence=st.floats(min_value=0, max_value=1),
         subject_id=st.integers(min_value=0),
-        feedback_text=st.text(min_value=0, max_value=250),
+        feedback_text=st.text(min_size=0, max_size=250),
         proposed_label=st.sampled_from(COMMON_LABELS),
     )
     def test_post_feedback_valid_data(
