@@ -17,7 +17,7 @@ class PredictionResponse(BaseModel):
         player_data = {
             "player_id": data.pop("id"),
             "player_name": data.pop("name"),
-            "prediction_label": data.pop("prediction"),
+            "prediction_label": data.pop("prediction").lower(),
             "prediction_confidence": data.pop("predicted_confidence") / 100.0,
             "created": data.pop("created"),
             "predictions_breakdown": {
