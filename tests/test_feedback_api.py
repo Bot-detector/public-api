@@ -28,11 +28,11 @@ class TestFeedbackAPI(unittest.TestCase):
     ]
 
     COMMON_LABELS = [
-        "Real_Player", "PVM_Melee_bot", "Smithing_bot", "Magic_bot", "Fishing_bot",
-        "Mining_bot", "Crafting_bot", "PVM_Ranged_Magic_bot", "Hunter_bot", "Fletching_bot",
-        "LMS_bot", "Agility_bot", "Wintertodt_bot", "Runecrafting_bot", "Zalcano_bot",
-        "Woodcutting_bot", "Thieving_bot", "Soul_Wars_bot", "Cooking_bot", "Vorkath_bot",
-        "Barrows_bot", "Herblore_bot", "Zlrah_bot", "Unknown_bot", "Something_else", "Unsure"
+        "real_player", "pvm_melee_bot", "smithing_bot", "magic_bot", "fishing_bot",
+        "mining_bot", "crafting_bot", "pvm_ranged_magic_bot", "hunter_bot", "fletching_bot",
+        "lms_bot", "agility_bot", "wintertodt_bot", "runecrafting_bot", "zalcano_bot",
+        "woodcutting_bot", "thieving_bot", "soul_wars_bot", "cooking_bot", "vorkath_bot",
+        "barrows_bot", "herblore_bot", "zlrah_bot", "unknown_bot", "something_else", "unsure"
     ]
     # fmt: on
 
@@ -75,9 +75,9 @@ class TestFeedbackAPI(unittest.TestCase):
         }
 
         # Send the POST request
-        response = requests.post(url=self.API_ENDPOINT_POST, params=data)
+        response = requests.post(url=self.API_ENDPOINT_POST, json=data)
 
-        # print(f"Test Data: {data}, Response: {response.json()}")
+        print(f"Test Data:\n{data}\nResponse:\n{response.json()}")
 
         # Assert that the response is as expected
         self.assertEqual(response.status_code, 200)
