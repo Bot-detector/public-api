@@ -4,33 +4,7 @@ from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
-
-class PlayerLabel(Enum):
-    real_player = "real_player"
-    pvm_melee_bot = "pvm_melee_bot"
-    smithing_bot = "smithing_bot"
-    magic_bot = "magic_bot"
-    fishing_bot = "fishing_bot"
-    mining_bot = "mining_bot"
-    crafting_bot = "crafting_bot"
-    pvm_ranged_magic_bot = "pvm_ranged_magic_bot"
-    pvm_ranged_bot = "pvm_ranged_bot"
-    hunter_bot = "hunter_bot"
-    fletching_bot = "fletching_bot"
-    clue_scroll_bot = "clue_scroll_bot"
-    lms_bot = "lms_bot"
-    agility_bot = "agility_bot"
-    wintertodt_bot = "wintertodt_bot"
-    runecrafting_bot = "runecrafting_bot"
-    zalcano_bot = "zalcano_bot"
-    woodcutting_bot = "woodcutting_bot"
-    thieving_bot = "thieving_bot"
-    soul_wars_bot = "soul_wars_bot"
-    cooking_bot = "cooking_bot"
-    vorkath_bot = "vorkath_bot"
-    barrows_bot = "barrows_bot"
-    herblore_bot = "herblore_bot"
-    unknown_bot = "unknown_bot"
+from src.core.fastapi.dependencies.player_label import PlayerLabel
 
 
 class FeedbackInput(BaseModel):

@@ -22,31 +22,6 @@ class Player:
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
 
-    def _to_jagex_name(self, feedback: FeedbackInput):
-        formatted_name = to_jagex_name(feedback.player_name)
-        # name should be 1-13 characters
-        if (
-            formatted_name is not None
-            and len(formatted_name) > 0
-            and len(formatted_name) < 14
-        ):
-            feedback.player_name = formatted_name
-            return feedback
-        else:
-            return None
-
-    async def parse_feedback(self, feedback: FeedbackInput):
-        """
-        Validate feedback data
-        """
-
-        data = self._to_jagex_name(feedback)
-        if not data:
-            logger.warning("invalid name")
-            return None
-
-        return data
-
     async def get_report_score(self, player_names: tuple[str]):
         """
         Retrieve Kill Count (KC) data for a list of player names.
@@ -144,7 +119,9 @@ class Player:
             user_insert = dbPlayer(name=feedback.player_name)
             if not user_result.scalar():
                 logger.info(f"creating new feedback player {feedback.player_name}")
-                user_insert_result: AsyncResult = await self.session.execute(user_insert)
+                user_insert_result: AsyncResult = await self.session.execute(
+                    user_insert
+                )
                 user_result: AsyncResult = await self.session.execute(user_query)
 
             # check subject_id exists in dbPlayer
@@ -166,7 +143,9 @@ class Player:
                     feedback_text=feedback.feedback_text,
                     proposed_label=feedback.proposed_label,
                 )
-                subject_feedback_result: AsyncResult = await self.session.execute(subject_insert_feedback)
+                subject_feedback_result: AsyncResult = await self.session.execute(
+                    subject_insert_feedback
+                )
 
             if subject_feedback_result.rowcount < 1:
                 logger.error("invalid feedback given")

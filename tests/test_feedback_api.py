@@ -4,6 +4,8 @@ import requests
 from hypothesis import assume, given, settings
 from hypothesis import strategies as st
 
+from src.core.fastapi.dependencies.player_label import PlayerLabel
+
 
 class TestFeedbackAPI(unittest.TestCase):
     API_ENDPOINT_GET = "http://localhost:5000/v2/player/feedback/score"
@@ -26,16 +28,10 @@ class TestFeedbackAPI(unittest.TestCase):
         159, 160, 163, 165, 167, 167, 182, 183, 184, 189, 189, 192, 198, 200, 201, 210,
         217, 219, 219, 224, 228, 232, 241, 243, 247
     ]
-
-    COMMON_LABELS = [
-        "real_player", "pvm_melee_bot", "smithing_bot", "magic_bot", "fishing_bot",
-        "mining_bot", "crafting_bot", "pvm_ranged_magic_bot", "hunter_bot", "fletching_bot",
-        "lms_bot", "agility_bot", "wintertodt_bot", "runecrafting_bot", "zalcano_bot",
-        "woodcutting_bot", "thieving_bot", "soul_wars_bot", "cooking_bot", "vorkath_bot",
-        "barrows_bot", "herblore_bot", "zlrah_bot", "unknown_bot", "something_else", "unsure"
-    ]
     # fmt: on
 
+    COMMON_LABELS = [label.value for label in PlayerLabel.__members__.values()]
+    print(COMMON_LABELS)
     # Define a Hypothesis strategy for player names
     PLAYERS = [f"player{i}" for i in PLAYER_IDS]
     PLAYER_NAME_STRATEGY = st.sampled_from(PLAYERS)

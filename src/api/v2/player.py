@@ -108,7 +108,7 @@ async def get_prediction(
 
 
 @router.post("/player/feedback", response_model=Ok, status_code=status.HTTP_201_CREATED)
-async def get_feedback(
+async def post_feedback(
     feedback: FeedbackInput,
     session=Depends(get_session),
 ):
@@ -126,10 +126,7 @@ async def get_feedback(
 
     """
     player = Player(session)
-    data = await player.parse_feedback(feedback)
-    if not data:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid feedback"
-        )
+
+    feedback.player_name = await to_jagex_name(feedback.player_name)
     await player.post_feedback(feedback)
     return Ok()
