@@ -136,29 +136,13 @@ class Player:
 
     async def post_feedback(self, feedback: FeedbackInput):
         async with self.session:
-            # check if the player name is anonymoususer
-            if feedback.player_name == "anonymoususer":
-                # check if the player exists
-                anonymous_user_query = select(dbPlayer).where(
-                    dbPlayer.name == "anonymoususer"
-                )
-                anonymous_user_insert = dbPlayer(name="anonymoususer")
-                anonymous_result: AsyncResult = await self.session.execute(anonymous_user_query)
-                # create anonymoususer if it does not exist
-                if not anonymous_result.scalar():
-                    anonymous_result: AsyncResult = await self.session.execute(anonymous_user_insert)
-
-                    await self.session.commit()
-
             # check if the player exists
-            player = await self.session.execute(
-                select(dbPlayer).where(dbPlayer.name == feedback.player_name)
-            )
-
+            user_query = select(dbPlayer).where(dbPlayer.name == feedback.player_name)
+            user_insert = dbPlayer(name=feedback.player_name)
+            user_result: AsyncResult = await self.session.execute(user_query)
             # create player if it does not exist
-            if not player.scalar():
-                self.session.add(dbPlayer(name=feedback.player_name))
-                await self.session.commit()
+            if not user_result.scalar():
+                user_result: AsyncResult = await self.session.execute(user_insert)
 
             # if the subject exists create a new feedback entry else create a new player and feedback entry
             subject = await self.session.execute(
