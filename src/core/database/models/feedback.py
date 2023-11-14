@@ -13,7 +13,7 @@ from src.core.database.database import Base
 
 
 class PredictionFeedback(Base):
-    __tablename__ = "PredictionFeedback"
+    __tablename__ = "PredictionsFeedback"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     ts = Column(TIMESTAMP, nullable=False, server_default="CURRENT_TIMESTAMP")

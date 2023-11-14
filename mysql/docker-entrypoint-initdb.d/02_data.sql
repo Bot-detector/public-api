@@ -212,7 +212,7 @@ INSERT INTO playerdata.Labels (label) VALUES
     ('Zulrah_bot')
 ;
 
-INSERT INTO PredictionFeedback (voter_id, subject_id, prediction, confidence, feedback_text, vote, proposed_label)
+INSERT INTO PredictionsFeedback (voter_id, subject_id, prediction, confidence, feedback_text, vote, proposed_label)
 SELECT 
     pl1.id AS voter_id, 
     pl2.id AS subject_id,
@@ -231,7 +231,7 @@ JOIN Predictions pr ON pr.id = pl2.id
 ORDER BY RAND(42)
 LIMIT 100;
 
-UPDATE PredictionFeedback
+UPDATE PredictionsFeedback
     SET proposed_label = prediction
 WHERE 1=1
     AND vote = 1

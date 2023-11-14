@@ -73,7 +73,7 @@ class Player:
                 reported_player.possible_ban,
                 reported_player.confirmed_ban,
                 reported_player.confirmed_player,
-                dbReport.manual_detect,
+                func.coalesce(dbReport.manual_detect, 0).label("manual_detect"),
             ]
         )
         query = query.select_from(dbReport)

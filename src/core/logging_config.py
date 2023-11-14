@@ -32,12 +32,12 @@ logging.getLogger("uvicorn").setLevel(logging.DEBUG)
 logging.getLogger("aiomysql").setLevel(logging.ERROR)
 logging.getLogger("aiokafka").setLevel(logging.WARNING)
 
-if settings.ENV == "PRD":
-    uvicorn_error = logging.getLogger("uvicorn.error")
-    uvicorn_error.disabled = True
-    uvicorn_access = logging.getLogger("uvicorn.access")
-    uvicorn_access.disabled = True
+# if settings.ENV == "PRD":
+#     uvicorn_error = logging.getLogger("uvicorn.error")
+#     uvicorn_error.disabled = True
+#     uvicorn_access = logging.getLogger("uvicorn.access")
+#     uvicorn_access.disabled = True
 
-# https://github.com/aio-libs/aiomysql/issues/103
-# https://github.com/coleifer/peewee/issues/2229
-warnings.filterwarnings("ignore", ".*Duplicate entry.*")
+# # https://github.com/aio-libs/aiomysql/issues/103
+# # https://github.com/coleifer/peewee/issues/2229
+# warnings.filterwarnings("ignore", ".*Duplicate entry.*")
