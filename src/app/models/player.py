@@ -49,7 +49,7 @@ class Player:
             reporting_player, dbReport.reportingID == reporting_player.id
         )
         query = query.join(reported_player, dbReport.reportedID == reported_player.id)
-        query = query.where(dbPlayer.name.in_(player_names))
+        query = query.where(reporting_player.name.in_(player_names))
         query = query.group_by(
             reported_player.possible_ban,
             reported_player.confirmed_ban,
