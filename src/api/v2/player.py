@@ -6,7 +6,9 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic.fields import Field
 
 from src.app.models.player import Player
+from src.app.views.input.feedback import FeedbackInput
 from src.app.views.response.feedback_score import FeedbackScoreResponse
+from src.app.views.response.ok import Ok
 from src.app.views.response.prediction import PredictionResponse
 from src.app.views.response.report_score import ReportScoreResponse
 from src.core.fastapi.dependencies.session import get_session
@@ -103,3 +105,31 @@ async def get_prediction(
             status_code=status.HTTP_404_NOT_FOUND, detail="Player not found"
         )
     return [PredictionResponse.from_data(d, breakdown) for d in data]
+
+
+@router.get("/player/feedback", response_model=Ok, status_code=status.HTTP_201_CREATED)
+async def get_feedback(
+    feedback: FeedbackInput,
+    session=Depends(get_session),
+):
+    """
+    Submit feedback for a player.
+
+    Args:
+        feedback (FeedbackInput): A FeedbackInput object containing the feedback data.
+
+    Returns:
+        Ok: An Ok object containing the message "Feedback submitted successfully".
+
+    Raises:
+        HTTPException: Returns a 400 error with the message "Invalid feedback" if the feedback is invalid.
+
+    """
+    player = Player(session)
+    data = await player.parse_feedback(feedback)
+    if not data:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid feedback"
+        )
+    await player.post_feedback(feedback)
+    return Ok()
