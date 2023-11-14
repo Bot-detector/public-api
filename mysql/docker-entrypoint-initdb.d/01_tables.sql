@@ -86,7 +86,7 @@ CREATE TABLE Predictions (
     unknown_bot DECIMAL(5, 2) DEFAULT 0
 );
 -- Create a table for Feedback
-CREATE TABLE PredictionFeedback (
+CREATE TABLE PredictionsFeedback (
     id INT PRIMARY KEY AUTO_INCREMENT,
     ts TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     voter_id INT NOT NULL,
