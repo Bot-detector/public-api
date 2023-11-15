@@ -6,4 +6,3 @@ class FeedbackScoreResponse(BaseModel):
     possible_ban: bool
     confirmed_ban: bool
     confirmed_player: bool
-    vote: int
