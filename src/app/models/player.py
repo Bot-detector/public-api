@@ -63,29 +63,25 @@ class Player:
 
     async def get_feedback_score(self, player_names: list[str]):
         # dbFeedback
-        feedback_voter: dbPlayer = aliased(dbPlayer, name="feedback_voter")
-        feedback_subject: dbPlayer = aliased(dbPlayer, name="feedback_subject")
+        fb_voter: dbPlayer = aliased(dbPlayer, name="feedback_voter")
+        fb_subject: dbPlayer = aliased(dbPlayer, name="feedback_subject")
 
         query: Select = select(
             [
-                func.count(func.distinct(feedback_subject.id)).label("count"),
-                feedback_subject.possible_ban,
-                feedback_subject.confirmed_ban,
-                feedback_subject.confirmed_player,
-                dbFeedback.vote,
+                func.count(func.distinct(fb_subject.id)).label("count"),
+                fb_subject.possible_ban,
+                fb_subject.confirmed_ban,
+                fb_subject.confirmed_player,
             ]
         )
         query = query.select_from(dbFeedback)
-        query = query.join(feedback_voter, dbFeedback.voter_id == feedback_voter.id)
-        query = query.join(
-            feedback_subject, dbFeedback.subject_id == feedback_subject.id
-        )
-        query = query.where(feedback_voter.name.in_(player_names))
+        query = query.join(fb_voter, dbFeedback.voter_id == fb_voter.id)
+        query = query.join(fb_subject, dbFeedback.subject_id == fb_subject.id)
+        query = query.where(fb_voter.name.in_(player_names))
         query = query.group_by(
-            feedback_subject.possible_ban,
-            feedback_subject.confirmed_ban,
-            feedback_subject.confirmed_player,
-            dbFeedback.vote,
+            fb_subject.possible_ban,
+            fb_subject.confirmed_ban,
+            fb_subject.confirmed_player,
         )
 
         async with self.session:
