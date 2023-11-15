@@ -136,13 +136,11 @@ async def post_feedback(
             logger.debug(f"creating new feedback player {feedback.player_name}")
             player_id = await player.add_player(feedback.player_name)
             logger.debug(f"new player_id is: {player_id}")
-            return Ok()
         if not feedback.player_name.startswith("anonymoususer "):
             logger.error("invalid player_name")
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 detail="Could not find voter in registry.",
             )
-    # await player.post_feedback(feedback, player_id)
-    # return Ok()
+    await player.post_feedback(feedback, player_id)
     return Ok()
