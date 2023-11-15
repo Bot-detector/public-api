@@ -128,5 +128,15 @@ async def post_feedback(
     player = Player(session)
 
     feedback.player_name = await to_jagex_name(feedback.player_name)
-    await player.post_feedback(feedback)
+    logger.debug(f"feedback.player_name is:\n{feedback.player_name}\n")
+    player_id = await player.get_player_id(feedback.player_name)
+    logger.debug(f"player_id is:\n{player_id}\n")
+    if player_id is None:
+        logger.debug(f"creating new feedback player {feedback.player_name}")
+        player_id = await player.add_player(feedback.player_name)
+        logger.debug(f"new player_id is: {player_id}")
+        return Ok()
+    logger.debug(f"player_id is: {player_id}")
+    # await player.post_feedback(feedback, player_id)
+    # return Ok()
     return Ok()

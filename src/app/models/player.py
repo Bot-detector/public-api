@@ -109,33 +109,37 @@ class Player:
             result = result.scalars().all()
         return jsonable_encoder(result)
 
-    async def post_feedback(self, feedback: FeedbackInput):
+    async def get_player_id(self, player_name: str):
+        user_query = select(dbPlayer).where(dbPlayer.name == player_name)
         async with self.session:
-            # check player exists
-            user_query = select(dbPlayer).where(dbPlayer.name == feedback.player_name)
             user_result: AsyncResult = await self.session.execute(user_query)
+            player = user_result.scalar_one_or_none()
+            return player.id if player else None
 
-            # create player if it does not exist
-            user_insert = dbPlayer(name=feedback.player_name)
-            if not user_result.scalar():
-                logger.info(f"creating new feedback player {feedback.player_name}")
-                user_insert_result: AsyncResult = await self.session.execute(
-                    user_insert
-                )
-                user_result: AsyncResult = await self.session.execute(user_query)
+    async def add_player(self, player_name: str):
+        async with self.session:
+            logger.info(f"creating new feedback player {player_name}")
+            new_player = dbPlayer(name=player_name)
+            self.session.add(new_player)
+            await self.session.commit()
+            await self.session.refresh(new_player)
+            player_id = new_player.id
+            return player_id
 
+    async def post_feedback(self, feedback: FeedbackInput, player_id: int):
+        async with self.session:
             # check subject_id exists in dbPlayer
             subject_query = select(dbPlayer).where(dbPlayer.id == feedback.subject_id)
             subject_result: AsyncResult = await self.session.execute(subject_query)
-            if not subject_result.scalar():
+            if not subject_result.scalar_one_or_none():
                 logger.warning("invalid subject_id")
                 return None
 
             # if the subject exists create a new feedback entry
-            if subject_result.scalar():
+            if subject_result.scalar_one_or_none():
                 logger.info(f"creating new feedback for {feedback.subject_id}")
-                subject_insert_feedback = dbFeedback(
-                    voter_id=user_result.scalar().id,
+                new_feedback = dbFeedback(
+                    voter_id=player_id,
                     subject_id=feedback.subject_id,
                     vote=feedback.vote,
                     prediction=feedback.prediction,
@@ -143,11 +147,12 @@ class Player:
                     feedback_text=feedback.feedback_text,
                     proposed_label=feedback.proposed_label,
                 )
-                subject_feedback_result: AsyncResult = await self.session.execute(
-                    subject_insert_feedback
-                )
+                self.session.add(new_feedback)
+                await self.session.commit()
+                await self.session.refresh(new_feedback)
+                subject_feedback_result = new_feedback
 
-            if subject_feedback_result.rowcount < 1:
+            if not subject_feedback_result:
                 logger.error("invalid feedback given")
                 return None
 

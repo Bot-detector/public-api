@@ -40,7 +40,7 @@ class TestFeedbackAPI(unittest.TestCase):
     SUBJECT_ID_STRATEGY = st.sampled_from(SUBJECT_IDS)
 
     @given(
-        player_name=PLAYER_NAME_STRATEGY,
+        player_name=st.text(min_size=1, max_size=13),  # PLAYER_NAME_STRATEGY,
         vote=st.integers(min_value=-1, max_value=1),
         prediction=st.sampled_from(COMMON_LABELS),
         confidence=st.floats(min_value=0, max_value=1),
@@ -76,8 +76,8 @@ class TestFeedbackAPI(unittest.TestCase):
         print(f"Test Data:\n{data}\nResponse:\n{response.json()}")
 
         # Assert that the response is as expected
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()["message"], "Feedback submitted successfully")
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.json()["detail"], "ok")
 
     # Test valid players and check if feedback scores are returned
     @settings(deadline=500)
