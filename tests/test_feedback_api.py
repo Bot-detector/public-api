@@ -5,12 +5,10 @@ import requests
 from hypothesis import assume, given, settings
 from hypothesis import strategies as st
 
-from src.core.fastapi.dependencies.player_label import PlayerLabel
-
 
 class TestFeedbackAPI(unittest.TestCase):
     API_ENDPOINT_GET = "http://localhost:5000/v2/player/feedback/score"
-    API_ENDPOINT_POST = "http://localhost:5000/v2/player/feedback"
+    API_ENDPOINT_POST = "http://localhost:5000/feedback"
 
     # fmt: off
     PLAYER_IDS = [
@@ -31,16 +29,13 @@ class TestFeedbackAPI(unittest.TestCase):
     ]
     # fmt: on
 
-    COMMON_LABELS = [label.value for label in PlayerLabel.__members__.values()]
+    COMMON_LABELS = ["real_player", "fishing_bot", "mining_bot"]
     print(COMMON_LABELS)
     # Define a Hypothesis strategy for player names
     PLAYERS = [f"player{i}" for i in PLAYER_IDS]
     PLAYER_NAME_STRATEGY = st.sampled_from(PLAYERS)
 
-    ANON = [
-        f"anonymoususer {str(uuid.uuid4()).replace('-', ' ')}"
-        for _ in range(len(PLAYER_IDS))
-    ]
+    ANON = [f"anonymoususer {str(uuid.uuid4())}" for _ in range(10)]
     ANON_NAME_STRATEGY = st.sampled_from(ANON)
 
     # define a Hypothesis strategy for subject ids

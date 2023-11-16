@@ -6,9 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic.fields import Field
 
 from src.app.models.player import Player
-from src.app.views.input.feedback import FeedbackInput
 from src.app.views.response.feedback_score import FeedbackScoreResponse
-from src.app.views.response.ok import Ok
 from src.app.views.response.prediction import PredictionResponse
 from src.app.views.response.report_score import ReportScoreResponse
 from src.core.fastapi.dependencies.session import get_session
@@ -105,42 +103,3 @@ async def get_prediction(
             status_code=status.HTTP_404_NOT_FOUND, detail="Player not found"
         )
     return [PredictionResponse.from_data(d, breakdown) for d in data]
-
-
-@router.post("/player/feedback", response_model=Ok, status_code=status.HTTP_201_CREATED)
-async def post_feedback(
-    feedback: FeedbackInput,
-    session=Depends(get_session),
-):
-    """
-    Submit feedback for a player.
-
-    Args:
-        feedback (FeedbackInput): A FeedbackInput object containing the feedback data.
-
-    Returns:
-        Ok: An Ok object containing the message "Feedback submitted successfully".
-
-    Raises:
-        HTTPException: Returns a 400 error with the message "Invalid feedback" if the feedback is invalid.
-
-    """
-    player = Player(session)
-
-    feedback.player_name = await to_jagex_name(feedback.player_name)
-    logger.debug(f"feedback.player_name is:\n{feedback.player_name}\n")
-    player_id = await player.get_player_id(feedback.player_name)
-    logger.debug(f"player_id is:\n{player_id}\n")
-    if player_id is None:
-        if feedback.player_name.startswith("anonymoususer "):
-            logger.debug(f"creating new feedback player {feedback.player_name}")
-            player_id = await player.add_player(feedback.player_name)
-            logger.debug(f"new player_id is: {player_id}")
-        if not feedback.player_name.startswith("anonymoususer "):
-            logger.error("invalid player_name")
-            raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail="Could not find voter in registry.",
-            )
-    await player.post_feedback(feedback, player_id)
-    return Ok()
