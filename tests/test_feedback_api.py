@@ -8,7 +8,7 @@ from hypothesis import strategies as st
 
 class TestFeedbackAPI(unittest.TestCase):
     API_ENDPOINT_GET = "http://localhost:5000/v2/player/feedback/score"
-    API_ENDPOINT_POST = "http://localhost:5000/feedback"
+    API_ENDPOINT_POST = "http://localhost:5000/v2/feedback"
 
     # fmt: off
     PLAYER_IDS = [
