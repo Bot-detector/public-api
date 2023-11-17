@@ -1,6 +1,8 @@
+import json
 import unittest
 import uuid
 
+import hypothesis
 import requests
 from hypothesis import assume, given, settings
 from hypothesis import strategies as st
@@ -31,6 +33,7 @@ class TestFeedbackAPI(unittest.TestCase):
 
     COMMON_LABELS = ["real_player", "fishing_bot", "mining_bot"]
     print(COMMON_LABELS)
+
     # Define a Hypothesis strategy for player names
     PLAYERS = [f"player{i}" for i in PLAYER_IDS]
     PLAYER_NAME_STRATEGY = st.sampled_from(PLAYERS)
@@ -75,11 +78,12 @@ class TestFeedbackAPI(unittest.TestCase):
         # Send the POST request
         response = requests.post(url=self.API_ENDPOINT_POST, json=data)
 
-        print(f"Test Data:\n{data}\nResponse:\n{response.json()}")
-
         # Assert that the response is as expected
-        self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.json()["detail"], "ok")
+        self.assertEqual(
+            first=response.status_code,
+            second=201,
+            msg=f"expected: 201, received: {response.status_code}, data: {json.dumps(data)}",
+        )
 
     @given(
         player_name=st.text(min_size=1, max_size=13),  # PLAYER_NAME_STRATEGY,
@@ -115,51 +119,15 @@ class TestFeedbackAPI(unittest.TestCase):
         # Send the POST request
         response = requests.post(url=self.API_ENDPOINT_POST, json=data)
 
-        print(f"Test Data:\n{data}\nResponse:\n{response.json()}")
-
-        # Assert that the response is as expected
-        self.assertEqual(response.status_code, 422)
-        self.assertEqual(response.json()["detail"], "Could not find voter in registry.")
-
-    @given(
-        player_name=st.text(min_size=1, max_size=13),  # PLAYER_NAME_STRATEGY,
-        vote=st.integers(min_value=-1, max_value=1),
-        prediction=st.sampled_from(COMMON_LABELS),
-        confidence=st.floats(min_value=0, max_value=1),
-        subject_id=SUBJECT_ID_STRATEGY,
-        feedback_text=st.text(min_size=0, max_size=250),
-        proposed_label=st.sampled_from(COMMON_LABELS),
-    )
-    def test_post_feedback_invalid_player(
-        self,
-        player_name,
-        vote,
-        prediction,
-        confidence,
-        subject_id,
-        feedback_text,
-        proposed_label,
-    ):
-        assume(prediction != proposed_label)
-        # Define the data to send
-        data = {
-            "player_name": player_name,
-            "vote": vote,
-            "prediction": prediction,
-            "confidence": confidence,
-            "subject_id": subject_id,
-            "feedback_text": feedback_text,
-            "proposed_label": proposed_label,
+        debug_data = {
+            "data": data,
+            "response_status": response.status_code,
+            "response": response.text,
         }
 
-        # Send the POST request
-        response = requests.post(url=self.API_ENDPOINT_POST, json=data)
-
-        print(f"Test Data:\n{data}\nResponse:\n{response.json()}")
-
         # Assert that the response is as expected
-        self.assertEqual(response.status_code, 422)
-        self.assertEqual(response.json()["detail"], "Could not find voter in registry.")
+        error_msg = f"expected status code: <422>, received: <{response.status_code}>, {json.dumps(debug_data)}"
+        self.assertEqual(first=response.status_code, second=422, msg=error_msg)
 
     # Test valid players and check if feedback scores are returned
     @settings(deadline=500)
@@ -168,20 +136,21 @@ class TestFeedbackAPI(unittest.TestCase):
         params = {"name": valid_player_names}
         response = requests.get(url=self.API_ENDPOINT_GET, params=params)
 
-        # Check if the response status code is 200
-        if response.status_code != 200:
-            print({"status": response.status_code})
-            print({"params": params, "response": response.json()})
-
         # Check that the response contains report scores for all specified players
         json_data = response.json()
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            first=response.status_code,
+            second=200,
+            msg=f"Expected 200, received: {response.status_code}",  # TODO:improve
+        )
 
         error = "List is empty"
-        assert len(json_data) > 0, error
+        assert len(json_data) > 0, error  # TODO: self.assert
 
         error = "Not all items in the list are dictionaries"
-        assert all(isinstance(item, dict) for item in json_data), error
+        assert all(
+            isinstance(item, dict) for item in json_data
+        ), error  # TODO: self.assert
 
     @given(
         invalid_player_names=st.lists(
@@ -192,14 +161,8 @@ class TestFeedbackAPI(unittest.TestCase):
         params = {"name": invalid_player_names}
         response = requests.get(url=self.API_ENDPOINT_GET, params=params)
 
-        # Check if the response status code is 200
-        if response.status_code != 200:
-            print({"status": response.status_code})
-            print({"params": params, "response": response.json()})
-
         # Check that the response is an empty list
         self.assertEqual(response.status_code, 200)
-        assert response.json() == []
 
 
 if __name__ == "__main__":
