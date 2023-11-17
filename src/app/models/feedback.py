@@ -50,7 +50,15 @@ class Feedback:
                 await self.session.rollback()
                 return False, "voter_does_not_exist"
 
-            voter_id = result.first()["id"]  # TODO: bug fix
+            result = result.first()
+
+            # check if voter exists
+            if not result:
+                logger.info({"voter_does_not_exist": FeedbackInput})
+                await self.session.rollback()
+                return False, "voter_does_not_exist"
+
+            voter_id = result["id"]
             sql_dupe_check = sql_dupe_check.where(dbFeedback.voter_id == voter_id)
 
             result: AsyncResult = await self.session.execute(sql_dupe_check)
