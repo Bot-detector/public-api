@@ -1,3 +1,4 @@
+import hashlib
 import json
 import unittest
 import uuid
@@ -6,6 +7,11 @@ import hypothesis
 import requests
 from hypothesis import assume, given, settings
 from hypothesis import strategies as st
+
+
+def generate_anon_name(i):
+    md5_hash = hashlib.md5(str(i).encode()).hexdigest()
+    return f"anonymoususer {md5_hash[:8]} {md5_hash[8:12]} {md5_hash[12:16]} {md5_hash[16:20]} {md5_hash[20:]}"
 
 
 class TestFeedbackAPI(unittest.TestCase):
@@ -31,6 +37,8 @@ class TestFeedbackAPI(unittest.TestCase):
     ]
     # fmt: on
 
+    ANON_IDS = [301, 302, 303, 304, 305, 306, 307, 308, 309, 310]
+
     COMMON_LABELS = ["real_player", "fishing_bot", "mining_bot"]
     print(COMMON_LABELS)
 
@@ -38,53 +46,65 @@ class TestFeedbackAPI(unittest.TestCase):
     PLAYERS = [f"player{i}" for i in PLAYER_IDS]
     PLAYER_NAME_STRATEGY = st.sampled_from(PLAYERS)
 
-    ANON = [f"anonymoususer {str(uuid.uuid4())}" for _ in range(10)]
+    ANON = []
+    for i in range(10):
+        ANON.append(generate_anon_name(i))
+    print(ANON)
+
+    # ANON = [f"anonymoususer {str(uuid.uuid4())}" for _ in range(10)]
     ANON_NAME_STRATEGY = st.sampled_from(ANON)
 
     # define a Hypothesis strategy for subject ids
     SUBJECT_ID_STRATEGY = st.sampled_from(SUBJECT_IDS)
 
+    # define a hypothesis strategy for annon subject ids
+    ANON_ID_STRATEGY = st.sampled_from(ANON_IDS)
+
     # TODO: anon player must first exist
-    # @given(
-    #     player_name=ANON_NAME_STRATEGY,
-    #     vote=st.integers(min_value=-1, max_value=1),
-    #     prediction=st.sampled_from(COMMON_LABELS),
-    #     confidence=st.floats(min_value=0, max_value=1),
-    #     subject_id=SUBJECT_ID_STRATEGY,
-    #     feedback_text=st.text(min_size=0, max_size=250),
-    #     proposed_label=st.sampled_from(COMMON_LABELS),
-    # )
-    # def test_post_feedback_valid_anon(
-    #     self,
-    #     player_name,
-    #     vote,
-    #     prediction,
-    #     confidence,
-    #     subject_id,
-    #     feedback_text,
-    #     proposed_label,
-    # ):
-    #     assume(prediction != proposed_label)
-    #     # Define the data to send
-    #     data = {
-    #         "player_name": player_name,
-    #         "vote": vote,
-    #         "prediction": prediction,
-    #         "confidence": confidence,
-    #         "subject_id": subject_id,
-    #         "feedback_text": feedback_text,
-    #         "proposed_label": proposed_label,
-    #     }
+    @given(
+        player_name=ANON_NAME_STRATEGY,
+        vote=st.integers(min_value=-1, max_value=1),
+        prediction=st.sampled_from(COMMON_LABELS),
+        confidence=st.floats(min_value=0, max_value=1),
+        subject_id=ANON_ID_STRATEGY,
+        feedback_text=st.text(min_size=0, max_size=250),
+        proposed_label=st.sampled_from(COMMON_LABELS),
+    )
+    def test_post_feedback_valid_anon(
+        self,
+        player_name,
+        vote,
+        prediction,
+        confidence,
+        subject_id,
+        feedback_text,
+        proposed_label,
+    ):
+        assume(prediction != proposed_label)
+        # Define the data to send
+        data = {
+            "player_name": player_name,
+            "vote": vote,
+            "prediction": prediction,
+            "confidence": confidence,
+            "subject_id": subject_id,
+            "feedback_text": feedback_text,
+            "proposed_label": proposed_label,
+        }
 
-    #     # Send the POST request
-    #     response = requests.post(url=self.API_ENDPOINT_POST, json=data)
+        # Send the POST request
+        response = requests.post(url=self.API_ENDPOINT_POST, json=data)
 
-    #     # Assert that the response is as expected
-    #     self.assertEqual(
-    #         first=response.status_code,
-    #         second=201,
-    #         msg=f"expected: 201, received: {response.status_code}, data: {json.dumps(data)}",
-    #     )
+        if response.status_code != 201:
+            print({"status": response.status_code})
+            print({"data": data, "response": response.json()})
+
+        # Assert that the response is as expected
+        self.assertEqual(
+            first=response.status_code,
+            second=201,
+            msg=f"expected: 201, received: {response.status_code}, data: {json.dumps(data)}",
+        )
 
     @given(
         player_name=st.text(min_size=1, max_size=13),  # PLAYER_NAME_STRATEGY,
