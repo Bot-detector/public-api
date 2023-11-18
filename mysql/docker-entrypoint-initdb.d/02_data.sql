@@ -51,8 +51,6 @@ call InsertRandomPlayers(100, 0,0,1);
 UPDATE Players
 SET
     name = CONCAT('player', id),
-    created_at = NOW() - INTERVAL FLOOR(RAND(42) * 365) DAY,
-    updated_at = NOW() - INTERVAL FLOOR(RAND(41) * 365) DAY,
     normalized_name = CONCAT('player', id)
 ;
 
@@ -235,4 +233,64 @@ UPDATE PredictionsFeedback
     SET proposed_label = prediction
 WHERE 1=1
     AND vote = 1
+;
+
+DELIMITER $$
+
+CREATE PROCEDURE InsertAnonymousPlayers(IN NUM INT, IN possible_ban BOOL, IN confirmed_ban BOOL, IN confirmed_player BOOL)
+BEGIN
+    DECLARE i INT DEFAULT 1;
+
+    WHILE i <= NUM DO
+        INSERT INTO Players (
+            name,
+            created_at,
+            updated_at,
+            possible_ban,
+            confirmed_ban,
+            confirmed_player,
+            label_id,
+            label_jagex,
+            ironman,
+            hardcore_ironman,
+            ultimate_ironman,
+            normalized_name
+        )
+        SELECT
+            CONCAT('anonymoususer ', 
+                SUBSTRING(MD5(i), 1, 8), ' ', 
+                SUBSTRING(MD5(i), 9, 4), ' ', 
+                SUBSTRING(MD5(i), 13, 4), ' ', 
+                SUBSTRING(MD5(i), 17, 4), ' ', 
+                SUBSTRING(MD5(i), 21, 12)) AS name, -- anonymous user name
+            NOW() AS created_at, -- updated later
+            NOW() AS updated_at, -- updated later
+            possible_ban,
+            confirmed_ban,
+            confirmed_player,
+            0 AS label_id, 
+            ROUND(RAND() * 1) AS label_jagex, -- doesn't matter?
+            null AS ironman,
+            null AS hardcore_ironman,
+            null AS ultimate_ironman,
+            CONCAT('anonymoususer ', 
+                SUBSTRING(MD5(i), 1, 8), ' ', 
+                SUBSTRING(MD5(i), 9, 4), ' ', 
+                SUBSTRING(MD5(i), 13, 4), ' ', 
+                SUBSTRING(MD5(i), 17, 4), ' ', 
+                SUBSTRING(MD5(i), 21, 12)) AS normalized_name -- anonymous user name
+        FROM dual;
+
+        SET i = i + 1;
+    END WHILE;
+END $$
+
+DELIMITER ;
+
+call InsertAnonymousPlayers(10, 1, 0, 0);
+
+UPDATE `Players`
+SET
+    created_at = NOW() - INTERVAL FLOOR(RAND(42) * 365) DAY,
+    updated_at = NOW() - INTERVAL FLOOR(RAND(41) * 365) DAY
 ;
