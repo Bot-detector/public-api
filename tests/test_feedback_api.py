@@ -146,12 +146,10 @@ class TestFeedbackAPI(unittest.TestCase):
         )
 
         error = "List is empty"
-        assert len(json_data) > 0, error  # TODO: self.assert
+        self.assertGreater(len(json_data), 0, msg=error)
 
         error = "Not all items in the list are dictionaries"
-        assert all(
-            isinstance(item, dict) for item in json_data
-        ), error  # TODO: self.assert
+        self.assertTrue(all(isinstance(item, dict) for item in json_data), msg=error)
 
     @given(
         invalid_player_names=st.lists(
