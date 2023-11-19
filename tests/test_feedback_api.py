@@ -1,5 +1,7 @@
 import hashlib
 import json
+import random
+import string
 import unittest
 import uuid
 
@@ -40,7 +42,6 @@ class TestFeedbackAPI(unittest.TestCase):
     ANON_IDS = [301, 302, 303, 304, 305, 306, 307, 308, 309, 310]
 
     COMMON_LABELS = ["real_player", "fishing_bot", "mining_bot"]
-    print(COMMON_LABELS)
 
     # Define a Hypothesis strategy for player names
     PLAYERS = [f"player{i}" for i in PLAYER_IDS]
@@ -48,10 +49,9 @@ class TestFeedbackAPI(unittest.TestCase):
 
     ANON = []
     for i in range(10):
-        ANON.append(generate_anon_name(i))
-    print(ANON)
+        ANON.append(generate_anon_name(i + 1))
 
-    # ANON = [f"anonymoususer {str(uuid.uuid4())}" for _ in range(10)]
+    print(ANON)
     ANON_NAME_STRATEGY = st.sampled_from(ANON)
 
     # define a Hypothesis strategy for subject ids
@@ -61,50 +61,42 @@ class TestFeedbackAPI(unittest.TestCase):
     ANON_ID_STRATEGY = st.sampled_from(ANON_IDS)
 
     # TODO: anon player must first exist
-    @given(
-        player_name=ANON_NAME_STRATEGY,
-        vote=st.integers(min_value=-1, max_value=1),
-        prediction=st.sampled_from(COMMON_LABELS),
-        confidence=st.floats(min_value=0, max_value=1),
-        subject_id=ANON_ID_STRATEGY,
-        feedback_text=st.text(min_size=0, max_size=250),
-        proposed_label=st.sampled_from(COMMON_LABELS),
-    )
-    def test_post_feedback_valid_anon(
-        self,
-        player_name,
-        vote,
-        prediction,
-        confidence,
-        subject_id,
-        feedback_text,
-        proposed_label,
-    ):
-        assume(prediction != proposed_label)
-        # Define the data to send
-        data = {
-            "player_name": player_name,
-            "vote": vote,
-            "prediction": prediction,
-            "confidence": confidence,
-            "subject_id": subject_id,
-            "feedback_text": feedback_text,
-            "proposed_label": proposed_label,
-        }
+    def test_post_feedback_valid_anon(self):
+        for player_name in self.ANON:
+            for subject_id in self.SUBJECT_IDS:
+                prediction = random.choice(self.COMMON_LABELS)
+                proposed_label = random.choice(self.COMMON_LABELS)
+                while proposed_label == prediction:
+                    proposed_label = random.choice(self.COMMON_LABELS)
 
-        # Send the POST request
-        response = requests.post(url=self.API_ENDPOINT_POST, json=data)
+                data = {
+                    "player_name": player_name,
+                    "vote": random.randint(-1, 1),
+                    "prediction": prediction,
+                    "confidence": random.random(),
+                    "subject_id": subject_id,
+                    "feedback_text": "".join(
+                        random.choices(
+                            string.ascii_letters + string.digits,
+                            k=random.randint(0, 250),
+                        )
+                    ),
+                    "proposed_label": proposed_label,
+                }
 
-        if response.status_code != 201:
-            print({"status": response.status_code})
-            print({"data": data, "response": response.json()})
+                # Send the POST request
+                response = requests.post(url=self.API_ENDPOINT_POST, json=data)
 
-        # Assert that the response is as expected
-        self.assertEqual(
-            first=response.status_code,
-            second=201,
-            msg=f"expected: 201, received: {response.status_code}, data: {json.dumps(data)}",
-        )
+                if response.status_code != 201:
+                    print({"status": response.status_code})
+                    print({"data": data, "response": response.json()})
+
+                    # Assert that the response is as expected
+                self.assertEqual(
+                    first=response.status_code,
+                    second=201,
+                    msg=f"expected: 201, received: {response.status_code}, data: {json.dumps(data)}",
+                )
 
     @given(
         player_name=st.text(min_size=1, max_size=13),  # PLAYER_NAME_STRATEGY,
