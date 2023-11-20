@@ -10,21 +10,31 @@ class TestPlayerAPI(unittest.TestCase):
 
     # fmt: off
     PLAYER_IDS = [
-        3, 5, 19, 23, 26, 29, 30, 34, 38, 39, 42, 45, 46, 52, 57, 58, 69, 74, 78, 79,
+        3, 5, 19, 26, 29, 30, 34, 38, 39, 42, 45, 46, 52, 57, 58, 69, 74, 78, 79,
         80, 81, 82, 85, 92, 95, 98, 100, 108, 112, 113, 114, 116, 121, 123, 124, 134,
         139, 141, 142, 146, 149, 154, 156, 157, 158, 161, 162, 166, 168, 171, 173, 178,
         180, 181, 187, 190, 191, 195, 197, 199, 202, 204, 206, 207, 208, 212, 215, 220,
         222, 225, 226, 233, 236, 242, 261, 264, 265, 266, 268, 276, 277, 282
     ]
+    REPORT_IDS = [
+        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 15, 24, 30, 47, 86,
+        91, 126, 149, 183, 184, 194, 217, 249, 272, 284
+    ]
     # fmt: on
 
     # Define a Hypothesis strategy for player names
-    PLAYERS = [f"player{i}" for i in PLAYER_IDS]
+    def name_strategy(player_ids):
+        players = [f"player{i}" for i in player_ids]
+        return players
+
+    PLAYERS = name_strategy(PLAYER_IDS)
+    REPORTS = name_strategy(REPORT_IDS)
     PLAYER_NAME_STRATEGY = st.sampled_from(PLAYERS)
+    REPORT_NAME_STRATEGY = st.sampled_from(REPORTS)
 
     # Test valid players and check if report scores are returned
     @settings(deadline=500)
-    @given(valid_player_names=st.lists(PLAYER_NAME_STRATEGY, min_size=1, max_size=5))
+    @given(valid_player_names=st.lists(REPORT_NAME_STRATEGY, min_size=1, max_size=5))
     def test_valid_players(self, valid_player_names):
         params = {"name": valid_player_names}
         response = requests.get(url=self.API_ENDPOINT, params=params)
