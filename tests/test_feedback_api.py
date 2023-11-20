@@ -22,7 +22,7 @@ class TestFeedbackAPI(unittest.TestCase):
 
     # fmt: off
     PLAYER_IDS = [
-        3, 5, 19, 23, 26, 29, 30, 34, 38, 39, 42, 45, 46, 52, 57, 58, 69, 74, 78, 79,
+        3, 5, 19, 26, 29, 30, 34, 38, 39, 42, 45, 46, 52, 57, 58, 69, 74, 78, 79,
         80, 81, 82, 85, 92, 95, 98, 100, 108, 112, 113, 114, 116, 121, 123, 124, 134,
         139, 141, 142, 146, 149, 154, 156, 157, 158, 161, 162, 166, 168, 171, 173, 178,
         180, 181, 187, 190, 191, 195, 197, 199, 202, 204, 206, 207, 208, 212, 215, 220,
@@ -49,7 +49,6 @@ class TestFeedbackAPI(unittest.TestCase):
     for i in range(10):
         ANON.append(generate_anon_name(i + 1))
 
-    print(ANON)
     ANON_NAME_STRATEGY = st.sampled_from(ANON)
 
     # define a Hypothesis strategy for subject ids
