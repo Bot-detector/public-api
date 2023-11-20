@@ -1,21 +1,17 @@
 import unittest
+from unittest import TestCase
 
+import hypothesis.strategies as st
 import requests
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
 
 class TestPlayerAPI(unittest.TestCase):
-    API_ENDPOINT = "http://localhost:5000/v2/player/report/score"
+    API_ENDPOINT_REPORT = "http://localhost:5000/v2/player/report/score"
+    API_ENDPOINT_PREDICTION = "http://localhost:5000/v2/player/prediction"
 
     # fmt: off
-    PLAYER_IDS = [
-        3, 5, 19, 26, 29, 30, 34, 38, 39, 42, 45, 46, 52, 57, 58, 69, 74, 78, 79,
-        80, 81, 82, 85, 92, 95, 98, 100, 108, 112, 113, 114, 116, 121, 123, 124, 134,
-        139, 141, 142, 146, 149, 154, 156, 157, 158, 161, 162, 166, 168, 171, 173, 178,
-        180, 181, 187, 190, 191, 195, 197, 199, 202, 204, 206, 207, 208, 212, 215, 220,
-        222, 225, 226, 233, 236, 242, 261, 264, 265, 266, 268, 276, 277, 282
-    ]
     REPORT_IDS = [
         1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 15, 24, 30, 47, 86,
         91, 126, 149, 183, 184, 194, 217, 249, 272, 284
@@ -27,17 +23,15 @@ class TestPlayerAPI(unittest.TestCase):
         players = [f"player{i}" for i in player_ids]
         return players
 
-    PLAYERS = name_strategy(PLAYER_IDS)
     REPORTS = name_strategy(REPORT_IDS)
-    PLAYER_NAME_STRATEGY = st.sampled_from(PLAYERS)
     REPORT_NAME_STRATEGY = st.sampled_from(REPORTS)
 
     # Test valid players and check if report scores are returned
     @settings(deadline=500)
     @given(valid_player_names=st.lists(REPORT_NAME_STRATEGY, min_size=1, max_size=5))
-    def test_valid_players(self, valid_player_names):
+    def test_report_valid_players(self, valid_player_names):
         params = {"name": valid_player_names}
-        response = requests.get(url=self.API_ENDPOINT, params=params)
+        response = requests.get(url=self.API_ENDPOINT_REPORT, params=params)
 
         # Check if the response status code is 200
         if response.status_code != 200:
@@ -60,9 +54,9 @@ class TestPlayerAPI(unittest.TestCase):
             st.text(min_size=1, max_size=13), min_size=1, max_size=5
         )
     )
-    def test_invalid_players(self, invalid_player_names):
+    def test_report_invalid_players(self, invalid_player_names):
         params = {"name": invalid_player_names}
-        response = requests.get(url=self.API_ENDPOINT, params=params)
+        response = requests.get(url=self.API_ENDPOINT_REPORT, params=params)
 
         # Check if the response status code is 200
         if response.status_code != 200:
@@ -72,6 +66,65 @@ class TestPlayerAPI(unittest.TestCase):
         # Check that the response is an empty list
         self.assertEqual(response.status_code, 200)
         assert response.json() == []
+
+    # multi valid check returns list[dict]
+    @settings(deadline=500)  # Increase the deadline to 500 milliseconds
+    @given(
+        prediction_tuple=st.tuples(
+            st.lists(REPORT_NAME_STRATEGY, min_size=1, max_size=5),
+            st.booleans(),
+        )
+    )
+    def test_prediction_valid_players(self, prediction_tuple):
+        player_names_count_valid, breakdown = prediction_tuple
+
+        params = {"name": player_names_count_valid, "breakdown": breakdown}
+        response = requests.get(url=self.API_ENDPOINT_PREDICTION, params=params)
+
+        # Check if the response status code is 200
+        if response.status_code != 200:
+            print({"status": response.status_code})
+            print({"params": params, "response": response.json()})
+
+        # Check that the response contains report scores for all specified players
+        json_data: list[dict] = response.json()
+        self.assertEqual(response.status_code, 200)
+
+        error = "List is empty"
+        assert len(json_data) > 0, error
+
+        error = "Not all items in the list are dictionaries"
+        assert all(isinstance(item, dict) for item in json_data), error
+
+        for item in json_data:
+            predictions_breakdown = item.get("predictions_breakdown", {})
+            if breakdown:
+                error = "'predictions_breakdown' is not a populated dictionary"
+                assert predictions_breakdown, error
+            else:
+                error = "'predictions_breakdown' is not an empty dictionary"
+                assert not predictions_breakdown, error
+
+    # invalid player(s) check returns empty list
+    @given(
+        prediction_tuple=st.tuples(
+            st.lists(st.text(min_size=1, max_size=13), min_size=1, max_size=5),
+            st.booleans(),
+        )
+    )
+    def test__prediction_invalid_players(self, prediction_tuple):
+        player_names_count_invalid, breakdown = prediction_tuple
+
+        params = {"name": player_names_count_invalid, "breakdown": breakdown}
+        response = requests.get(url=self.API_ENDPOINT_PREDICTION, params=params)
+
+        if response.status_code != 404:
+            print({"status": response.status_code})
+            print({"params": params, "response": response.json()})
+
+        self.assertEqual(response.status_code, 404)
+
+        self.assertEqual(response.json(), {"detail": "Player not found"})
 
 
 # Run the tests
