@@ -58,8 +58,7 @@ class Feedback:
 
             # check if duplicate record
             if result:
-                logger.info({"duplicate_record": FeedbackInput})
-                logger.debug({"voter id": voter_id})
+                logger.info({"duplicate_record": FeedbackInput, "voter id": voter_id})
                 await self.session.rollback()
                 return False, "duplicate_record"
 
