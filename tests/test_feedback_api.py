@@ -11,11 +11,6 @@ from hypothesis import assume, given, settings
 from hypothesis import strategies as st
 
 
-def generate_anon_name(i):
-    md5_hash = hashlib.md5(str(i).encode()).hexdigest()
-    return f"anonymoususer {md5_hash[:8]} {md5_hash[8:12]} {md5_hash[12:16]} {md5_hash[16:20]} {md5_hash[20:]}"
-
-
 class TestFeedbackAPI(unittest.TestCase):
     API_ENDPOINT_GET = "http://localhost:5000/v2/player/feedback/score"
     API_ENDPOINT_POST = "http://localhost:5000/v2/feedback"
@@ -45,9 +40,18 @@ class TestFeedbackAPI(unittest.TestCase):
     PLAYERS = [f"player{i}" for i in PLAYER_IDS]
     PLAYER_NAME_STRATEGY = st.sampled_from(PLAYERS)
 
-    ANON = []
-    for i in range(10):
-        ANON.append(generate_anon_name(i + 1))
+    ANON = [
+        "anonymoususer 382e728f 87ea 11ee aab6 0242ac120002",
+        "anonymoususer 382e7259 87ea 11ee aab6 0242ac120002",
+        "anonymoususer 382e7221 87ea 11ee aab6 0242ac120002",
+        "anonymoususer 382e71ee 87ea 11ee aab6 0242ac120002",
+        "anonymoususer 382e71bb 87ea 11ee aab6 0242ac120002",
+        "anonymoususer 382e7179 87ea 11ee aab6 0242ac120002",
+        "anonymoususer 382e7133 87ea 11ee aab6 0242ac120002",
+        "anonymoususer 382e70ef 87ea 11ee aab6 0242ac120002",
+        "anonymoususer 382e7089 87ea 11ee aab6 0242ac120002",
+        "anonymoususer 382e6def 87ea 11ee aab6 0242ac120002",
+    ]
 
     ANON_NAME_STRATEGY = st.sampled_from(ANON)
 
