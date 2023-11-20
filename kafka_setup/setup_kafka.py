@@ -34,7 +34,7 @@ def create_topics():
                 replication_factor=1,
             ),
             NewTopic(
-                name="reports",
+                name="report",
                 num_partitions=4,
                 replication_factor=1,
             ),
