@@ -51,7 +51,7 @@ class Feedback:
                 return False, "voter_does_not_exist"
 
             voter_id = result["id"]
-            sql_dupe_check = sql_dupe_check.where(and_(dbFeedback.voter_id == voter_id))
+            sql_dupe_check = sql_dupe_check.where(dbFeedback.voter_id == voter_id)
 
             result: AsyncResult = await self.session.execute(sql_dupe_check)
             result = result.first()
