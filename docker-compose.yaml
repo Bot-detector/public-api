@@ -79,7 +79,7 @@ services:
       dockerfile: Dockerfile
       target: base
       args:
-        root_path: /
+        root_path: ""
         api_port: 5000
     image: public_api
     # command: bash -c "apt update && apt install -y curl && sleep infinity"

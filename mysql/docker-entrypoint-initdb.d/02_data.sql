@@ -51,10 +51,9 @@ call InsertRandomPlayers(100, 0,0,1);
 UPDATE Players
 SET
     name = CONCAT('player', id),
-    created_at = NOW() - INTERVAL FLOOR(RAND(42) * 365) DAY,
-    updated_at = NOW() - INTERVAL FLOOR(RAND(41) * 365) DAY,
     normalized_name = CONCAT('player', id)
 ;
+
 
 -- Insert data into the Reports table
 INSERT INTO
@@ -167,7 +166,9 @@ SELECT
         TIMESTAMPDIFF(SECOND, '2020-01-01 00:00:00', '2022-12-31 23:59:59') * RAND(42) 
         + UNIX_TIMESTAMP('2020-01-01 00:00:00')
     )
-FROM `Players` 
+FROM `Players`
+where 1=1
+    AND name not LIKE 'anonymoususer%'
 ORDER BY RAND(42) 
 LIMIT 250
 ;
@@ -235,4 +236,40 @@ UPDATE PredictionsFeedback
     SET proposed_label = prediction
 WHERE 1=1
     AND vote = 1
+;
+
+DELIMITER $$
+
+INSERT INTO Players (
+    name,
+    created_at,
+    updated_at,
+    possible_ban,
+    confirmed_ban,
+    confirmed_player,
+    label_id,
+    label_jagex
+) VALUES 
+    ("anonymoususer 382e728f 87ea 11ee aab6 0242ac120002", NOW(), NOW(), 0, 0, 0, 0, 0),
+    ("anonymoususer 382e7259 87ea 11ee aab6 0242ac120002", NOW(), NOW(), 0, 0, 0, 0, 0),
+    ("anonymoususer 382e7221 87ea 11ee aab6 0242ac120002", NOW(), NOW(), 0, 0, 0, 0, 0),
+    ("anonymoususer 382e71ee 87ea 11ee aab6 0242ac120002", NOW(), NOW(), 0, 0, 0, 0, 0),
+    ("anonymoususer 382e71bb 87ea 11ee aab6 0242ac120002", NOW(), NOW(), 0, 0, 0, 0, 0),
+    ("anonymoususer 382e7179 87ea 11ee aab6 0242ac120002", NOW(), NOW(), 0, 0, 0, 0, 0),
+    ("anonymoususer 382e7133 87ea 11ee aab6 0242ac120002", NOW(), NOW(), 0, 0, 0, 0, 0),
+    ("anonymoususer 382e70ef 87ea 11ee aab6 0242ac120002", NOW(), NOW(), 0, 0, 0, 0, 0),
+    ("anonymoususer 382e7089 87ea 11ee aab6 0242ac120002", NOW(), NOW(), 0, 0, 0, 0, 0),
+    ("anonymoususer 382e6def 87ea 11ee aab6 0242ac120002", NOW(), NOW(), 0, 0, 0, 0, 0)
+;
+
+UPDATE `Players`
+SET
+    created_at = NOW() - INTERVAL FLOOR(RAND(42) * 365) DAY,
+    updated_at = NOW() - INTERVAL FLOOR(RAND(41) * 365) DAY
+;
+UPDATE `Players`
+SET
+    name=replace(name,'-',' '),
+    normalized_name=replace(name,'-',' ')
+WHERE name LIKE 'anonymoususer%'
 ;

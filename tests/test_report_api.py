@@ -25,7 +25,7 @@ max_ts = current_time
 unique_reporter = str(uuid4()).replace("-", "")[:13]
 
 
-class TestPostReportAPI(unittest.TestCase):
+class TestReportAPI(unittest.TestCase):
     API_ENDPOINT = "http://localhost:5000/v2/report"
 
     @given(

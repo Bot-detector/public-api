@@ -1,15 +1,15 @@
+import asyncio
 import logging
 import time
 
 from src.app.views.input.report import Detection
-from src.core.kafka.engine import AioKafkaEngine
+from src.core.fastapi.dependencies import kafka
 
 logger = logging.getLogger(__name__)
 
 
 class Report:
-    def __init__(self, kafka_engine: AioKafkaEngine) -> None:
-        self.kafka_engine = kafka_engine
+    def __init__(self) -> None:
         pass
 
     def _check_data_size(self, data: list[Detection]) -> list[Detection] | None:
@@ -45,7 +45,8 @@ class Report:
         return data
 
     async def send_to_kafka(self, data: list[Detection]) -> None:
-        for detection in data:
-            detection = detection.model_dump_json()
-            self.kafka_engine.message_queue.put_nowait(detection)
+        detections = [d.model_dump(mode="json") for d in data]
+        await asyncio.gather(
+            *[kafka.report_send_queue.put(detection) for detection in detections]
+        )
         return
