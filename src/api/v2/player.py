@@ -97,7 +97,6 @@ async def get_prediction(
     player = Player(session)
     names = await asyncio.gather(*[to_jagex_name(n) for n in name])
     data = await player.get_prediction(player_names=names)
-    logger.info(data)
     if not data:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Player not found"
