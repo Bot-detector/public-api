@@ -14,10 +14,11 @@ class PredictionResponse(BaseModel):
     @classmethod
     def from_data(self, data: dict, breakdown: bool):
         # Create the player data dictionary with only the relevant fields
+        prediction_label = data.get("prediction", "").lower()
         player_data = {
             "player_id": data.pop("id"),
             "player_name": data.pop("name"),
-            "prediction_label": data.pop("prediction").lower(),
+            "prediction_label": prediction_label,
             "prediction_confidence": data.pop("predicted_confidence") / 100.0,
             "created": data.pop("created"),
             "predictions_breakdown": {
