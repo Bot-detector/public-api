@@ -35,4 +35,7 @@ class Prediction(Base):
     vorkath_bot = Column(DECIMAL(5, 2), default=0)
     barrows_bot = Column(DECIMAL(5, 2), default=0)
     herblore_bot = Column(DECIMAL(5, 2), default=0)
+    zulrah_bot = Column(DECIMAL(5, 2), default=0)
+    gauntlet_bot = Column(DECIMAL(5, 2), default=0)
+    nex_bot = Column(DECIMAL(5, 2), default=0)
     unknown_bot = Column(DECIMAL(5, 2), default=0)
