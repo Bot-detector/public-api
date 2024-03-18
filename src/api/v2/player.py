@@ -5,7 +5,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic.fields import Field
 
-from src.app.models.player import Player
+from src.app.repositories.player import Player as repoPlayer
 from src.app.views.response.feedback_score import FeedbackScoreResponse
 from src.app.views.response.prediction import PredictionResponse
 from src.app.views.response.report_score import ReportScoreResponse
@@ -36,9 +36,9 @@ async def get_players_kc(
     Returns:
         list[ReportScoreResponse]: A list of dictionaries containing KC data for each player.
     """
-    player = Player(session)
+    repo = repoPlayer(session)
     names = await asyncio.gather(*[to_jagex_name(n) for n in name])
-    data = await player.get_report_score(player_names=names)
+    data = await repo.get_report_score(player_names=names)
     return data
 
 
@@ -62,9 +62,9 @@ async def get_feedback_score(
     Returns:
         list[FeedbackScoreResponse]: A list of dictionaries containing KC data for each player.
     """
-    player = Player(session)
+    repo = repoPlayer(session)
     names = await asyncio.gather(*[to_jagex_name(n) for n in name])
-    data = await player.get_feedback_score(player_names=names)
+    data = await repo.get_feedback_score(player_names=names)
     return data
 
 
@@ -94,9 +94,9 @@ async def get_prediction(
         HTTPException: Returns a 404 error with the message "Player not found" if no data is found for the user.
 
     """
-    player = Player(session)
+    repo = repoPlayer(session)
     names = await asyncio.gather(*[to_jagex_name(n) for n in name])
-    data = await player.get_prediction(player_names=names)
+    data = await repo.get_prediction(player_names=names)
     if not data:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Player not found"

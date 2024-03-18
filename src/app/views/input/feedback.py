@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pydantic import BaseModel, Field, constr, validator
+from pydantic import BaseModel, Field, validator
 
 
 class FeedbackInput(BaseModel):
@@ -8,7 +8,7 @@ class FeedbackInput(BaseModel):
     Class representing prediction feedback input.
     """
 
-    player_name: constr(strip_whitespace=True) = Field(
+    player_name: str = Field(
         ...,
         example="Player1",
         min_length=1,
@@ -35,7 +35,7 @@ class FeedbackInput(BaseModel):
     )
 
     @validator("player_name")
-    def uuid_format(cls, value: str):
+    def player_name_validator(cls, value: str):
         match value:
             case _ if 1 <= len(value) <= 12:
                 return value
