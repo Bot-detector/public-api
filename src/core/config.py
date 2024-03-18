@@ -1,3 +1,5 @@
+import asyncio
+
 from pydantic_settings import BaseSettings
 
 
@@ -10,3 +12,6 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+producer = None
+send_queue = None
+sd_event = asyncio.Event()

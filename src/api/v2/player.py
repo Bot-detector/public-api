@@ -23,7 +23,7 @@ async def get_players_kc(
         min_length=1,
         max_length=5,
         description="Name of the player",
-        example=["Player1", "Player2"],
+        examples=["Player1", "Player2"],
     ),
     session=Depends(get_session),
 ):
@@ -49,7 +49,7 @@ async def get_feedback_score(
         min_length=1,
         max_length=5,
         description="Name of the player",
-        example=["Player1", "Player2"],
+        examples=["Player1", "Player2"],
     ),
     session=Depends(get_session),
 ):
@@ -75,7 +75,7 @@ async def get_prediction(
         min_length=1,
         max_length=5,
         description="Name of the player",
-        example=["Player1", "Player2"],
+        examples=["Player1", "Player2"],
     ),
     breakdown: bool = Query(...),
     session=Depends(get_session),

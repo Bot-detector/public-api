@@ -1,7 +1,7 @@
 from fastapi import APIRouter, status
 from fastapi.exceptions import HTTPException
 
-from src.app.models.report import Report
+from src.app.repositories.report import Report
 from src.app.views.input.report import Detection
 from src.app.views.response.ok import Ok
 

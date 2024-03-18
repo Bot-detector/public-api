@@ -1,12 +1,14 @@
 import asyncio
 import logging
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
 
 from src import api
-from src.core.fastapi.dependencies import kafka
+from src.core import config
+from src.core.fastapi.dependencies import _kafka
 from src.core.fastapi.middleware.logging import LoggingMiddleware
 
 logger = logging.getLogger(__name__)
@@ -35,11 +37,22 @@ def make_middleware() -> list[Middleware]:
     return middleware
 
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    logger.info("startup initiated")
+    config.producer = await _kafka.kafka_producer()
+    config.send_queue = asyncio.Queue(maxsize=500)
+    yield
+    config.sd_event.set()
+    await config.producer.stop()
+
+
 def create_app() -> FastAPI:
     _app = FastAPI(
         title="Bot-Detector-API",
         description="Bot-Detector-API",
         middleware=make_middleware(),
+        lifespan=lifespan,
     )
     init_routers(_app=_app)
     return _app
@@ -51,20 +64,3 @@ app = create_app()
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
-
-
-@app.on_event("startup")
-async def startup_event():
-    logger.info("startup initiated")
-    producer = await kafka.kafka_producer(kafka.producer)
-    asyncio.create_task(
-        kafka.send_messages(
-            topic="report", producer=producer, send_queue=kafka.report_send_queue
-        )
-    )
-
-
-@app.on_event("shutdown")
-async def shutdown_event():
-    logger.info("shutdown initiated")
-    await kafka.producer.stop()

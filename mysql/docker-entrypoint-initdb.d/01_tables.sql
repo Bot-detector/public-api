@@ -83,6 +83,9 @@ CREATE TABLE Predictions (
     vorkath_bot DECIMAL(5, 2) DEFAULT 0,
     barrows_bot DECIMAL(5, 2) DEFAULT 0,
     herblore_bot DECIMAL(5, 2) DEFAULT 0,
+    zulrah_bot DECIMAL(5, 2) DEFAULT 0,
+    gauntlet_bot DECIMAL(5, 2) DEFAULT 0,
+    nex_bot DECIMAL(5, 2) DEFAULT 0,
     unknown_bot DECIMAL(5, 2) DEFAULT 0
 );
 -- Create a table for Feedback

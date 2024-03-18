@@ -19,48 +19,39 @@ class Player:
         self.session = session
 
     async def get_report_score(self, player_names: tuple[str]):
-        """
-        Retrieve Kill Count (KC) data for a list of player names.
+        voter: dbPlayer = aliased(dbPlayer, name="voter")
+        subject: dbPlayer = aliased(dbPlayer, name="subject")
 
-        Args:
-            player_names (list[str]): A list of player names for which KC data is requested.
+        sub_query: Select = select(
+            dbReport.reportedID.distinct().label("reportedID"), dbReport.manual_detect
+        )
+        sub_query = sub_query.join(voter, dbReport.reportingID == voter.id)
+        sub_query = sub_query.where(voter.name.in_(player_names))
+        sub_query = sub_query.where(dbReport.manual_detect == 0)
 
-        Returns:
-            tuple: A tuple of dictionaries containing KC data for each player name. Each dictionary
-                includes the following keys:
-                - "count": The distinct count of reported players.
-                - "possible_ban": Whether the player has a possible ban (True or False).
-                - "confirmed_ban": Whether the player has a confirmed ban (True or False).
-                - "confirmed_player": Whether the player is confirmed as a valid player (True or False).
-                - "manual_detect": Wheter the detection was manual (True or False)
-        """
-        # Create aliases for the tables
-        reporting_player: dbPlayer = aliased(dbPlayer, name="reporting_player")
-        reported_player: dbPlayer = aliased(dbPlayer, name="reported_player")
+        # Create an alias for the subquery
+        sub_query_alias = sub_query.alias("DistinctReports")
 
-        query: Select = select(
-            [
-                func.count(func.distinct(reported_player.id)).label("count"),
-                reported_player.possible_ban,
-                reported_player.confirmed_ban,
-                reported_player.confirmed_player,
-                func.coalesce(dbReport.manual_detect, 0).label("manual_detect"),
-            ]
+        sql: Select = select(
+            func.count(func.distinct(subject.id)).label("count"),
+            subject.possible_ban,
+            subject.confirmed_ban,
+            subject.confirmed_player,
+            func.coalesce(sub_query_alias.c.manual_detect, 0).label("manual_detect"),
         )
-        query = query.select_from(dbReport)
-        query = query.join(
-            reporting_player, dbReport.reportingID == reporting_player.id
+        sql = sql.select_from(sub_query_alias)
+        sql = sql.join(
+            subject, sub_query_alias.c.reportedID == subject.id
+        )  # Use c to access columns
+        sql = sql.group_by(
+            subject.possible_ban,
+            subject.confirmed_ban,
+            subject.confirmed_player,
+            func.coalesce(sub_query_alias.c.manual_detect, 0).label("manual_detect"),
         )
-        query = query.join(reported_player, dbReport.reportedID == reported_player.id)
-        query = query.where(reporting_player.name.in_(player_names))
-        query = query.group_by(
-            reported_player.possible_ban,
-            reported_player.confirmed_ban,
-            reported_player.confirmed_player,
-            dbReport.manual_detect,
-        )
+
         async with self.session:
-            result: AsyncResult = await self.session.execute(query)
+            result: AsyncResult = await self.session.execute(sql)
             await self.session.commit()
         return tuple(result.mappings())
 
@@ -70,12 +61,10 @@ class Player:
         fb_subject: dbPlayer = aliased(dbPlayer, name="feedback_subject")
 
         query: Select = select(
-            [
-                func.count(func.distinct(fb_subject.id)).label("count"),
-                fb_subject.possible_ban,
-                fb_subject.confirmed_ban,
-                fb_subject.confirmed_player,
-            ]
+            func.count(func.distinct(fb_subject.id)).label("count"),
+            fb_subject.possible_ban,
+            fb_subject.confirmed_ban,
+            fb_subject.confirmed_player,
         )
         query = query.select_from(dbFeedback)
         query = query.join(fb_voter, dbFeedback.voter_id == fb_voter.id)

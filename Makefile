@@ -59,6 +59,11 @@ docker-build: ## Startup docker with build switch
 docker-build-detached: ## Startup docker with build switch
 	docker-compose up --build -d
 
+docker-restart:
+	docker-compose down
+	docker-compose up --build -d
+
+
 setup: test-setup requirements## setup requirements
 
 setup-detached: test-setup docker-build-detached ## setup & run after downloaded repo detached

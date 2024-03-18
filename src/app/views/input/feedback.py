@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 
 
 class FeedbackInput(BaseModel):
@@ -10,7 +10,7 @@ class FeedbackInput(BaseModel):
 
     player_name: str = Field(
         ...,
-        example="Player1",
+        examples=["Player1"],
         min_length=1,
         max_length=50,
         description="Name of the player",
@@ -18,23 +18,23 @@ class FeedbackInput(BaseModel):
     vote: int = Field(..., ge=-1, le=1, description="Vote is -1, 0 or 1")
     prediction: str = Field(
         ...,
-        example="real_player",
+        examples=["real_player"],
         description="Prediction for the player",
     )
     confidence: Optional[float] = Field(
         0, ge=0, le=1, description="Confidence level of the prediction"
     )
-    subject_id: int = Field(..., example=1, description="ID of the subject")
+    subject_id: int = Field(..., examples=[1], description="ID of the subject")
     feedback_text: Optional[str] = Field(
-        None, example="Test feedback", max_length=250, description="Feedback text"
+        None, examples=["Test feedback"], max_length=250, description="Feedback text"
     )
     proposed_label: Optional[str] = Field(
         None,
-        example="real_player",
+        examples=["real_player"],
         description="Proposed label for the player",
     )
 
-    @validator("player_name")
+    @field_validator("player_name")
     def player_name_validator(cls, value: str):
         match value:
             case _ if 1 <= len(value) <= 12:

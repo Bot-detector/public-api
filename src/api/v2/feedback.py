@@ -2,7 +2,7 @@ import logging
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from src.app.models.feedback import Feedback
+from src.app.repositories.feedback import Feedback
 from src.app.views.input.feedback import FeedbackInput
 from src.app.views.response.ok import Ok
 from src.core.fastapi.dependencies.session import get_session
