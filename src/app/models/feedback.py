@@ -1,8 +1,6 @@
 import logging
-import time
 
-from fastapi.encoders import jsonable_encoder
-from sqlalchemy import and_, func, insert, select
+from sqlalchemy import and_, insert, select
 from sqlalchemy.ext.asyncio import AsyncResult, AsyncSession
 from sqlalchemy.sql.expression import Insert, Select
 

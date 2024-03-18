@@ -1,6 +1,5 @@
 import asyncio
 import logging
-from asyncio import Queue
 
 from fastapi import FastAPI
 from fastapi.middleware import Middleware
@@ -9,8 +8,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from src import api
 from src.core.fastapi.dependencies import kafka
 from src.core.fastapi.middleware.logging import LoggingMiddleware
-
-from . import logging_config  # needed for log formatting
 
 logger = logging.getLogger(__name__)
 

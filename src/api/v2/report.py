@@ -4,7 +4,6 @@ from fastapi.exceptions import HTTPException
 from src.app.models.report import Report
 from src.app.views.input.report import Detection
 from src.app.views.response.ok import Ok
-from src.core.fastapi.dependencies import kafka
 
 router = APIRouter(tags=["Report"])
 

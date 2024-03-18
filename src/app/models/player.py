@@ -1,20 +1,15 @@
 import logging
-import time
 
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy import func, select
-from sqlalchemy.engine import Result
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncResult, AsyncSession
 from sqlalchemy.orm import aliased
 from sqlalchemy.sql.expression import Select
 
-from src.app.views.input.feedback import FeedbackInput
 from src.core.database.models.feedback import PredictionFeedback as dbFeedback
 from src.core.database.models.player import Player as dbPlayer
 from src.core.database.models.prediction import Prediction as dbPrediction
 from src.core.database.models.report import Report as dbReport
-from src.core.fastapi.dependencies.to_jagex_name import to_jagex_name
 
 logger = logging.getLogger(__name__)
 

@@ -1,5 +1,4 @@
 import unittest
-from unittest import TestCase
 
 import hypothesis.strategies as st
 import requests
