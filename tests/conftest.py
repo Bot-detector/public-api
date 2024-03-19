@@ -38,6 +38,7 @@ async def get_session_override():
     async with SessionFactory() as session:
         session: AsyncSession
         yield session
+    await engine.dispose()
     return
 
 
