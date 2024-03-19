@@ -20,19 +20,19 @@ def init_routers(_app: FastAPI) -> None:
 
 def make_middleware() -> list[Middleware]:
     middleware = [
-        Middleware(
-            CORSMiddleware,
-            allow_origins=[
-                "http://osrsbotdetector.com/",
-                "https://osrsbotdetector.com/",
-                "http://localhost",
-                "http://localhost:8080",
-            ],
-            allow_credentials=True,
-            allow_methods=["*"],
-            allow_headers=["*"],
-        ),
-        Middleware(LoggingMiddleware),
+        # Middleware(
+        #     CORSMiddleware,
+        #     allow_origins=[
+        #         "http://osrsbotdetector.com/",
+        #         "https://osrsbotdetector.com/",
+        #         "http://localhost",
+        #         "http://localhost:8080",
+        #     ],
+        #     allow_credentials=True,
+        #     allow_methods=["*"],
+        #     allow_headers=["*"],
+        # ),
+        # Middleware(LoggingMiddleware),
     ]
     return middleware
 
