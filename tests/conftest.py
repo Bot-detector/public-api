@@ -16,24 +16,24 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from src.core import server  # noqa: E402
 from src.core.fastapi.dependencies.session import get_session  # noqa: E402
 
+# Create an async SQLAlchemy engine
+engine = create_async_engine(
+    "mysql+aiomysql://root:root_bot_buster@localhost:3307/playerdata",
+    pool_timeout=30,
+    pool_recycle=30,
+    echo=True,
+    pool_pre_ping=True,
+)
+
+# Create a session factory
+SessionFactory = sessionmaker(
+    bind=engine,
+    expire_on_commit=False,
+    class_=AsyncSession,  # Use AsyncSession for asynchronous operations
+)
+
 
 async def get_session_override():
-    # for some reason this has to be in here
-    # Create an async SQLAlchemy engine
-    engine = create_async_engine(
-        "mysql+aiomysql://root:root_bot_buster@localhost:3307/playerdata",
-        pool_timeout=30,
-        pool_recycle=30,
-        echo=True,
-        pool_pre_ping=True,
-    )
-
-    # Create a session factory
-    SessionFactory = sessionmaker(
-        bind=engine,
-        expire_on_commit=False,
-        class_=AsyncSession,  # Use AsyncSession for asynchronous operations
-    )
     async with SessionFactory() as session:
         session: AsyncSession
         yield session
