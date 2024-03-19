@@ -25,7 +25,7 @@ jobs:
         run: sudo apt update && sudo apt install python3-venv -y
 
       - name: Run Black
-        uses: psf/black@v1.3.3
+        uses: psf/black@24.3.0
         with:
           options: "--check --verbose"
           src: "./src"
