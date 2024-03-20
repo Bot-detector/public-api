@@ -20,11 +20,11 @@ class PredictionResponse(BaseModel):
             "prediction_label": data.pop("prediction").lower(),
             "prediction_confidence": data.pop("predicted_confidence") / 100.0,
             "created": data.pop("created"),
-            "predictions_breakdown": {
-                k: v / 100.0 if v > 0 else v for k, v in data.items()
-            }
-            if breakdown
-            else {},
+            "predictions_breakdown": (
+                {k: v / 100.0 if v > 0 else v for k, v in data.items()}
+                if breakdown
+                else {}
+            ),
         }
 
         return self(**player_data)
