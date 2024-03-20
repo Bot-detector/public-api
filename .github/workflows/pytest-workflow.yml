@@ -51,7 +51,7 @@ jobs:
 
       - name: install testing requirements
         run: |
-          python3 -m pip install pytest 
+          python3 -m pip install pytest-asyncio
           python3 -m pip install httpx 
           python3 -m pip install hypothesis
           python3 -m pip install -r requirements.txt
