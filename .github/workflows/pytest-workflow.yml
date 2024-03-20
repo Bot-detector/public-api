@@ -34,6 +34,12 @@ jobs:
     name: Setup Enviornment and Run Tests
     runs-on: [self-hosted, "hetzner"]
     if: github.repository_owner == 'Bot-detector'
+    env:
+      ENV: "DVP"
+      DATABASE_URL: "mysql+aiomysql://root:root_bot_buster@mysql:3306/playerdata"
+      KAFKA_HOST: "localhost:9092"
+      POOL_RECYCLE: 60
+      POOL_TIMEOUT: 30
     steps:
       - name: Checkout
         uses: actions/checkout@v3
