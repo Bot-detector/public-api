@@ -37,50 +37,18 @@ clean-test: ## cleanup pytests leftovers
 	rm -f test-results.html
 	rm -f output.xml
 
-docker-clean:
-	@read -p "Are you sure you want to prune all Docker data (y/n)? " -n 1 -r; \
-	echo; \
-	if [[ $$REPLY =~ ^[Yy]$$ ]]; then \
-		docker system prune -a -f; \
-	fi
-
-test: clean-test ## Run pytest unit tests
-	python3 -m pytest --verbosity=1 -s
-
-test-report:
-	python3 -m pytest --junit-xml=pytest_report.xml
-
-test-debug: ## Run unit tests with debugging enabled
-	python3 -m pytest --pdb
-
-test-coverage: clean-test ## Run unit tests and check code coverage
-	PYTHONPATH=src python3 -m pytest --cov=src tests/ --disable-warnings
-
-docker-up: ## Startup docker
-	docker-compose --verbose up
-
-docker-build: ## Startup docker with build switch
-	docker-compose --verbose up --build
-
-docker-build-detached: ## Startup docker with build switch
-	docker-compose up --build -d
-
-docker-restart:
+docker-restart: ## restart containers
 	docker compose down
 	docker compose up --build -d
 
-docker-test: docker-restart
+docker-test: docker-restart ## restart containers & test
 	pytest -s
-
-setup: test-setup requirements## setup requirements
-
-setup-detached: test-setup docker-build-detached ## setup & run after downloaded repo detached
 
 pre-commit-setup: ## Install pre-commit
 	python3 -m pip install pre-commit
 	pre-commit --version
 
-test-setup: pre-commit-setup## installs pytest singular package for local testing
+test-setup: ## installs pytest singular package for local testing
 	python3 -m pip install pytest 
 	python3 -m pip install requests 
 	python3 -m pip install hypothesis
@@ -89,28 +57,16 @@ test-setup: pre-commit-setup## installs pytest singular package for local testin
 requirements: ## installs all requirements
 	python3 -m pip install -r requirements.txt
 
-docker-down: ## shutdown docker
-	docker-compose down
+create-env: ## create .env file
+	echo "ENV=DEV" > .env
+	echo "DATABASE_URL=mysql+aiomysql://root:root_bot_buster@localhost/playerdata" >> .env
+	echo "KAFKA_HOST=localhost:9094" >> .env
+	echo "POOL_RECYCLE=60" >> .env
+	echo "POOL_TIMEOUT=30" >> .env
 
-docker-rebuild: docker-down ## shuts down docker then brings it up and rebuilds
-	docker-compose --verbose up --build
+setup: create-env pre-commit-setup test-setup requirements ## setup requirements
 
-docker-force-rebuild: docker-down ## shuts down docker than brings it up and force rebuilds
-	docker-compose --verbose up --build --force-recreate
-
-docs: # opens your browser to the webapps testing docs
+docs: ## opens your browser to the webapps testing docs
 	open http://localhost:5000/docs
 	xdg-open http://localhost:5000/docs
 	. http://localhost:5000/docs
-
-venv-create: ## creates a venv in the folder .venv
-	python3 -m venv .venv
-
-venv-remove: ## removes the .venv folder
-	rm -rf .venv
-
-test-loud: ## runs pytest with verbose output
-	python3 -m pytest --verbose -s
-
-pre-commit:
-	pre-commit run --all-files

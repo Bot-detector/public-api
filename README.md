@@ -23,7 +23,7 @@ pre-commit install
 ## Linux
 Setup overview:
 1. install requirements: python, pip, make, docker
-2. create venv `make venv-create` or `python3 -m venv .venv`
+2. create venv `python3 -m venv .venv`
 3. activate venv `source .venv/bin/activate`
 4. run setup `make setup`
 
@@ -75,7 +75,7 @@ alias make="gmake"
 #### Setup
 run the following command to create your venv
 ```sh
-make venv-create
+python3 -m venv .venv
 ```
 
 ####  Activate
@@ -97,22 +97,15 @@ use the `make` command with an `action` when developing on linux.  think of `act
 ```sh
 clean-pyc            clean python cache files
 clean-test           cleanup pytests leftovers
-test                 Run pytest unit tests
-test-debug           Run unit tests with debugging enabled
-test-coverage        Run unit tests and check code coverage
-docker-up            Startup docker
-docker-build         Startup docker with build switch
-setup                setup & run after downloaded repo
+docker-restart       restart containers
+docker-test          restart containers & test
 pre-commit-setup     Install pre-commit
-pre-commit           Run pre-commit
 test-setup           installs pytest singular package for local testing
 requirements         installs all requirements
-docker-down          shutdown docker
-docker-rebuild       shuts down docker then brings it up and rebuilds
-docker-force-rebuild shuts down docker than brings it up and force rebuilds
-api-setup            installs fastapi singular package, for local testing
-venv-create          cleans the .venv then creates a venv in the folder .venv
-venv-remove          removes the .venv folder
+create-env           create .env file
+setup                setup requirements
+docs                 opens your browser to the webapps testing docs
+
 ```
 
 ### Docker
@@ -123,93 +116,29 @@ venv-remove          removes the .venv folder
 - terminal opened to cloned repos root path
 
 
-#### Setup Docker Enviornment
-run `setup`
+#### Setup Docker Environment
+With the Makefile we setup our development environment. it is important that you are in your python virtual environment (.venv) when you run this command.
+the `make setup` command will 
+- create a .env file, 
+- install precommit
+- install requirements for testing
+- install requirements for the project
 ```sh
 make setup
 ```
+You are now ready to develop code but you may want to read further, to know how to run & debug te code
 
-once complete you will have to open a new terminal as the docker output will be running in the current one. you are looking for the message 'Application startup complete.' to know when the `setup` is done and containers are running. 
-
-more explinations of different `make` `actions` that can be run in the other sections below
-
-#### Shutdown Docker Containers
-run `docker-down`
-
+#### Starting / restarting containers
+with the Makefile we can easily start & shutdown the containers to a fresh state, under the hood we leverage `docker compose` commands.
 ```sh
-make docker-down
-```
-the outcome should be like
-```sh
-docker-compose down
-[+] Running 6/6
- ✔ Container kafdrop                       Removed  10.2s 
- ✔ Container public_api                    Removed   0.4s 
- ✔ Container kafka_setup                   Removed   0.0s 
- ✔ Container database                      Removed   0.8s 
- ✔ Container kafka                         Removed   0.9s 
- ✔ Network public-api_botdetector-network  Removed   0.0s 
-```
-
-##### Startup Docker Containers
-run `docker-up`. example below is using public-api
-```sh
-make docker-up
-```
-the outcome should be like
-```sh
-docker-compose --verbose up
-[+] Building 0.0s (0/0)                              
-[+] Running 7/5
- ✔ Network public-api_botdetector-Network
- ✔ Container database kafka_setup                   
- ✔ Container kafka
- ✔ Container kafka_setup 
- ✔ Container kafdrop
- ...
- ...
- public_api   | INFO:     Application startup complete.
- ...
-```
-
-##### Force Rebuild of Docker Containers
-run `docker-force-rebuild`. usually done if requirements.txt are changed.  or if containers are having weird issues and you want to start fresh.
-```sh
-make docker-force-rebuild
+make docker-restart
 ```
 
 ### TDD using pytest
 #### Verifying Tests Pass
 run `test`
 ```sh
-make test
-```
-the outcome should be like
-```sh
-python3 -m pytest --verbosity=1 --rootdir=./
-=============== test session starts ===============
-platform darwin -- Python 3.11.6, pytest-7.4.2, pluggy-1.3.0 -- /opt/homebrew/opt/python@3.11/bin/python3.11
-cachedir: .pytest_cache
-hypothesis profile 'default' -> database=DirectoryBasedExampleDatabase(PosixPath('./bot-detector/public-api/.hypothesis/examples'))
-rootdir: public-api
-plugins: hypothesis-6.88.1, anyio-3.7.1
-collected 13 items                   
-
-tests/test_player_api.py::TestPlayerAPI::test_invalid_player_returns_empty PASSED             [  7%]
-tests/test_player_api.py::TestPlayerAPI::test_invalid_player_returns_success PASSED           [ 15%]
-tests/test_player_api.py::TestPlayerAPI::test_valid_player_returns_data PASSED       [ 23%]
-tests/test_player_api.py::TestPlayerAPI::test_valid_player_returns_success PASSED             [ 30%]
-tests/test_prediction_api.py::TestPredictionAPI::test_invalid_max_player_name_length_returns_unkonwn PASSED     [ 38%]
-tests/test_prediction_api.py::TestPredictionAPI::test_invalid_min_player_name_length_returns_unknown PASSED     [ 46%]
-tests/test_prediction_api.py::TestPredictionAPI::test_invalid_player_breakdown_false_returns_player_not_found PASSED     [ 53%]
-tests/test_prediction_api.py::TestPredictionAPI::test_invalid_player_breakdown_true_returns_player_not_found PASSED      [ 61%]
-tests/test_prediction_api.py::TestPredictionAPI::test_invalid_player_breakdown_true_returns_unknown PASSED      [ 69%]
-tests/test_prediction_api.py::TestPredictionAPI::test_valid_player_breakdown_false_returns_empty_property PASSED         [ 76%]
-tests/test_prediction_api.py::TestPredictionAPI::test_valid_player_breakdown_false_returns_success PASSED       [ 84%]
-tests/test_prediction_api.py::TestPredictionAPI::test_valid_player_breakdown_true_returns_populated_property PASSED      [ 92%]
-tests/test_prediction_api.py::TestPredictionAPI::test_valid_player_breakdown_true_returns_success PASSED        [100%]
-
-=============== 13 passed in 1.54s ===============
+make docker-test
 ```
 
 # for admin purposes saving & upgrading
