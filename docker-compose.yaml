@@ -16,8 +16,12 @@ services:
       - 9092:9092
     healthcheck:
       test: ["CMD", "kafka-topics.sh", "--list", "--bootstrap-server", "localhost:9092"]
+      # during this period fails are not considered
+      start_period: 30s
+      # time between cmd
       interval: 30s
-      timeout: 10s
+      # time given to the cmd
+      timeout: 5s
       retries: 5
     networks:
       - botdetector-network
@@ -68,9 +72,12 @@ services:
       - botdetector-network
     healthcheck:
       test: "mysqladmin ping -h localhost -u root -proot_bot_buster"
+      # during this period fails are not considered
+      start_period: 30s
+      # time between cmd
       interval: 30s
-      timeout: 10s
-      retries: 5
+      # time given to the cmd
+      timeout: 5s
 
   public_api:
     container_name: public_api

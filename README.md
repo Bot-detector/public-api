@@ -155,3 +155,14 @@ call pip install -r requirements.txt --upgrade
 call pip freeze > requirements.txt
 powershell "(Get-Content requirements.txt) | ForEach-Object { $_ -replace '>=', '==' } | Set-Content requirements.txt"
 ```
+upgrading with linux
+```sh
+sed -i 's/==/>=/g' requirements.txt
+pip install -r requirements.txt --upgrade
+pip freeze > requirements.txt
+```
+if you are running the cluster
+```sh
+kubectl port-forward -n kafka svc/bd-prd-kafka-service 9094:9094
+kubectl port-forward -n database svc/mysql 3306:3306
+```
