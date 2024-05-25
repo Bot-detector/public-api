@@ -1,4 +1,3 @@
-import asyncio
 import logging
 from contextlib import asynccontextmanager
 
@@ -7,8 +6,7 @@ from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
 
 from src import api
-from src.core import config
-from src.core.fastapi.dependencies import _kafka
+from src.core.fastapi.dependencies import kafka_engine
 from src.core.fastapi.middleware.logging import LoggingMiddleware
 
 logger = logging.getLogger(__name__)
@@ -40,19 +38,9 @@ def make_middleware() -> list[Middleware]:
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("startup initiated")
-    config.producer = await _kafka.kafka_producer()
-    config.send_queue = asyncio.Queue(maxsize=500)
-    asyncio.create_task(
-        _kafka.send_messages(
-            topic="report",
-            producer=config.producer,
-            send_queue=config.send_queue,
-            shutdown_event=config.sd_event,
-        )
-    )
+    await kafka_engine.producer.start_engine(topic="report")
     yield
-    config.sd_event.set()
-    await config.producer.stop()
+    await kafka_engine.producer.stop_engine()
 
 
 def create_app() -> FastAPI:

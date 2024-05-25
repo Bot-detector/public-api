@@ -3,7 +3,7 @@ import logging
 import time
 
 from src.app.views.input.report import Detection
-from src.core import config
+from src.core.fastapi.dependencies import kafka_engine
 
 logger = logging.getLogger(__name__)
 
@@ -62,7 +62,6 @@ class Report:
 
     async def send_to_kafka(self, data: list[Detection]) -> None:
         detections = [d.model_dump(mode="json") for d in data]
-        await asyncio.gather(
-            *[config.send_queue.put(detection) for detection in detections]
-        )
+        send_queue = kafka_engine.producer.get_queue()
+        await asyncio.gather(*[send_queue.put(d) for d in detections])
         return

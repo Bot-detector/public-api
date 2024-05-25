@@ -1,6 +1,7 @@
-import asyncio
-
+from dotenv import find_dotenv, load_dotenv
 from pydantic_settings import BaseSettings
+
+load_dotenv(find_dotenv())
 
 
 class Settings(BaseSettings):
@@ -12,6 +13,3 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
-producer = None
-send_queue = None
-sd_event = asyncio.Event()

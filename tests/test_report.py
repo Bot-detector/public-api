@@ -1,12 +1,9 @@
 import os
 import sys
 import time
-from typing import Optional
 
 import pytest
 from httpx import AsyncClient
-from pydantic import BaseModel
-from pydantic.fields import Field
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
