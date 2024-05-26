@@ -56,6 +56,7 @@ test-setup: ## installs pytest singular package for local testing
 
 requirements: ## installs all requirements
 	python3 -m pip install -r requirements.txt
+	python3 -m pip install ruff
 
 create-env: ## create .env file
 	echo "ENV=DEV" > .env

@@ -1,3 +1,4 @@
+import time
 from typing import Optional
 
 from pydantic import BaseModel
@@ -23,7 +24,7 @@ class Detection(BaseModel):
     x_coord: int = Field(0, ge=0)
     y_coord: int = Field(0, ge=0)
     z_coord: int = Field(0, ge=0)
-    ts: int = Field(0, ge=0)
+    ts: int = Field(int(time.time()), ge=0)
     manual_detect: int = Field(0, ge=0, le=1)
     on_members_world: int = Field(0, ge=0, le=1)
     on_pvp_world: int = Field(0, ge=0, le=1)
