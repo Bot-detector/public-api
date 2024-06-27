@@ -1,4 +1,3 @@
-version: '3'
 services:
   kafka:
     container_name: kafka
@@ -106,11 +105,21 @@ services:
       - POOL_TIMEOUT=30
     # env_file:
     #   - .env
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import requests; assert requests.get('http://localhost:5000/').status_code == 200\""]
+      interval: 5s
+      timeout: 10s
+      retries: 3
     depends_on:
       kafka:
         condition: service_healthy
       mysql:
         condition: service_healthy
-        
+  wait_for_api:
+    image: alpine:latest
+    container_name: wait_for_api
+    depends_on:
+      public_api:
+        condition: service_healthy
 networks:
   botdetector-network:

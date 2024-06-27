@@ -4,6 +4,8 @@ from typing import Optional
 from pydantic import BaseModel
 from pydantic.fields import Field
 
+from src.app.views.input._metadata import Metadata
+
 
 class Equipment(BaseModel):
     equip_head_id: Optional[int] = Field(None, ge=0)
@@ -17,7 +19,7 @@ class Equipment(BaseModel):
     equip_shield_id: Optional[int] = Field(None, ge=0)
 
 
-class Detection(BaseModel):
+class BaseDetection(BaseModel):
     reporter: str = Field(..., min_length=1, max_length=13)
     reported: str = Field(..., min_length=1, max_length=12)
     region_id: int = Field(0, ge=0, le=100_000)
@@ -31,3 +33,19 @@ class Detection(BaseModel):
     world_number: int = Field(0, ge=300, le=1_000)
     equipment: Equipment
     equip_ge_value: int = Field(0, ge=0)
+
+
+class Detection(BaseDetection):
+    reporter: str = Field(..., min_length=1, max_length=13)
+    reported: str = Field(..., min_length=1, max_length=12)
+
+
+class ParsedDetection(BaseDetection):
+    reporter_id: int = Field(..., ge=0)
+    reported_id: int = Field(..., ge=0)
+
+
+class KafkaDetectionV1(BaseDetection):
+    metadata: Metadata = Metadata(version="v1.0.0")
+    reporter: str = Field(..., min_length=1, max_length=13)
+    reported: str = Field(..., min_length=1, max_length=12)
