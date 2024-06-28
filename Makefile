@@ -45,7 +45,7 @@ docker-test: docker-restart ## restart containers & test
 	pytest
 	
 docker-test-verbose: docker-restart ## restart containers & test
-	pytest-s
+	pytest -s
 
 pre-commit-setup: ## Install pre-commit
 	python3 -m pip install pre-commit
