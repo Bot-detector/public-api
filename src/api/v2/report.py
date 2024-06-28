@@ -18,5 +18,5 @@ async def post_reports(detections: list[Detection]):
     if not data:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, detail="invalid data")
     logger.debug(f"Working: {len(data)}")
-    await report.send_to_kafka(data)
+    await report.send_to_kafka(data=data)
     return Ok()

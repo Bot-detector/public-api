@@ -2,7 +2,7 @@ import asyncio
 import logging
 import time
 
-from src.app.views.input.report import Detection
+from src.app.views.input.report import Detection, KafkaDetectionV1
 from src.core.fastapi.dependencies import kafka_engine
 
 logger = logging.getLogger(__name__)
@@ -60,8 +60,16 @@ class Report:
             return None
         return data
 
+    def detection_to_v1(self, data: list[Detection]) -> list[KafkaDetectionV1]:
+        logger.debug(f"received: {len(data)}")
+        _data = [KafkaDetectionV1(**d.model_dump()) for d in data]
+        logger.debug(f"received: {len(_data)}")
+        return _data
+
     async def send_to_kafka(self, data: list[Detection]) -> None:
-        detections = [d.model_dump(mode="json") for d in data]
+        data_vx = self.detection_to_v1(data=data)
+        assert len(data) == len(data_vx)
+        detections = [d.model_dump(mode="json") for d in data_vx]
         send_queue = kafka_engine.producer.get_queue()
         await asyncio.gather(*[send_queue.put(d) for d in detections])
         return
