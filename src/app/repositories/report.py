@@ -61,9 +61,7 @@ class Report:
         return data
 
     def detection_to_v1(self, data: list[Detection]) -> list[KafkaDetectionV1]:
-        logger.debug(f"received: {len(data)}")
         _data = [KafkaDetectionV1(**d.model_dump()) for d in data]
-        logger.debug(f"received: {len(_data)}")
         return _data
 
     async def send_to_kafka(self, data: list[Detection]) -> None:
