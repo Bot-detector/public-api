@@ -7,7 +7,7 @@ async-timeout==4.0.3
 asyncmy==0.2.9
 attrs==23.2.0
 black==24.4.2
-certifi==2024.2.2
+certifi==2024.7.4
 cffi==1.16.0
 cfgv==3.4.0
 charset-normalizer==3.3.2
