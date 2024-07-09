@@ -2,7 +2,12 @@ import asyncio
 import logging
 import time
 
-from src.app.views.input.report import Detection, KafkaDetectionV1
+from src.app.views.input.report import (
+    Detection,
+    KafkaDetectionV1,
+    KafkaDetectionV2,
+    ParsedDetection,
+)
 from src.core.fastapi.dependencies import kafka_engine
 
 logger = logging.getLogger(__name__)
@@ -61,13 +66,25 @@ class Report:
         return data
 
     def detection_to_v1(self, data: list[Detection]) -> list[KafkaDetectionV1]:
-        _data = [KafkaDetectionV1(**d.model_dump()) for d in data]
-        return _data
+        return [KafkaDetectionV1(**d.model_dump()) for d in data]
 
-    async def send_to_kafka(self, data: list[Detection]) -> None:
-        data_vx = self.detection_to_v1(data=data)
-        assert len(data) == len(data_vx)
-        detections = [d.model_dump(mode="json") for d in data_vx]
+    def detection_to_v2(self, data: list[ParsedDetection]) -> list[KafkaDetectionV2]:
+        return [KafkaDetectionV2(**d.model_dump()) for d in data]
+
+    async def send_to_kafka(
+        self, data: list[Detection] | list[ParsedDetection]
+    ) -> None:
+        detections = []
+        v1, v2 = [], []
+        for d in data:
+            if isinstance(d, Detection):
+                v1.append(d)
+            elif isinstance(d, ParsedDetection):
+                v2.append(d)
+        v1 = self.detection_to_v1(data=v1)
+        v2 = self.detection_to_v2(data=v2)
+
+        detections: list[dict] = [d.model_dump(mode="json") for d in v1 + v2]
         send_queue = kafka_engine.producer.get_queue()
         await asyncio.gather(*[send_queue.put(d) for d in detections])
         return

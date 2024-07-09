@@ -20,8 +20,6 @@ class Equipment(BaseModel):
 
 
 class BaseDetection(BaseModel):
-    reporter: str = Field(..., min_length=1, max_length=13)
-    reported: str = Field(..., min_length=1, max_length=12)
     region_id: int = Field(0, ge=0, le=100_000)
     x_coord: int = Field(0, ge=0)
     y_coord: int = Field(0, ge=0)
@@ -49,3 +47,9 @@ class KafkaDetectionV1(BaseDetection):
     metadata: Metadata = Metadata(version="v1.0.0")
     reporter: str = Field(..., min_length=1, max_length=13)
     reported: str = Field(..., min_length=1, max_length=12)
+
+
+class KafkaDetectionV2(BaseDetection):
+    metadata: Metadata = Metadata(version="v2.0.0")
+    reporter_id: int = Field(..., ge=0)
+    reported_id: int = Field(..., ge=0)
