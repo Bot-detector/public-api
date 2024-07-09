@@ -39,8 +39,10 @@ async def post_reports(
     _data = []
     for d in data:
         _d = d.model_dump()
-        _d["reported_id"] = players.get(_d.pop("reported"))
-        _d["reporter_id"] = players.get(_d.pop("reporter"))
+        reported = player_repo.sanitize_name(_d.pop("reported"))
+        reporter = player_repo.sanitize_name(_d.pop("reporter"))
+        _d["reported_id"] = players.get(reported)
+        _d["reporter_id"] = players.get(reporter)
         _data.append(ParsedDetection(**_d))
     await report_repo.send_to_kafka(data=_data)
     return Ok()
