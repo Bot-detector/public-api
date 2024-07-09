@@ -1,4 +1,3 @@
-import asyncio
 import logging
 
 from fastapi import APIRouter, Depends, status
@@ -18,7 +17,12 @@ player_cache = SimpleALRUCache(max_size=10_000)
 
 
 @router.post("/report", status_code=status.HTTP_201_CREATED, response_model=Ok)
-async def post_reports(detections: list[Detection], session=Depends(get_session)):
+async def post_reports(
+    detections: list[Detection],
+    session=Depends(get_session),
+):
+    global player_cache
+
     report_repo = Report()
     player_repo = Player(session=session, cache=player_cache)
 
@@ -29,9 +33,7 @@ async def post_reports(detections: list[Detection], session=Depends(get_session)
 
     # get unique list of names
     player_names = list(set([d.reported for d in data] + [d.reporter for d in data]))
-    players = await asyncio.gather(
-        *[player_repo.get_or_insert(player_name=p) for p in player_names]
-    )
+    players = [await player_repo.get_or_insert(player_name=p) for p in player_names]
     players = {p.name: p.id for p in players}
 
     _data = []

@@ -69,9 +69,8 @@ class Player:
             func.coalesce(sub_query_alias.c.manual_detect, 0).label("manual_detect"),
         )
 
-        async with self.session:
-            result: AsyncResult = await self.session.execute(sql)
-            await self.session.commit()
+        result: AsyncResult = await self.session.execute(sql)
+        await self.session.commit()
         return tuple(result.mappings())
 
     async def get_feedback_score(self, player_names: list[str]):
@@ -95,24 +94,24 @@ class Player:
             fb_subject.confirmed_player,
         )
 
-        async with self.session:
-            result: AsyncResult = await self.session.execute(query)
-            await self.session.commit()
+        result: AsyncResult = await self.session.execute(query)
+        await self.session.commit()
         return tuple(result.mappings())
 
     async def get_prediction(self, player_names: list[str]):
         query: Select = select(dbPrediction)
         query = query.select_from(dbPrediction)
         query = query.where(dbPrediction.name.in_(player_names))
-        async with self.session:
-            result: AsyncResult = await self.session.execute(query)
-            result = result.scalars().all()
+
+        result: AsyncResult = await self.session.execute(query)
+        result = result.scalars().all()
         return jsonable_encoder(result)
 
     async def get(self, player_name: str) -> PlayerInDB:
         player_name = self.sanitize_name(player_name)
 
         sql = sqla.select(dbPlayer).where(dbPlayer.name == player_name)
+
         result = await self.session.execute(sql)
         data = result.scalars().all()
 
@@ -131,7 +130,6 @@ class Player:
 
         if isinstance(player, PlayerInDB):
             await self.cache.put(key=player_name, value=player)
-
         return player
 
     async def insert(self, player: PlayerCreate) -> PlayerInDB:
