@@ -68,6 +68,40 @@ async def test_valid_report_weird_name(custom_client):
 
 
 @pytest.mark.asyncio
+async def test_valid_report_unkown_reported(custom_client):
+    global example_data
+    endpoint = "/v2/report"
+    _data = example_data.copy()
+    _data["ts"] = int(time.time())
+    _data["reported"] = "new reported"
+
+    # Example of a valid detection data
+    detection_data = [_data]
+
+    async with custom_client as client:
+        client: AsyncClient
+        response = await client.post(endpoint, json=detection_data)
+        assert response.status_code == 201
+
+
+@pytest.mark.asyncio
+async def test_valid_report_unkown_reporter(custom_client):
+    global example_data
+    endpoint = "/v2/report"
+    _data = example_data.copy()
+    _data["ts"] = int(time.time())
+    _data["reported"] = "new reporter"
+
+    # Example of a valid detection data
+    detection_data = [_data]
+
+    async with custom_client as client:
+        client: AsyncClient
+        response = await client.post(endpoint, json=detection_data)
+        assert response.status_code == 201
+
+
+@pytest.mark.asyncio
 async def test_invalid_ts_high_report(custom_client):
     global example_data
     endpoint = "/v2/report"

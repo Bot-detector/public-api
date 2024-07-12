@@ -3,7 +3,7 @@ USE playerdata;
 CREATE TABLE Players (
     id INT PRIMARY KEY AUTO_INCREMENT,
     name TEXT,
-    created_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP,
     possible_ban BOOLEAN,
     confirmed_ban BOOLEAN,

@@ -39,10 +39,23 @@ async def post_reports(
     _data = []
     for d in data:
         _d = d.model_dump()
+        # get reported_id from name
         reported = player_repo.sanitize_name(_d.pop("reported"))
+        reported_id = players.get(reported)
+
+        # get reporter_id from name
         reporter = player_repo.sanitize_name(_d.pop("reporter"))
-        _d["reported_id"] = players.get(reported)
-        _d["reporter_id"] = players.get(reporter)
+        reporter_id = players.get(reporter)
+
+        # some validation
+        if reporter_id is None or reported_id is None:
+            logger.warning(msg=f"{reported_id=}, {reporter_id=}, {d}")
+            raise HTTPException(
+                status.HTTP_400_BAD_REQUEST, detail="something went wrong"
+            )
+        _d["reported_id"] = reported_id
+        _d["reporter_id"] = reporter_id
+
         _data.append(ParsedDetection(**_d))
     await report_repo.send_to_kafka(data=_data)
     return Ok()

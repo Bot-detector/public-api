@@ -115,11 +115,13 @@ services:
         condition: service_healthy
       mysql:
         condition: service_healthy
+  
   wait_for_api:
     image: alpine:latest
     container_name: wait_for_api
     depends_on:
       public_api:
         condition: service_healthy
+
 networks:
   botdetector-network:

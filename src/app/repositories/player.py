@@ -108,14 +108,14 @@ class Player:
         return jsonable_encoder(result)
 
     async def get(self, player_name: str) -> PlayerInDB:
+        assert isinstance(player_name, str)
         player_name = self.sanitize_name(player_name)
 
         sql = sqla.select(dbPlayer).where(dbPlayer.name == player_name)
 
         result = await self.session.execute(sql)
         data = result.scalars().all()
-
-        return PlayerInDB(**model_to_dict(data[0])) if data else None
+        return PlayerInDB(**model_to_dict(data[0])) if len(data) > 0 else None
 
     async def get_cache(self, player_name: str) -> PlayerInDB:
         player_name = self.sanitize_name(player_name)
@@ -136,6 +136,7 @@ class Player:
         player.name = self.sanitize_name(player.name)
         sql = sqla.insert(dbPlayer).values(player.model_dump()).prefix_with("IGNORE")
         await self.session.execute(sql)
+        # await self.session.commit()
         return await self.get(player_name=player.name)
 
     async def get_or_insert(self, player_name: str, cached=True) -> PlayerInDB:
