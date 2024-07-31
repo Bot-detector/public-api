@@ -136,7 +136,7 @@ class Player:
         player.name = self.sanitize_name(player.name)
         sql = sqla.insert(dbPlayer).values(player.model_dump()).prefix_with("IGNORE")
         await self.session.execute(sql)
-        # await self.session.commit()
+        await self.session.commit()
         return await self.get(player_name=player.name)
 
     async def get_or_insert(self, player_name: str, cached=True) -> PlayerInDB:

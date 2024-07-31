@@ -30,13 +30,13 @@ async def post_reports(
     data = await report_repo.parse_data(detections)
     if not data:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, detail="invalid data")
-    logger.debug(f"Working: {len(data)}")
+    logger.debug(f"Received: {len(data)}, Reporter: {data[0].reporter}")
 
     # get unique list of names
     player_names = list(set([d.reported for d in data] + [d.reporter for d in data]))
     players = [await player_repo.get_or_insert(player_name=p) for p in player_names]
-    players = {p.name: p.id for p in players}
-    await session.commit()
+    players = {p.name: p.id for p in players if p}
+    # await session.commit()
 
     _data = []
     for d in data:
