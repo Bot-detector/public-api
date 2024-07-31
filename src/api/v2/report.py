@@ -2,6 +2,7 @@ import logging
 
 from fastapi import APIRouter, Depends, status
 from fastapi.exceptions import HTTPException
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.app.repositories.player import Player
 from src.app.repositories.report import Report
@@ -19,10 +20,10 @@ player_cache = SimpleALRUCache(max_size=10_000)
 @router.post("/report", status_code=status.HTTP_201_CREATED, response_model=Ok)
 async def post_reports(
     detections: list[Detection],
-    session=Depends(get_session),
+    session: AsyncSession = Depends(get_session),
 ):
     global player_cache
-
+    session: AsyncSession
     report_repo = Report()
     player_repo = Player(session=session, cache=player_cache)
 
@@ -35,6 +36,7 @@ async def post_reports(
     player_names = list(set([d.reported for d in data] + [d.reporter for d in data]))
     players = [await player_repo.get_or_insert(player_name=p) for p in player_names]
     players = {p.name: p.id for p in players}
+    await session.commit()
 
     _data = []
     for d in data:

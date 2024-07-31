@@ -90,7 +90,7 @@ async def test_valid_report_unkown_reporter(custom_client):
     endpoint = "/v2/report"
     _data = example_data.copy()
     _data["ts"] = int(time.time())
-    _data["reported"] = "new reporter"
+    _data["reporter"] = "new reporter"
 
     # Example of a valid detection data
     detection_data = [_data]
