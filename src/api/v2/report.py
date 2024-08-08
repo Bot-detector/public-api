@@ -14,7 +14,7 @@ from src.core.fastapi.dependencies.session import get_session
 logger = logging.getLogger(__name__)
 router = APIRouter(tags=["Report"])
 
-player_cache = SimpleALRUCache(max_size=10_000)
+player_cache = SimpleALRUCache(max_size=100_000)
 
 
 @router.post("/report", status_code=status.HTTP_201_CREATED, response_model=Ok)
