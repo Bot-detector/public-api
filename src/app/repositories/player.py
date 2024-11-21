@@ -12,7 +12,8 @@ from src.core._cache import SimpleALRUCache
 from src.core.database.models.feedback import PredictionFeedback as dbFeedback
 from src.core.database.models.player import Player as dbPlayer
 from src.core.database.models.prediction import Prediction as dbPrediction
-from src.core.database.models.report import Report as dbReport
+
+# from src.core.database.models.report import Report as dbReport
 
 logger = logging.getLogger(__name__)
 
@@ -38,40 +39,25 @@ class Player:
         self.session = session
 
     async def get_report_score(self, player_names: tuple[str]):
-        voter: dbPlayer = aliased(dbPlayer, name="voter")
-        subject: dbPlayer = aliased(dbPlayer, name="subject")
-
-        sub_query: Select = select(
-            dbReport.reportedID.distinct().label("reportedID"), dbReport.manual_detect
-        )
-        sub_query = sub_query.join(voter, dbReport.reportingID == voter.id)
-        sub_query = sub_query.where(voter.name.in_(player_names))
-        sub_query = sub_query.where(dbReport.manual_detect == 0)
-
-        # Create an alias for the subquery
-        sub_query_alias = sub_query.alias("DistinctReports")
-
-        sql: Select = select(
-            func.count(func.distinct(subject.id)).label("count"),
-            subject.possible_ban,
+        sql_select = """
+        select
+            count(sr.reporting_id) as count,
             subject.confirmed_ban,
-            subject.confirmed_player,
-            func.coalesce(sub_query_alias.c.manual_detect, 0).label("manual_detect"),
-        )
-        sql = sql.select_from(sub_query_alias)
-        sql = sql.join(
-            subject, sub_query_alias.c.reportedID == subject.id
-        )  # Use c to access columns
-        sql = sql.group_by(
             subject.possible_ban,
+            subject.confirmed_player
+        from report_sighting sr
+        join Players voter ON sr.reporting_id = voter.id
+        join Players subject ON sr.reported_id = subject.id
+        WHERE voter.name in :name 
+        GROUP BY
             subject.confirmed_ban,
-            subject.confirmed_player,
-            func.coalesce(sub_query_alias.c.manual_detect, 0).label("manual_detect"),
-        )
-
-        result: AsyncResult = await self.session.execute(sql)
-        await self.session.commit()
-        return tuple(result.mappings())
+            subject.possible_ban,
+            subject.confirmed_player
+        """
+        params = {"name": player_names}
+        data = await self.session.execute(sqla.text(sql_select), params=params)
+        result = data.mappings().all()
+        return result
 
     async def get_feedback_score(self, player_names: list[str]):
         # dbFeedback
