@@ -273,3 +273,18 @@ SET
     normalized_name=replace(name,'-',' ')
 WHERE name LIKE 'anonymoususer%'
 ;
+INSERT INTO `report_sighting` (`reporting_id`, `reported_id`, `manual_detect`)
+VALUES
+    (1, 2, 0),
+    (1, 3, 0),
+    (1, 5, 0),
+    (2, 3, 0),
+    (3, 4, 0),
+    (4, 5, 1),
+    (5, 6, 0),
+    (6, 7, 0),
+    (7, 8, 1),
+    (8, 9, 0),
+    (9, 10, 1),
+    (10, 11, 0)
+;
