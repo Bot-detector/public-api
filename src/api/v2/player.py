@@ -38,7 +38,7 @@ async def get_players_kc(
     """
     repo = repoPlayer(session)
     names = await asyncio.gather(*[to_jagex_name(n) for n in name])
-    data = await repo.get_report_score(player_names=names)
+    data = await repo.get_report_score(player_names=tuple(names))
     return data
 
 

@@ -39,6 +39,8 @@ class Player:
         self.session = session
 
     async def get_report_score(self, player_names: tuple[str]):
+        if not isinstance(player_names, tuple):
+            raise Exception()
         sql_select = """
         select
             count(rs.reporting_id) as count,
