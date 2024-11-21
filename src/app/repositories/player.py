@@ -41,18 +41,20 @@ class Player:
     async def get_report_score(self, player_names: tuple[str]):
         sql_select = """
         select
-            count(sr.reporting_id) as count,
+            count(rs.reporting_id) as count,
             subject.confirmed_ban,
             subject.possible_ban,
-            subject.confirmed_player
-        from report_sighting sr
-        join Players voter ON sr.reporting_id = voter.id
-        join Players subject ON sr.reported_id = subject.id
+            subject.confirmed_player,
+            rs.manual_detect
+        from report_sighting rs
+        join Players voter ON rs.reporting_id = voter.id
+        join Players subject ON rs.reported_id = subject.id
         WHERE voter.name in :name 
         GROUP BY
             subject.confirmed_ban,
             subject.possible_ban,
-            subject.confirmed_player
+            subject.confirmed_player,
+            rs.manual_detect
         """
         params = {"name": player_names}
         data = await self.session.execute(sqla.text(sql_select), params=params)
