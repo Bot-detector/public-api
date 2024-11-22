@@ -12,6 +12,7 @@ dependencies = [
     "prometheus-client>=0.21.0",
     "pydantic-settings>=2.6.1",
     "pydantic>=2.10.1",
+    "pytest-cov>=6.0.0",
     "sqlalchemy>=2.0.36",
     "uvicorn>=0.32.1",
     "watchfiles>=0.24.0",

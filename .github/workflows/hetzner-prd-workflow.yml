@@ -69,7 +69,7 @@ jobs:
           python-version-file: ".python-version"
       - name: Setup Docker Containers
         run: |
-          docker-compose --verbose up --build -d
+          docker-compose up --build --quiet-pull -d
       - name: Check API is Up
         uses: cygnetdigital/wait_for_response@v2.0.0
         with:
