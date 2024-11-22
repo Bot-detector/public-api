@@ -49,7 +49,7 @@ jobs:
   #     - run: uv run pyright
   tests:
     runs-on: [self-hosted, "hetzner"]
-    needs: [lock_file]
+    needs: [lock_file, linting, formatting]
     strategy:
       matrix:
         python-version: ["3.9", "3.10", "3.11", "3.12"]
@@ -64,8 +64,8 @@ jobs:
       
   # This workflow contains two jobs: build_image and update_image_version
   build_image:
-    # The type of runner that the job will run on
     runs-on: [self-hosted, "hetzner"]
+    needs: [tests]
     # Run only on manual trigger
     if: ${{ github.event_name == 'workflow_dispatch' }}
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -97,9 +97,10 @@ jobs:
 
   update_image_version:
     runs-on: [self-hosted, "hetzner"]
+    needs: build_image
     # Run only on manual trigger
     if: ${{ github.event_name == 'workflow_dispatch' }}
-    needs: build_image # This ensures that the build_image job is completed before running this job
+    
     steps:
       - name: Checkout Target Repository
         uses: actions/checkout@v3
