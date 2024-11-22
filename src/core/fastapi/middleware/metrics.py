@@ -27,12 +27,16 @@ class PrometheusMiddleware(BaseHTTPMiddleware):
 
         # Calculate request latency
         latency = time.time() - start_time
-        endpoint = request.url.path
 
         # Update Prometheus metrics
         REQUEST_COUNT.labels(
-            method=request.method, endpoint=endpoint, http_status=response.status_code
+            method=request.method,
+            endpoint=request.url.path,
+            http_status=response.status_code,
         ).inc()
-        REQUEST_LATENCY.labels(endpoint=endpoint).observe(latency)
+        REQUEST_LATENCY.labels(
+            method=request.method,
+            endpoint=request.url.path,
+        ).observe(latency)
 
         return response
