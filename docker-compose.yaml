@@ -94,7 +94,6 @@ services:
       - ./src:/project/src
     ports:
       - 5000:5000
-      - 8000:8000
     networks:
       - botdetector-network
     # this overrides the env_file for the specific variable
