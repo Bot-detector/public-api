@@ -16,11 +16,54 @@ env:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
+  lock_file:
+    runs-on: [self-hosted, "hetzner"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: uv lock --locked
+  linting:
+    runs-on: [self-hosted, "hetzner"]
+    needs: [lock_file]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: uvx ruff check .
+  formatting:
+    runs-on: [self-hosted, "hetzner"]
+    needs: [lock_file]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: uvx ruff format --check .
+  # type_consistency:
+  #   runs-on: [self-hosted, "hetzner"]
+  #   needs: [lock_file]
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: ./.github/actions/setup
+  #     - run: uv run pyright
+  tests:
+    runs-on: [self-hosted, "hetzner"]
+    needs: [lock_file]
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - uses: ./.github/actions/setup
+      - run: uv run pytest -v --durations=0 --cov --cov-report=xml
+      
   # This workflow contains two jobs: build_image and update_image_version
   build_image:
     # The type of runner that the job will run on
     runs-on: [self-hosted, "hetzner"]
-    if: github.repository_owner == 'Bot-detector'
+    # Run only on manual trigger
+    if: ${{ github.event_name == 'workflow_dispatch' }}
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -50,9 +93,9 @@ jobs:
 
   update_image_version:
     runs-on: [self-hosted, "hetzner"]
-    if: github.repository_owner == 'Bot-detector'
+    # Run only on manual trigger
+    if: ${{ github.event_name == 'workflow_dispatch' }}
     needs: build_image # This ensures that the build_image job is completed before running this job
-
     steps:
       - name: Checkout Target Repository
         uses: actions/checkout@v3

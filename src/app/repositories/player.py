@@ -38,7 +38,7 @@ class Player:
     async def update_session(self, session: AsyncSession):
         self.session = session
 
-    async def get_report_score(self, player_names: tuple[str]):
+    async def get_report_score(self, player_names: tuple[str, ...]):
         if not isinstance(player_names, tuple):
             raise Exception()
         sql_select = """
