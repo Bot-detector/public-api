@@ -52,7 +52,13 @@ jobs:
   #     - run: uv run pyright
   tests:
     runs-on: [self-hosted, "hetzner"]
-    needs: [lock_file, linting, formatting]
+    needs: [lock_file]
+    env:
+      ENV: "DVP"
+      DATABASE_URL: "mysql+aiomysql://root:root_bot_buster@mysql:3306/playerdata"
+      KAFKA_HOST: "localhost:9092"
+      POOL_RECYCLE: 60
+      POOL_TIMEOUT: 30
     steps:
       - uses: actions/checkout@v4
       - name: Install uv
@@ -61,9 +67,18 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version-file: ".python-version"
-
+      - name: Setup Docker Containers
+        run: |
+          docker-compose --verbose up --build -d
+      - name: Check API is Up
+        uses: cygnetdigital/wait_for_response@v2.0.0
+        with:
+          url: "http://localhost:5000/docs"
+          responseCode: "200,500"
+          timeout: 120000 # wait up to 120 seconds
+          interval: 5000 # poll every 5 seconds
       - run: uv run pytest -v --durations=0 --cov --cov-report=xml
-      
+
   # This workflow contains two jobs: build_image and update_image_version
   build_image:
     runs-on: [self-hosted, "hetzner"]
@@ -102,7 +117,7 @@ jobs:
     needs: build_image
     # Run only on manual trigger
     if: ${{ github.event_name == 'workflow_dispatch' }}
-    
+
     steps:
       - name: Checkout Target Repository
         uses: actions/checkout@v3
