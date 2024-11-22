@@ -99,7 +99,7 @@ services:
     # this overrides the env_file for the specific variable
     environment:
       - KAFKA_HOST=kafka:9092
-      - DATABASE_URL=mysql+aiomysql://root:root_bot_buster@mysql/playerdata
+      - DATABASE_URL=mysql+asyncmy://root:root_bot_buster@mysql/playerdata
       - ENV=DEV
       - POOL_RECYCLE=60
       - POOL_TIMEOUT=30
