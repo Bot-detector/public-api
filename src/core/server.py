@@ -7,7 +7,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from src import api
 from src.core.fastapi.dependencies import kafka_engine
-from src.core.fastapi.middleware.logging import LoggingMiddleware
+from src.core.fastapi.middleware import LoggingMiddleware, PrometheusMiddleware
+from prometheus_client import start_http_server
 
 logger = logging.getLogger(__name__)
 
@@ -31,6 +32,7 @@ def make_middleware() -> list[Middleware]:
             allow_headers=["*"],
         ),
         Middleware(LoggingMiddleware),
+        Middleware(PrometheusMiddleware),
     ]
     return middleware
 
@@ -55,6 +57,9 @@ def create_app() -> FastAPI:
 
 
 app = create_app()
+
+
+start_http_server(8000)
 
 
 @app.get("/")

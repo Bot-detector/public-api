@@ -1,4 +1,4 @@
-FROM python:3.11-slim as base
+FROM python:3.11-slim AS base
 
 ARG api_port
 ENV UVICORN_PORT ${api_port}
@@ -23,7 +23,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY ./src /project/src
 
 # production image
-FROM base as production
+FROM base AS production
 # Creates a non-root user with an explicit UID and adds permission to access the /project folder
 RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /project
 USER appuser

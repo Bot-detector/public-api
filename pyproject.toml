@@ -1,0 +1,26 @@
+[project]
+name = "public-api"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "aiokafka>=0.12.0",
+    "aiokafkaengine>=0.0.4",
+    "aiomysql>=0.2.0",
+    "fastapi>=0.115.5",
+    "prometheus-client>=0.21.0",
+    "pydantic-settings>=2.6.1",
+    "pydantic>=2.10.1",
+    "sqlalchemy>=2.0.36",
+    "uvicorn>=0.32.1",
+    "watchfiles>=0.24.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.3",
+    "pytest-asyncio>=0.24.0",
+    "ruff>=0.7.4",
+    "pre-commit>=4.0.1",
+]
