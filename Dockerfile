@@ -1,16 +1,11 @@
 FROM python:3.11-slim AS base
+COPY --from=ghcr.io/astral-sh/uv:0.5.4 /uv /uvx /bin/
 
 ARG api_port
 ENV UVICORN_PORT ${api_port}
 
 ARG root_path
 ENV UVICORN_ROOT_PATH ${root_path}
-
-# Keeps Python from generating .pyc files in the container
-ENV PYTHONDONTWRITEBYTECODE=1
-
-# Turns off buffering for easier container logging
-ENV PYTHONUNBUFFERED=1
 
 # set the working directory
 WORKDIR /project
