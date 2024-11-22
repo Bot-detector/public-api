@@ -24,21 +24,24 @@ jobs:
     runs-on: [self-hosted, "hetzner"]
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
       - run: uv lock --locked
   linting:
     runs-on: [self-hosted, "hetzner"]
     needs: [lock_file]
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
       - run: uvx ruff check .
   formatting:
     runs-on: [self-hosted, "hetzner"]
     needs: [lock_file]
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
       - run: uvx ruff format --check .
   # type_consistency:
   #   runs-on: [self-hosted, "hetzner"]
@@ -50,16 +53,15 @@ jobs:
   tests:
     runs-on: [self-hosted, "hetzner"]
     needs: [lock_file, linting, formatting]
-    strategy:
-      matrix:
-        python-version: ["3.9", "3.10", "3.11", "3.12"]
     steps:
       - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
-      - uses: ./.github/actions/setup
+          python-version-file: ".python-version"
+
       - run: uv run pytest -v --durations=0 --cov --cov-report=xml
       
   # This workflow contains two jobs: build_image and update_image_version
