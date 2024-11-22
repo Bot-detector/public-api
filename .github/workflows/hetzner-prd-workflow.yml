@@ -52,7 +52,7 @@ jobs:
   #     - run: uv run pyright
   tests:
     runs-on: [self-hosted, "hetzner"]
-    needs: [lock_file]
+    needs: [linting, formatting]
     env:
       ENV: "DVP"
       DATABASE_URL: "mysql+aiomysql://root:root_bot_buster@mysql:3306/playerdata"
@@ -82,7 +82,7 @@ jobs:
   # This workflow contains two jobs: build_image and update_image_version
   build_image:
     runs-on: [self-hosted, "hetzner"]
-    needs: [tests, linting, formatting]
+    needs: [tests]
     # Run only on manual trigger
     if: ${{ github.event_name == 'workflow_dispatch' }}
     # Steps represent a sequence of tasks that will be executed as part of the job
