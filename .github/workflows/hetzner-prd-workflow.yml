@@ -82,7 +82,7 @@ jobs:
   # This workflow contains two jobs: build_image and update_image_version
   build_image:
     runs-on: [self-hosted, "hetzner"]
-    needs: [tests]
+    needs: [tests, linting, formatting]
     # Run only on manual trigger
     if: ${{ github.event_name == 'workflow_dispatch' }}
     # Steps represent a sequence of tasks that will be executed as part of the job
