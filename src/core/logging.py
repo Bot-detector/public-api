@@ -8,7 +8,8 @@ class JsonFormatter(logging.Formatter):
         log_record = {
             "ts": self.formatTime(record, self.datefmt),
             "lvl": record.levelname,
-            "module": record.module,
+            "name": record.name,
+            # "module": record.module,
             "func": record.funcName,
             "line": record.lineno,
             "msg": record.getMessage(),

@@ -23,7 +23,6 @@ async def post_reports(
     session: AsyncSession = Depends(get_session),
 ):
     global player_cache
-    session: AsyncSession
     report_repo = Report()
     player_repo = Player(session=session, cache=player_cache)
 
