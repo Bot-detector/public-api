@@ -6,10 +6,12 @@ from src.core.config import settings
 # Create an async SQLAlchemy engine
 engine = create_async_engine(
     settings.DATABASE_URL,
+    pool_pre_ping=True,
+    pool_size=10,
+    max_overflow=90,
     pool_timeout=settings.POOL_TIMEOUT,
     pool_recycle=settings.POOL_RECYCLE,
     # echo=(settings.ENV != "PRD"),
-    pool_pre_ping=True,
 )
 
 # Create a session factory
