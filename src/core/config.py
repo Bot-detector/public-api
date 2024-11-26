@@ -1,3 +1,5 @@
+import asyncio
+
 from dotenv import find_dotenv, load_dotenv
 from pydantic_settings import BaseSettings
 
@@ -13,3 +15,5 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+DB_SEMAPHORE = asyncio.Semaphore(100)
