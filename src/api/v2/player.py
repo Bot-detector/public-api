@@ -21,7 +21,6 @@ async def get_players_kc(
     name: list[Annotated[str, Field(..., min_length=1, max_length=13)]] = Query(
         ...,
         min_length=1,
-        max_length=5,
         description="Name of the player",
         examples=["Player1", "Player2"],
     ),
@@ -47,7 +46,6 @@ async def get_feedback_score(
     name: list[Annotated[str, Field(..., min_length=1, max_length=13)]] = Query(
         ...,
         min_length=1,
-        max_length=5,
         description="Name of the player",
         examples=["Player1", "Player2"],
     ),
